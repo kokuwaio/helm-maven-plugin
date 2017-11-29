@@ -6,30 +6,42 @@
 	<artifactId>helm-maven-plugin</artifactId>
 	<version>1.0</version>
 
-	<name>${project.artifactId}</name>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>
+		A plugin for executing HELM (https://docs.helm.sh).
+		HELM itself will be downloaded during build.
+	</description>
+	<url>https://github.com/kiwigrid/helm-maven-plugin</url>
+
 	<packaging>maven-plugin</packaging>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License, v3</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>Kiwigrid GmbH</name>
+		<url>https://www.kiwigrid.com</url>
+	</organization>
 
 	<developers>
 		<developer>
 			<name>Fabian Schlegel</name>
 			<email>fabian.schlegel@kiwigrid.com</email>
-			<roles>
-				<role>developer</role>
-			</roles>
 		</developer>
 		<developer>
 			<name>Axel Köhler</name>
 			<email>axel.koehler@kiwigrid.com</email>
-			<roles>
-				<role>developer</role>
-			</roles>
 		</developer>
 	</developers>
 
 	<scm>
-		<connection>https://github.com/kiwigrid/helm-maven-plugin.git</connection>
-		<developerConnection>https://github.com/kiwigrid/helm-maven-plugin.git</developerConnection>
-		<url>https://github.com/kiwigrid/helm-maven-plugin</url>
+		<connection>scm:git:git://github.com/kiwigrid/helm-maven-plugin.git</connection>
+		<developerConnection>scm:git:ssh://github.com:kiwigrid/helm-maven-plugin.git</developerConnection>
+		<url>https://github.com/kiwigrid/helm-maven-plugin/tree/master</url>
 	</scm>
 
 	<issueManagement>
