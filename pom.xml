@@ -39,8 +39,8 @@
 	</developers>
 
 	<scm>
-		<connection>git@github.com:kiwigrid/helm-maven-plugin.git</connection>
-		<developerConnection>git@github.com:kiwigrid/helm-maven-plugin.git</developerConnection>
+		<connection>scm:git:git://github.com/kiwigrid/helm-maven-plugin.git</connection>
+		<developerConnection>scm:git:ssh://github.com:kiwigrid/helm-maven-plugin.git</developerConnection>
 		<url>https://github.com/kiwigrid/helm-maven-plugin/tree/master</url>
 	</scm>
 
