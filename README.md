@@ -1,16 +1,56 @@
 # What?
 
-This is a Maven plugin for testing, packaging and uploading Helm charts.
+This is a Maven plugin for testing, packaging and uploading HELM charts.
 
-"Helm is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources." https://github.com/kubernetes/helm
+"HELM is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources." 
+
+Visit https://docs.helm.sh for detailed information.
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)
 
 # Why?
 
-Currently (October 2017) there is no simple Maven plugin to package existing Helm charts.
+Currently (October 2017) there is no simple Maven plugin to package existing HELM charts.
 
 # How?
 
-The plugin downloads Helm in a specific version and runs the tool in the background.
+The plugin downloads HELM in a specific version and runs the tool in the background.
+
+Add following dependency to your pom.xml:
+```
+<dependency>
+  <groupId>com.kiwigrid</groupId>
+  <artifactId>helm-maven-plugin</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+
+Configure plugin:
+```
+...
+<properties>
+  <helm.download.url>https://kubernetes-helm.storage.googleapis.com/helm-v2.6.1-linux-amd64.tar.gz</helm.download.url>
+  <helm.repo.url>https://repo.example.com/artifactory/helm</helm.repo.url>
+</properties>
+...
+<build>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>1.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <helmRepoUrl>${helm.repo.url}</helmRepoUrl>
+        <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
+        <indexFileForMerge>${project.basedir}/target/helm/current_index.yaml</indexFileForMerge>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
+</build>
+```
 
 # Features
 
@@ -27,6 +67,7 @@ The plugin downloads Helm in a specific version and runs the tool in the backgro
 - `helm:init` initializes Helm by downloading a specific version
 - `helm:package`packages the given charts (chart.tar.gz) 
 - `helm:lint` tests the given charts
+- `helm:dry-run` simulate an install
 - `helm:index` creates and merges the index.yaml file
 
 ## Configuration
