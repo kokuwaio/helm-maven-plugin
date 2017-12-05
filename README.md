@@ -65,7 +65,8 @@ Configure plugin:
 ## Goals
 
 - `helm:init` initializes Helm by downloading a specific version
-- `helm:package`packages the given charts (chart.tar.gz) 
+- `helm:package` packages the given charts (chart.tar.gz)
+- `helm:dependency-build` resolves the chart dependencies  
 - `helm:lint` tests the given charts
 - `helm:dry-run` simulate an install
 - `helm:index` creates and merges the index.yaml file
