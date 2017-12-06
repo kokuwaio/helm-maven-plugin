@@ -41,5 +41,12 @@ public class InitMojo extends AbstractHelmMojo {
 				+ "linux-amd64"
 				+ File.separator
 				+ "helm init --client-only", "Unable to call helm init", false);
+
+		getLog().info("Enable incubator repo...");
+		callCli(getHelmExecuteableDirectory()
+				+ File.separator
+				+ "linux-amd64"
+				+ File.separator
+				+ "helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator", "Unable add incubator repo", false);
 	}
 }
