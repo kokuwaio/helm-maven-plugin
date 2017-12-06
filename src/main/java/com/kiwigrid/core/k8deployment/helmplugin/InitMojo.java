@@ -47,6 +47,6 @@ public class InitMojo extends AbstractHelmMojo {
 				+ File.separator
 				+ "linux-amd64"
 				+ File.separator
-				+ "helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator", "Unable add incubator repo", false);
+				+ "helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com", "Unable add incubator repo", false);
 	}
 }
