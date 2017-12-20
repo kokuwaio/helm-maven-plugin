@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Mojo for initializing helm
@@ -37,16 +38,21 @@ public class InitMojo extends AbstractHelmMojo {
 				+ getHelmExecuteableDirectory(), "Unable to unpack helm to " + getHelmExecuteableDirectory(), false);
 		getLog().info("Run helm init...");
 		callCli(getHelmExecuteableDirectory()
-				+ File.separator
-				+ "linux-amd64"
-				+ File.separator
-				+ "helm init --client-only", "Unable to call helm init", false);
+						+ File.separator
+						+ "linux-amd64"
+						+ File.separator
+						+ "helm init --client-only"
+						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
+				"Unable to call helm init",
+				false);
 
 		getLog().info("Enable incubator repo...");
 		callCli(getHelmExecuteableDirectory()
-				+ File.separator
-				+ "linux-amd64"
-				+ File.separator
-				+ "helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com", "Unable add incubator repo", false);
+						+ File.separator
+						+ "linux-amd64"
+						+ File.separator
+						+ "helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com",
+				"Unable add incubator repo",
+				false);
 	}
 }

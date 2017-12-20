@@ -44,6 +44,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helmDownloadUrl")
 	private String helmDownloadUrl;
 
+	@Parameter(property = "helmHomeDirectory")
+	private String helmHomeDirectory;
+
 	/**
 	 * Calls cli with specified command
 	 *
@@ -162,5 +165,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setChartDirectory(String chartDirectory) {
 		this.chartDirectory = chartDirectory;
+	}
+
+	public String getHelmHomeDirectory() {
+		return helmHomeDirectory;
+	}
+
+	public void setHelmHomeDirectory(String helmHomeDirectory) {
+		this.helmHomeDirectory = helmHomeDirectory;
 	}
 }
