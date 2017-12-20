@@ -45,6 +45,7 @@ Configure plugin:
         <helmRepoUrl>${helm.repo.url}</helmRepoUrl>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
         <indexFileForMerge>${project.basedir}/target/helm/current_index.yaml</indexFileForMerge>
+        <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
       </configuration>
     </plugin>
   ...
@@ -114,4 +115,10 @@ Configure plugin:
   - description: chart output directory
   - required: false
   - default value: ${project.build.directory}/helm/repo
+  - type: string
+  
+- `<helmHomeDirectory>`
+  - description: path to helm home directory; useful for concurrent Jenkins builds!
+  - required: false
+  - default value: ~/.helm
   - type: string
