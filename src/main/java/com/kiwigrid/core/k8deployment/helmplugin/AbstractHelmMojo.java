@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,6 +39,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helmRepoUrl", required = true)
 	private String helmRepoUrl;
+
+	@Parameter(property = "helmUploadUrl", required = true)
+	private String helmUploadUrl;
 
 	@Parameter(property = "indexFileForMerge")
 	private String indexFileForMerge;
@@ -93,13 +98,22 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	List<String> getChartDirectories(String path) throws MojoExecutionException {
-		try {
-			return Files.walk(Paths.get(path))
-					.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
+		try (Stream<Path> files = Files.walk(Paths.get(path))) {
+			return files.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
 					.map(p -> p.getParent().toString())
 					.collect(Collectors.toList());
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan chart directory at " + path, e);
+		}
+	}
+
+	List<String> getChartTgzs(String path) throws MojoExecutionException {
+		try (Stream<Path> files = Files.walk(Paths.get(path))) {
+			return files.filter(p -> p.getFileName().toString().endsWith("tgz"))
+					.map(p -> p.toString())
+					.collect(Collectors.toList());
+		} catch (IOException e) {
+			throw new MojoExecutionException("Unable to scan repo directory at " + path, e);
 		}
 	}
 
@@ -173,5 +187,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setHelmHomeDirectory(String helmHomeDirectory) {
 		this.helmHomeDirectory = helmHomeDirectory;
+	}
+
+	public String getHelmUploadUrl() {
+		return helmUploadUrl;
+	}
+
+	public void setHelmUploadUrl(String helmUploadUrl) {
+		this.helmUploadUrl = helmUploadUrl;
 	}
 }
