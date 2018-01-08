@@ -21,7 +21,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>1.2</version>
+  <version>1.4</version>
 </dependency>
 ```
 
