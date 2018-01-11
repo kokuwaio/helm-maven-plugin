@@ -17,12 +17,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 @Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE)
 public class PackageMojo extends AbstractHelmMojo {
 
-	private static final String CHART_YAML = "Chart.yaml";
-	/**
-	 * Regular expression to check if a given string is in the {@see https://semver.org/} format.
-	 */
-	private static final String SEMVER_REGEX = "(\\d+)\\.(\\d+)(?:\\.)?(\\d*)(\\.|-|\\+)?([0-9A-Za-z-.]*)?";
-
 	public void execute()
 			throws MojoExecutionException
 	{
