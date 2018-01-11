@@ -18,17 +18,27 @@ public class PackageMojo extends AbstractHelmMojo {
 	public void execute()
 			throws MojoExecutionException
 	{
+
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			if(getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {
+			if (getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {
 				getLog().debug("Skip excluded directory " + inputDirectory);
 				continue;
 			}
 			getLog().info("Packaging chart " + inputDirectory + "...");
-			callCli(getHelmExecuteable()
+
+			String helmCommand = getHelmExecuteable()
 					+ " package "
 					+ inputDirectory
 					+ " -d "
-					+ getOutputDirectory(), "Unable to package chart at " + inputDirectory, true);
+					+ getOutputDirectory();
+
+			if (getChartVersion() != null) {
+				getLog().info(String.format("Setting chart version to %s", getChartVersion()));
+				helmCommand = helmCommand + " --version " + getChartVersion();
+			}
+
+			callCli(helmCommand, "Unable to package chart at " + inputDirectory, true);
 		}
 	}
+
 }

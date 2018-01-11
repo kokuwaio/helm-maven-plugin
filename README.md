@@ -42,6 +42,7 @@ Configure plugin:
       <version>1.2</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
         <helmRepoUrl>${helm.repo.url}</helmRepoUrl>
         <helmUploadUrl>${helm.repo.url}/api/charts</helmUploadUrl>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
@@ -80,6 +81,11 @@ Configure plugin:
 - `<chartDirectory>`
   - description: root directory of your charts
   - required: true
+  - type: string
+
+- `<chartVersion>`
+  - description: Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
+  - required: false
   - type: string
 
 - `<helmRepoUrl>`
