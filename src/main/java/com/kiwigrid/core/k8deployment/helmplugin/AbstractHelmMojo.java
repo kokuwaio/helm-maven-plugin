@@ -37,6 +37,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "chartDirectory", required = true)
 	private String chartDirectory;
 
+	@Parameter(property = "chartVersion")
+	private String chartVersion;
+
 	@Parameter(property = "helmRepoUrl", required = true)
 	private String helmRepoUrl;
 
@@ -195,5 +198,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setHelmUploadUrl(String helmUploadUrl) {
 		this.helmUploadUrl = helmUploadUrl;
+	}
+
+	public String getChartVersion() {
+		return chartVersion;
+	}
+
+	public void setChartVersion(String chartVersion) {
+		this.chartVersion = chartVersion;
 	}
 }
