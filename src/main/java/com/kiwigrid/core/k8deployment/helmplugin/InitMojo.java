@@ -16,6 +16,20 @@ import org.codehaus.plexus.util.StringUtils;
 @Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InitMojo extends AbstractHelmMojo {
 
+	private static final String HELM_OS_LOCATION;
+
+	static {
+		String osName = System.getProperty("os.name");
+
+		if (osName.toLowerCase().contains("mac")) {
+			HELM_OS_LOCATION = "darwin-amd64";
+		} else if (osName.toLowerCase().contains("windows")) {
+			HELM_OS_LOCATION = "windows-amd64";
+		} else {
+			HELM_OS_LOCATION = "linux-amd64";
+		}
+	}
+
 	public void execute()
 			throws MojoExecutionException
 	{
@@ -39,7 +53,7 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().info("Run helm init...");
 		callCli(getHelmExecuteableDirectory()
 						+ File.separator
-						+ "linux-amd64"
+						+ HELM_OS_LOCATION
 						+ File.separator
 						+ "helm init --client-only"
 						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
@@ -49,7 +63,7 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().info("Enable incubator repo...");
 		callCli(getHelmExecuteableDirectory()
 						+ File.separator
-						+ "linux-amd64"
+						+ HELM_OS_LOCATION
 						+ File.separator
 						+ "helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com",
 				"Unable add incubator repo",
