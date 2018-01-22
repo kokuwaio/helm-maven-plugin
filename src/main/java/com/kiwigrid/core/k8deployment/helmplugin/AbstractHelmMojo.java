@@ -22,37 +22,37 @@ import org.apache.maven.plugins.annotations.Parameter;
  */
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
-	@Parameter(property = "helmExecutableDirectory", defaultValue = "${project.build.directory}/helm")
+	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecuteableDirectory;
 
-	@Parameter(property = "helmExecutable", defaultValue = "${project.build.directory}/helm/linux-amd64/helm")
+	@Parameter(property = "helm.executable", defaultValue = "${project.build.directory}/helm/linux-amd64/helm")
 	private String helmExecuteable;
 
-	@Parameter(property = "outputDirectory", defaultValue = "${project.build.directory}/helm/repo")
+	@Parameter(property = "helm.outputDirectory", defaultValue = "${project.build.directory}/helm/repo")
 	private String outputDirectory;
 
-	@Parameter(property = "excludes")
+	@Parameter(property = "helm.excludes")
 	private String[] excludes;
 
-	@Parameter(property = "chartDirectory", required = true)
+	@Parameter(property = "helm.chartDirectory", required = true)
 	private String chartDirectory;
 
-	@Parameter(property = "chartVersion")
+	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
 
-	@Parameter(property = "helmRepoUrl", required = true)
+	@Parameter(property = "helm.repoUrl", required = true)
 	private String helmRepoUrl;
 
-	@Parameter(property = "helmUploadUrl", required = true)
+	@Parameter(property = "helm.uploadUrl", required = true)
 	private String helmUploadUrl;
 
-	@Parameter(property = "indexFileForMerge")
+	@Parameter(property = "helm.indexFileForMerge")
 	private String indexFileForMerge;
 
-	@Parameter(property = "helmDownloadUrl")
+	@Parameter(property = "helm.downloadUrl")
 	private String helmDownloadUrl;
 
-	@Parameter(property = "helmHomeDirectory")
+	@Parameter(property = "helm.homeDirectory")
 	private String helmHomeDirectory;
 
 	/**
@@ -69,24 +69,22 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		try {
 			final Process p = Runtime.getRuntime().exec(command);
-			new Thread(new Runnable() {
-				public void run() {
-					BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-					BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-					String inputLine;
-					String errorLine;
-					try {
-						while ((inputLine = input.readLine()) != null)
-							if (verbose) {
-								getLog().info(inputLine);
-							} else {
-								getLog().debug(inputLine);
-							}
-						while ((errorLine = error.readLine()) != null)
-							getLog().error(errorLine);
-					} catch (IOException e) {
-						getLog().error(e);
-					}
+			new Thread(() -> {
+				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+				String inputLine;
+				String errorLine;
+				try {
+					while ((inputLine = input.readLine()) != null)
+						if (verbose) {
+							getLog().info(inputLine);
+						} else {
+							getLog().debug(inputLine);
+						}
+					while ((errorLine = error.readLine()) != null)
+						getLog().error(errorLine);
+				} catch (IOException e) {
+					getLog().error(e);
 				}
 			}).start();
 			p.waitFor();
