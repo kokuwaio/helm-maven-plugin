@@ -23,8 +23,6 @@ public class InitMojo extends AbstractHelmMojo {
 
 		if (osName.toLowerCase().contains("mac")) {
 			HELM_OS_LOCATION = "darwin-amd64";
-		} else if (osName.toLowerCase().contains("windows")) {
-			HELM_OS_LOCATION = "windows-amd64";
 		} else {
 			HELM_OS_LOCATION = "linux-amd64";
 		}
