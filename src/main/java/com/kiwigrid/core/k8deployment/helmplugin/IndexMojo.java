@@ -17,7 +17,7 @@ public class IndexMojo extends AbstractHelmMojo {
 			throws MojoExecutionException
 	{
 		getLog().info("Indexing Repo at " + getOutputDirectory() + "...");
-		callCli(getHelmExecuteable()
+		callCli(getHelmExecuteablePath()
 				+ " repo index "
 				+ getOutputDirectory()
 				+ " --url "

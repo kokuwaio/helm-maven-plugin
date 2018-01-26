@@ -24,7 +24,7 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 				continue;
 			}
 			getLog().info("Build chart dependencies for " + inputDirectory + "...");
-			callCli(getHelmExecuteable()
+			callCli(getHelmExecuteablePath()
 					+ " dependency build "
 					+ inputDirectory, "Failed to resolve dependencies", true);
 		}

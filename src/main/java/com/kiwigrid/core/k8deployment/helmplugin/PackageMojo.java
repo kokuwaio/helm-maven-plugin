@@ -26,7 +26,7 @@ public class PackageMojo extends AbstractHelmMojo {
 			}
 			getLog().info("Packaging chart " + inputDirectory + "...");
 
-			String helmCommand = getHelmExecuteable()
+			String helmCommand = getHelmExecuteablePath()
 					+ " package "
 					+ inputDirectory
 					+ " -d "
