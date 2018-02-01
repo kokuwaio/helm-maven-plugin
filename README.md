@@ -78,61 +78,72 @@ Configure plugin:
 
 ## Configuration
 
-- `<chartDirectory>`
+- `<chartDirectory>` 
   - description: root directory of your charts
   - required: true
   - type: string
+  - user property: helm.chartDirectory
 
 - `<chartVersion>`
   - description: Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
   - required: false
   - type: string
+  - user property: helm.chartVersion
 
 - `<helmRepoUrl>`
   - description: URL to your helm repository
   - required: true
   - type: string
+  - user property: helm.repoUrl
 
 - `<helmUploadUrl>`
   - description: URL to your helm repository
   - required: true
   - type: string
+  - user property: helm.uploadUrl
 
 - `<indexFileForMerge>`
   - description: path to a index.yaml file that will be merged
   - required: false
   - type: string
+  - user property: helm.indexFileForMerge
 
 - `<helmDownloadUrl>`
   - description: URL to download helm
   - required: false
   - type: string
+  - user property: helm.downloadUrl
 
 - `<excludes>`
   - description: list of chart directories to exclude
   - required: false
   - type: list of strings
+  - user property: helm.excludes
 
 - `<helmExecutableDirectory>`
   - description: directory of your helm installation
   - required: false
   - default value: ${project.build.directory}/helm
   - type: string
+  - user property: helm.executableDirectory
 
 - `<helmExecutable>`
   - description: path to your helm executable
   - required: false
   - default value: "${project.build.directory}/helm/linux-amd64/helm
   - type: string
+  - user property: helm.executable
 
 - `<outputDirectory>`
   - description: chart output directory
   - required: false
   - default value: ${project.build.directory}/helm/repo
   - type: string
-  
+  - user property: helm.outputDirectory
+
 - `<helmHomeDirectory>`
   - description: path to helm home directory; useful for concurrent Jenkins builds!
   - required: false
   - default value: ~/.helm
   - type: string
+  - user property: helm.homeDirectory
