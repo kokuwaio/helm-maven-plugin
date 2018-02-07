@@ -1,9 +1,9 @@
 package com.kiwigrid.core.k8deployment.helmplugin;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.contains;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doNothing;
 
 import java.nio.file.Files;
@@ -29,7 +29,7 @@ public class HelmMojoTest {
     @DisplayName("Init helm with different download urls.")
     @ParameterizedTest
     @ValueSource(strings = { "darwin", "linux", "windows" })
-    public void init(String os, InitMojo mojo) throws Exception {
+    public void testInitMojo(String os, InitMojo mojo) throws Exception {
 
         // prepare execution
 

@@ -34,6 +34,7 @@ public class InitMojo extends AbstractHelmMojo {
 		callCli("tar -xf "
 				+ getHelmExecuteableDirectory()
 				+ File.separator
+				// flatten directory structure using --strip to get helm executeable on basedir, see https://www.systutorials.com/docs/linux/man/1-tar/#lbAS
 				+ "helm.tar.gz --strip=1 --directory="
 				+ getHelmExecuteableDirectory(), "Unable to unpack helm to " + getHelmExecuteableDirectory(), false);
 		getLog().info("Run helm init...");
