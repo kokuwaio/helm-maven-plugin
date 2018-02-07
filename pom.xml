@@ -3,7 +3,7 @@
 
 	<groupId>com.kiwigrid</groupId>
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>1.7-SNAPSHOT</version>
+	<version>1.7</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
@@ -41,7 +41,7 @@
 		<connection>scm:git:git://github.com/kiwigrid/helm-maven-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:kiwigrid/helm-maven-plugin.git</developerConnection>
 		<url>https://github.com/kiwigrid/helm-maven-plugin/tree/master</url>
-		<tag>HEAD</tag>
+		<tag>helm-maven-plugin-1.7</tag>
 	</scm>
 
 	<distributionManagement>
