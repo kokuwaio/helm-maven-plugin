@@ -34,12 +34,11 @@ public class InitMojo extends AbstractHelmMojo {
 		callCli("tar -xf "
 				+ getHelmExecuteableDirectory()
 				+ File.separator
-				+ "helm.tar.gz -C "
+				// flatten directory structure using --strip to get helm executeable on basedir, see https://www.systutorials.com/docs/linux/man/1-tar/#lbAS
+				+ "helm.tar.gz --strip=1 --directory="
 				+ getHelmExecuteableDirectory(), "Unable to unpack helm to " + getHelmExecuteableDirectory(), false);
 		getLog().info("Run helm init...");
 		callCli(getHelmExecuteableDirectory()
-						+ File.separator
-						+ "linux-amd64"
 						+ File.separator
 						+ "helm init --client-only"
 						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
@@ -48,8 +47,6 @@ public class InitMojo extends AbstractHelmMojo {
 
 		getLog().info("Enable incubator repo...");
 		callCli(getHelmExecuteableDirectory()
-						+ File.separator
-						+ "linux-amd64"
 						+ File.separator
 						+ "helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com",
 				"Unable add incubator repo",

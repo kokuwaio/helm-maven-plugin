@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -25,7 +26,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecuteableDirectory;
 
-	@Parameter(property = "helm.executable", defaultValue = "${project.build.directory}/helm/linux-amd64/helm")
+	/** If no executeable is set this plugin tries to determine helm executeable based on operation system. */
+	@Parameter(property = "helm.executable")
 	private String helmExecuteable;
 
 	@Parameter(property = "helm.outputDirectory", defaultValue = "${project.build.directory}/helm/repo")
@@ -54,6 +56,17 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.homeDirectory")
 	private String helmHomeDirectory;
+
+	Path getHelmExecuteablePath() throws MojoExecutionException {
+		if (helmExecuteable == null) {
+			helmExecuteable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
+		}
+		Path path = Paths.get(helmExecuteableDirectory, helmExecuteable).toAbsolutePath();
+		if (!Files.exists(path)) {
+			throw new MojoExecutionException("Helm executeable at " + path + " not found.");
+		}
+		return path;
+	}
 
 	/**
 	 * Calls cli with specified command

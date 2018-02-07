@@ -24,7 +24,7 @@ public class LintMojo extends AbstractHelmMojo {
 				continue;
 			}
 			getLog().info("\n\nTesting chart " + inputDirectory + "...");
-			callCli(getHelmExecuteable()
+			callCli(getHelmExecuteablePath()
 					+ " lint "
 					+ inputDirectory, "There are test failures", true);
 		}

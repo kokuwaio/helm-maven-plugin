@@ -22,7 +22,7 @@ public class DryRunMojo extends AbstractHelmMojo {
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("\n\nPerform dry-run for chart " + inputDirectory + "...");
 
-			callCli(getHelmExecuteable()
+			callCli(getHelmExecuteablePath()
 					+ " " + action
 					+ " " + inputDirectory, "There are test failures", true);
 		}
