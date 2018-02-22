@@ -48,6 +48,15 @@ Configure plugin:
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
         <indexFileForMerge>${project.basedir}/target/helm/current_index.yaml</indexFileForMerge>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+        <excludes>
+          <exclude>${project.basedir}/excluded</exclude>
+        </excludes>
+        <helmExtraRepos>
+          <helmExtraRepo>
+            <name>incubator</name>
+            <url>https://kubernetes-charts-incubator.storage.googleapis.com</url>
+          </helmExtraRepo>
+        </helmExtraRepos>
       </configuration>
     </plugin>
   ...
@@ -147,3 +156,9 @@ Configure plugin:
   - default value: ~/.helm
   - type: string
   - user property: helm.homeDirectory
+
+- `<helmExtraRepos>`
+  - description: adds extra repositories while init
+  - required: false
+  - type: list of <helmExtraRepo><name></name><url></url></helmExtraRepo>
+  - user property: helm.extraRepos 
