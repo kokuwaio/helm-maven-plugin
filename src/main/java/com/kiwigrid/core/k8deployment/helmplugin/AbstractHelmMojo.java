@@ -26,7 +26,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecuteableDirectory;
 
-	/** If no executeable is set this plugin tries to determine helm executeable based on operation system. */
+	/**
+	 * If no executeable is set this plugin tries to determine helm executeable based on operation system.
+	 */
 	@Parameter(property = "helm.executable")
 	private String helmExecuteable;
 
@@ -56,6 +58,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.homeDirectory")
 	private String helmHomeDirectory;
+
+	@Parameter(property = "helm.extraRepos")
+	private HelmRepository[] helmExtraRepos;
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
 		if (helmExecuteable == null) {
@@ -218,4 +223,15 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	public void setChartVersion(String chartVersion) {
 		this.chartVersion = chartVersion;
 	}
+
+	public HelmRepository[] getHelmExtraRepos() {
+		return helmExtraRepos;
+	}
+
+	public void setHelmExtraRepos(HelmRepository[] helmExtraRepos) {
+		this.helmExtraRepos = helmExtraRepos;
+	}
 }
+
+
+
