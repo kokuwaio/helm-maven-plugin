@@ -5,6 +5,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Mojo for simulate a dry run.
@@ -24,7 +25,9 @@ public class DryRunMojo extends AbstractHelmMojo {
 
 			callCli(getHelmExecuteablePath()
 					+ " " + action
-					+ " " + inputDirectory, "There are test failures", true);
+					+ " " + inputDirectory
+					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
+					"There are test failures", true);
 		}
 	}
 

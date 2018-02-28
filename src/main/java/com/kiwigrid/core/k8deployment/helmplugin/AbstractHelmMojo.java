@@ -85,6 +85,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		int exitValue;
 
+		getLog().debug(command);
+
 		try {
 			final Process p = Runtime.getRuntime().exec(command);
 			new Thread(() -> {

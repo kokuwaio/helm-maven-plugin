@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Mojo for packaging charts
@@ -30,7 +31,8 @@ public class PackageMojo extends AbstractHelmMojo {
 					+ " package "
 					+ inputDirectory
 					+ " -d "
-					+ getOutputDirectory();
+					+ getOutputDirectory()
+					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "");
 
 			if (getChartVersion() != null) {
 				getLog().info(String.format("Setting chart version to %s", getChartVersion()));

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Mojo for building chart dependencies
@@ -26,7 +27,9 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 			getLog().info("Build chart dependencies for " + inputDirectory + "...");
 			callCli(getHelmExecuteablePath()
 					+ " dependency build "
-					+ inputDirectory, "Failed to resolve dependencies", true);
+					+ inputDirectory
+					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
+					"Failed to resolve dependencies", true);
 		}
 	}
 }
