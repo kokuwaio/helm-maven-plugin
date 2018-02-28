@@ -3,6 +3,7 @@ package com.kiwigrid.core.k8deployment.helmplugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Mojo for creating the repository index
@@ -23,6 +24,8 @@ public class IndexMojo extends AbstractHelmMojo {
 				+ " --url "
 				+ getHelmRepoUrl()
 				+ " --merge "
-				+ getIndexFileForMerge(), "Unable to index repo at " + getOutputDirectory(), true);
+				+ getIndexFileForMerge()
+				+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
+				"Unable to index repo at " + getOutputDirectory(), true);
 	}
 }
