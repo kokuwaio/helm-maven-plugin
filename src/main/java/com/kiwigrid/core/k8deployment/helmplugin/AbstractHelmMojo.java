@@ -47,8 +47,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.repoUrl", required = true)
 	private String helmRepoUrl;
 
-	@Parameter(property = "helm.uploadUrl", required = true)
-	private String helmUploadUrl;
+	@Parameter(property = "helm.uploadUrl.stable", required = true)
+	private String helmUploadUrlStable;
+
+	@Parameter(property = "helm.uploadUrl.snapshot", required = true)
+	private String helmUploadUrlSnapshot;
 
 	@Parameter(property = "helm.indexFileForMerge")
 	private String indexFileForMerge;
@@ -95,14 +98,16 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 				String inputLine;
 				String errorLine;
 				try {
-					while ((inputLine = input.readLine()) != null)
+					while ((inputLine = input.readLine()) != null) {
 						if (verbose) {
 							getLog().info(inputLine);
 						} else {
 							getLog().debug(inputLine);
 						}
-					while ((errorLine = error.readLine()) != null)
+					}
+					while ((errorLine = error.readLine()) != null) {
 						getLog().error(errorLine);
+					}
 				} catch (IOException e) {
 					getLog().error(e);
 				}
@@ -136,6 +141,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan repo directory at " + path, e);
 		}
+	}
+
+	/**
+	 * Returns the proper upload URL based on the provided chart version.
+	 * Charts w/ an SNAPSHOT suffix will be uploaded to SNAPSHOT repo.
+	 *
+	 * @return Upload URL based on chart version
+	 */
+	String getHelmUploadUrl() {
+		String uploadUrl = helmUploadUrlStable;
+		if(chartVersion.endsWith("-SNAPSHOT")) {
+			uploadUrl = helmUploadUrlSnapshot;
+		}
+		return uploadUrl;
 	}
 
 	public String getHelmExecuteable() {
@@ -210,12 +229,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		this.helmHomeDirectory = helmHomeDirectory;
 	}
 
-	public String getHelmUploadUrl() {
-		return helmUploadUrl;
+	public String getHelmUploadUrlStable() {
+		return helmUploadUrlStable;
 	}
 
-	public void setHelmUploadUrl(String helmUploadUrl) {
-		this.helmUploadUrl = helmUploadUrl;
+	public void setHelmUploadUrlStable(String helmUploadUrlStable) {
+		this.helmUploadUrlStable = helmUploadUrlStable;
+	}
+
+	public String getHelmUploadUrlSnapshot() {
+		return helmUploadUrlSnapshot;
+	}
+
+	public void setHelmUploadUrlSnapshot(String helmUploadUrlSnapshot) {
+		this.helmUploadUrlSnapshot = helmUploadUrlSnapshot;
 	}
 
 	public String getChartVersion() {
