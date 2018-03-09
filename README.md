@@ -21,7 +21,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>1.8</version>
+  <version>1.9</version>
 </dependency>
 ```
 
@@ -44,7 +44,8 @@ Configure plugin:
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
         <helmRepoUrl>${helm.repo.url}</helmRepoUrl>
-        <helmUploadUrl>${helm.repo.url}/api/charts</helmUploadUrl>
+        <helmUploadUrlStable>${helm.repo.url}/stable/api/charts</helmUploadUrlStable>
+        <helmUploadUrlSnapshot>${helm.repo.url}/snapshot/api/charts</helmUploadUrlSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
         <indexFileForMerge>${project.basedir}/target/helm/current_index.yaml</indexFileForMerge>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
@@ -105,11 +106,17 @@ Configure plugin:
   - type: string
   - user property: helm.repoUrl
 
-- `<helmUploadUrl>`
-  - description: URL to your helm repository
+- `<helmUploadUrlStable>`
+  - description: URL to your stable helm repository
   - required: true
   - type: string
-  - user property: helm.uploadUrl
+  - user property: helm.uploadUrl.stable
+
+- `<helmUploadUrlSnapshot>`
+  - description: URL to your snapshot helm repository
+  - required: true
+  - type: string
+  - user property: helm.uploadUrl.snapshot
 
 - `<indexFileForMerge>`
   - description: path to a index.yaml file that will be merged
