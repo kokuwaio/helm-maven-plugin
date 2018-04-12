@@ -31,8 +31,8 @@ Configure plugin:
 ```
 ...
 <properties>
-  <helm.download.url>https://kubernetes-helm.storage.googleapis.com/helm-v2.6.1-linux-amd64.tar.gz</helm.download.url>
-  <repoBaseUrl>>https://repo.example.com/artifactory/</repoBaseUrl>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-rc3-linux-amd64.tar.gz</helm.download.url>
+  <repoBaseUrl>>https://repo.example.com/artifactory</repoBaseUrl>
 </properties>
 ...
 <build>
@@ -80,18 +80,18 @@ Configure plugin:
 - Test Helm charts (Helm lint)
 - Recursive chart detection (subcharts)
 - Helm does not need to be installed
-- Upload via POST
+- Upload via PUT
 
 # Usage
 
 ## Goals
 
 - `helm:init` initializes Helm by downloading a specific version
-- `helm:package` packages the given charts (chart.tar.gz)
 - `helm:dependency-build` resolves the chart dependencies  
+- `helm:package` packages the given charts (chart.tar.gz)
 - `helm:lint` tests the given charts
-- `helm:dry-run` simulate an install
-- `helm:upload` upload charts via HTTP POST
+- `helm:dry-run` simulates an install
+- `helm:upload` upload charts via HTTP PUT
 
 ## Configuration
 
@@ -150,5 +150,17 @@ Configure plugin:
 - `<helmExtraRepos>`
   - description: adds extra repositories while init
   - required: false
-  - type: list of <helmExtraRepo><name></name><url></url></helmExtraRepo>
-  - user property: helm.extraRepos 
+  - type: list of <helmRepo><name></name><url></url></helmRepo>
+  - user property: helm.extraRepos
+  
+- `<uploadRepoStable>`
+  - description: Upload repository for stable charts
+  - required: false
+  - type: [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java)
+  - user property: helm.uploadRepo.stable
+  
+- `<uploadRepoSnapshot>`
+  - description: Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
+  - required: false
+  - type: [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java)
+  - user property: helm.uploadRepo.snapshot
