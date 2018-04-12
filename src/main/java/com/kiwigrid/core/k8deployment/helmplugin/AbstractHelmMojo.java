@@ -44,9 +44,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
 
-	@Parameter(property = "helm.repoUrl", required = true)
-	private String helmRepoUrl;
-
 	@Parameter(property = "helm.uploadUrl.stable", required = true)
 	private String helmUploadUrlStable;
 
@@ -176,14 +173,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setHelmExecuteableDirectory(String helmExecuteableDirectory) {
 		this.helmExecuteableDirectory = helmExecuteableDirectory;
-	}
-
-	public String getHelmRepoUrl() {
-		return helmRepoUrl;
-	}
-
-	public void setHelmRepoUrl(String helmRepoUrl) {
-		this.helmRepoUrl = helmRepoUrl;
 	}
 
 	public String getHelmDownloadUrl() {

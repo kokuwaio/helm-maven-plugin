@@ -30,7 +30,6 @@ Configure plugin:
 ...
 <properties>
   <helm.download.url>https://kubernetes-helm.storage.googleapis.com/helm-v2.6.1-linux-amd64.tar.gz</helm.download.url>
-  <helm.repo.url>https://repo.example.com/artifactory/helm</helm.repo.url>
 </properties>
 ...
 <build>
@@ -43,9 +42,8 @@ Configure plugin:
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
-        <helmRepoUrl>${helm.repo.url}</helmRepoUrl>
-        <helmUploadUrlStable>${helm.repo.url}/stable/api/charts</helmUploadUrlStable>
-        <helmUploadUrlSnapshot>${helm.repo.url}/snapshot/api/charts</helmUploadUrlSnapshot>
+        <helmUploadUrlStable>https://repo.example.com/artifactory/helm-stable</helmUploadUrlStable>
+        <helmUploadUrlSnapshot>https://repo.example.com/artifactory/helm-snapshots</helmUploadUrlSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
         <excludes>
@@ -96,12 +94,6 @@ Configure plugin:
   - required: false
   - type: string
   - user property: helm.chartVersion
-
-- `<helmRepoUrl>`
-  - description: URL to your helm repository
-  - required: true
-  - type: string
-  - user property: helm.repoUrl
 
 - `<helmUploadUrlStable>`
   - description: URL to your stable helm repository
