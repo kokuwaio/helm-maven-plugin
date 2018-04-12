@@ -1,29 +1,23 @@
-package com.kiwigrid.core.k8deployment.helmplugin;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.doNothing;
+package com.kiwigrid.helm.maven.plugin;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.kiwigrid.helm.maven.plugin.junit.MojoExtension;
+import com.kiwigrid.helm.maven.plugin.junit.MojoProperty;
+import com.kiwigrid.helm.maven.plugin.junit.SystemPropertyExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.kiwigrid.core.k8deployment.helmplugin.junit.MojoExtension;
-import com.kiwigrid.core.k8deployment.helmplugin.junit.MojoProperty;
-import com.kiwigrid.core.k8deployment.helmplugin.junit.SystemPropertyExtension;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
 @MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-linux-amd64.tar.gz")
-@MojoProperty(name = "helmUploadUrlStable", value = "none")
-@MojoProperty(name = "helmUploadUrlSnapshot", value = "none")
-@MojoProperty(name = "helmRepoUrl", value = "none")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 public class HelmMojoTest {
 

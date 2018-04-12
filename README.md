@@ -8,6 +8,8 @@ Visit https://docs.helm.sh for detailed information.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin)
 
+[![Build Status](https://travis-ci.org/kiwigrid/helm-maven-plugin.svg?branch=master)](https://travis-ci.org/kiwigrid/helm-maven-plugin)
+
 # Why?
 
 Currently (October 2017) there is no simple Maven plugin to package existing HELM charts.
@@ -21,7 +23,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>1.10</version>
+  <version>2.0</version>
 </dependency>
 ```
 
@@ -30,7 +32,7 @@ Configure plugin:
 ...
 <properties>
   <helm.download.url>https://kubernetes-helm.storage.googleapis.com/helm-v2.6.1-linux-amd64.tar.gz</helm.download.url>
-  <helm.repo.url>https://repo.example.com/artifactory/helm</helm.repo.url>
+  <repoBaseUrl>>https://repo.example.com/artifactory/</repoBaseUrl>
 </properties>
 ...
 <build>
@@ -43,20 +45,27 @@ Configure plugin:
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
-        <helmRepoUrl>${helm.repo.url}</helmRepoUrl>
-        <helmUploadUrlStable>${helm.repo.url}/stable/api/charts</helmUploadUrlStable>
-        <helmUploadUrlSnapshot>${helm.repo.url}/snapshot/api/charts</helmUploadUrlSnapshot>
+        <uploadRepoStable>
+            <name>stable-repo</name>
+            <url>${repoBaseUrl}/helm-stable</url>
+            <!-- Basic authentication is supported from HELM version >= 2.9 -->
+            <username>foo</username>
+            <password>bar</password>
+        </uploadRepoStable>
+        <uploadRepoSnapshot>
+            <name>snapshot-repo</name>
+            <url>${repoBaseUrl}/helm-snapshots</url>
+        </uploadRepoSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
-        <indexFileForMerge>${project.basedir}/target/helm/current_index.yaml</indexFileForMerge>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
         </excludes>
         <helmExtraRepos>
-          <helmExtraRepo>
+          <helmRepo>
             <name>incubator</name>
             <url>https://kubernetes-charts-incubator.storage.googleapis.com</url>
-          </helmExtraRepo>
+          </helmRepo>
         </helmExtraRepos>
       </configuration>
     </plugin>
@@ -68,7 +77,6 @@ Configure plugin:
 # Features
 
 - Package Helm charts from standard folder structure
-- Merge index.yaml files from remote repositories, so the local repository is updated
 - Test Helm charts (Helm lint)
 - Recursive chart detection (subcharts)
 - Helm does not need to be installed
@@ -83,7 +91,6 @@ Configure plugin:
 - `helm:dependency-build` resolves the chart dependencies  
 - `helm:lint` tests the given charts
 - `helm:dry-run` simulate an install
-- `helm:index` creates and merges the index.yaml file
 - `helm:upload` upload charts via HTTP POST
 
 ## Configuration
@@ -99,30 +106,6 @@ Configure plugin:
   - required: false
   - type: string
   - user property: helm.chartVersion
-
-- `<helmRepoUrl>`
-  - description: URL to your helm repository
-  - required: true
-  - type: string
-  - user property: helm.repoUrl
-
-- `<helmUploadUrlStable>`
-  - description: URL to your stable helm repository
-  - required: true
-  - type: string
-  - user property: helm.uploadUrl.stable
-
-- `<helmUploadUrlSnapshot>`
-  - description: URL to your snapshot helm repository
-  - required: true
-  - type: string
-  - user property: helm.uploadUrl.snapshot
-
-- `<indexFileForMerge>`
-  - description: path to a index.yaml file that will be merged
-  - required: false
-  - type: string
-  - user property: helm.indexFileForMerge
 
 - `<helmDownloadUrl>`
   - description: URL to download helm

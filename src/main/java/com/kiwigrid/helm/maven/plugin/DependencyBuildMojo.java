@@ -1,4 +1,4 @@
-package com.kiwigrid.core.k8deployment.helmplugin;
+package com.kiwigrid.helm.maven.plugin;
 
 import java.util.Arrays;
 
@@ -8,28 +8,28 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * Mojo for testing charts
+ * Mojo for building chart dependencies
  *
- * @author Fabian Schlegel
- * @since 06.11.17
+ * @author Axel Köhler
+ * @since 1.1
  */
-@Mojo(name = "lint", defaultPhase = LifecyclePhase.TEST)
-public class LintMojo extends AbstractHelmMojo {
+@Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
+public class DependencyBuildMojo extends AbstractHelmMojo {
 
 	public void execute()
 			throws MojoExecutionException
 	{
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			if (getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {
+			if(getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {
 				getLog().debug("Skip excluded directory " + inputDirectory);
 				continue;
 			}
-			getLog().info("\n\nTesting chart " + inputDirectory + "...");
+			getLog().info("Build chart dependencies for " + inputDirectory + "...");
 			callCli(getHelmExecuteablePath()
-					+ " lint "
+					+ " dependency build "
 					+ inputDirectory
 					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
-					"There are test failures", true);
+					"Failed to resolve dependencies", true);
 		}
 	}
 }

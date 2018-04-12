@@ -1,7 +1,4 @@
-package com.kiwigrid.core.k8deployment.helmplugin.junit;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.spy;
+package com.kiwigrid.helm.maven.plugin.junit;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -11,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kiwigrid.helm.maven.plugin.AbstractHelmMojo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.plugin.descriptor.MojoDescriptor;
 import org.apache.maven.plugin.descriptor.Parameter;
@@ -20,15 +18,11 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.InterpolationFilterReader;
 import org.codehaus.plexus.util.ReflectionUtils;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.params.ParameterizedTest;
 
-import com.kiwigrid.core.k8deployment.helmplugin.AbstractHelmMojo;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.spy;
 
 @SuppressWarnings("unchecked")
 public class MojoExtension implements ParameterResolver, BeforeAllCallback, BeforeEachCallback {

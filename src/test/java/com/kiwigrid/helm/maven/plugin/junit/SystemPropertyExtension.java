@@ -1,4 +1,4 @@
-package com.kiwigrid.core.k8deployment.helmplugin.junit;
+package com.kiwigrid.helm.maven.plugin.junit;
 
 import java.util.Arrays;
 import java.util.Properties;
