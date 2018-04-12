@@ -30,6 +30,7 @@ Configure plugin:
 ...
 <properties>
   <helm.download.url>https://kubernetes-helm.storage.googleapis.com/helm-v2.6.1-linux-amd64.tar.gz</helm.download.url>
+  <repoBaseUrl>>https://repo.example.com/artifactory/</repoBaseUrl>
 </properties>
 ...
 <build>
@@ -42,8 +43,8 @@ Configure plugin:
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
-        <helmUploadUrlStable>https://repo.example.com/artifactory/helm-stable</helmUploadUrlStable>
-        <helmUploadUrlSnapshot>https://repo.example.com/artifactory/helm-snapshots</helmUploadUrlSnapshot>
+        <helmUploadUrlStable>${repoBaseUrl}/helm-stable</helmUploadUrlStable>
+        <helmUploadUrlSnapshot>${repoBaseUrl}/helm-snapshots</helmUploadUrlSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
         <excludes>
