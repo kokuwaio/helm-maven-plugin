@@ -47,7 +47,6 @@ Configure plugin:
         <helmUploadUrlStable>${helm.repo.url}/stable/api/charts</helmUploadUrlStable>
         <helmUploadUrlSnapshot>${helm.repo.url}/snapshot/api/charts</helmUploadUrlSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
-        <indexFileForMerge>${project.basedir}/target/helm/current_index.yaml</indexFileForMerge>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
@@ -68,7 +67,6 @@ Configure plugin:
 # Features
 
 - Package Helm charts from standard folder structure
-- Merge index.yaml files from remote repositories, so the local repository is updated
 - Test Helm charts (Helm lint)
 - Recursive chart detection (subcharts)
 - Helm does not need to be installed
@@ -83,7 +81,6 @@ Configure plugin:
 - `helm:dependency-build` resolves the chart dependencies  
 - `helm:lint` tests the given charts
 - `helm:dry-run` simulate an install
-- `helm:index` creates and merges the index.yaml file
 - `helm:upload` upload charts via HTTP POST
 
 ## Configuration
@@ -117,12 +114,6 @@ Configure plugin:
   - required: true
   - type: string
   - user property: helm.uploadUrl.snapshot
-
-- `<indexFileForMerge>`
-  - description: path to a index.yaml file that will be merged
-  - required: false
-  - type: string
-  - user property: helm.indexFileForMerge
 
 - `<helmDownloadUrl>`
   - description: URL to download helm

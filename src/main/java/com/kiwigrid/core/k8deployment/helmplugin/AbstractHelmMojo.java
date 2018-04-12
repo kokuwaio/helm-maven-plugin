@@ -53,9 +53,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.uploadUrl.snapshot", required = true)
 	private String helmUploadUrlSnapshot;
 
-	@Parameter(property = "helm.indexFileForMerge")
-	private String indexFileForMerge;
-
 	@Parameter(property = "helm.downloadUrl")
 	private String helmDownloadUrl;
 
@@ -187,14 +184,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setHelmRepoUrl(String helmRepoUrl) {
 		this.helmRepoUrl = helmRepoUrl;
-	}
-
-	public String getIndexFileForMerge() {
-		return indexFileForMerge;
-	}
-
-	public void setIndexFileForMerge(String indexFileForMerge) {
-		this.indexFileForMerge = indexFileForMerge;
 	}
 
 	public String getHelmDownloadUrl() {
