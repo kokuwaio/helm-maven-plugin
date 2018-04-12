@@ -8,6 +8,8 @@ Visit https://docs.helm.sh for detailed information.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin)
 
+[![Build Status](https://travis-ci.org/kiwigrid/helm-maven-plugin.svg?branch=master)](https://travis-ci.org/kiwigrid/helm-maven-plugin)
+
 # Why?
 
 Currently (October 2017) there is no simple Maven plugin to package existing HELM charts.
