@@ -23,7 +23,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>1.10</version>
+  <version>2.0</version>
 </dependency>
 ```
 
