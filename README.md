@@ -43,18 +43,27 @@ Configure plugin:
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
-        <helmUploadUrlStable>${repoBaseUrl}/helm-stable</helmUploadUrlStable>
-        <helmUploadUrlSnapshot>${repoBaseUrl}/helm-snapshots</helmUploadUrlSnapshot>
+        <uploadRepoStable>
+            <name>stable-repo</name>
+            <url>${repoBaseUrl}/helm-stable</url>
+            <!-- Basic authentication is supported from HELM version >= 2.9 -->
+            <username>foo</username>
+            <password>bar</password>
+        </uploadRepoStable>
+        <uploadRepoSnapshot>
+            <name>snapshot-repo</name>
+            <url>${repoBaseUrl}/helm-snapshots</url>
+        </uploadRepoSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
         </excludes>
         <helmExtraRepos>
-          <helmExtraRepo>
+          <helmRepo>
             <name>incubator</name>
             <url>https://kubernetes-charts-incubator.storage.googleapis.com</url>
-          </helmExtraRepo>
+          </helmRepo>
         </helmExtraRepos>
       </configuration>
     </plugin>
@@ -95,18 +104,6 @@ Configure plugin:
   - required: false
   - type: string
   - user property: helm.chartVersion
-
-- `<helmUploadUrlStable>`
-  - description: URL to your stable helm repository
-  - required: true
-  - type: string
-  - user property: helm.uploadUrl.stable
-
-- `<helmUploadUrlSnapshot>`
-  - description: URL to your snapshot helm repository
-  - required: true
-  - type: string
-  - user property: helm.uploadUrl.snapshot
 
 - `<helmDownloadUrl>`
   - description: URL to download helm

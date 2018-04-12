@@ -52,9 +52,11 @@ public class InitMojo extends AbstractHelmMojo {
 								+ File.separator
 								+ "helm repo add "
 								+ repository.getName()
-								+ ": "
+								+ " "
 								+ repository.getUrl()
-								+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
+								+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "")
+								+ (StringUtils.isNotEmpty(repository.getUsername()) ? " --username=" + repository.getUsername() : "")
+								+ (StringUtils.isNotEmpty(repository.getPassword()) ? " --password=" + repository.getPassword() : ""),
 						"Unable add repo",
 						false);
 			}

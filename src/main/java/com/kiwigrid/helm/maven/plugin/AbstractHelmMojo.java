@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -44,11 +45,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
 
-	@Parameter(property = "helm.uploadUrl.stable", required = true)
-	private String helmUploadUrlStable;
+	@Parameter(property = "helm.uploadRepo.stable")
+	private HelmRepository uploadRepoStable;
 
-	@Parameter(property = "helm.uploadUrl.snapshot", required = true)
-	private String helmUploadUrlSnapshot;
+	@Parameter(property = "helm.uploadRepo.snapshot")
+	private HelmRepository uploadRepoSnapshot;
 
 	@Parameter(property = "helm.downloadUrl")
 	private String helmDownloadUrl;
@@ -144,9 +145,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @return Upload URL based on chart version
 	 */
 	String getHelmUploadUrl() {
-		String uploadUrl = helmUploadUrlStable;
-		if(chartVersion.endsWith("-SNAPSHOT")) {
-			uploadUrl = helmUploadUrlSnapshot;
+		String uploadUrl = uploadRepoStable.getUrl();
+		if(chartVersion.endsWith("-SNAPSHOT")
+				&& uploadRepoSnapshot != null
+				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
+			uploadUrl = uploadRepoSnapshot.getUrl();
 		}
 		return uploadUrl;
 	}
@@ -207,22 +210,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		this.helmHomeDirectory = helmHomeDirectory;
 	}
 
-	public String getHelmUploadUrlStable() {
-		return helmUploadUrlStable;
-	}
-
-	public void setHelmUploadUrlStable(String helmUploadUrlStable) {
-		this.helmUploadUrlStable = helmUploadUrlStable;
-	}
-
-	public String getHelmUploadUrlSnapshot() {
-		return helmUploadUrlSnapshot;
-	}
-
-	public void setHelmUploadUrlSnapshot(String helmUploadUrlSnapshot) {
-		this.helmUploadUrlSnapshot = helmUploadUrlSnapshot;
-	}
-
 	public String getChartVersion() {
 		return chartVersion;
 	}
@@ -237,6 +224,22 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setHelmExtraRepos(HelmRepository[] helmExtraRepos) {
 		this.helmExtraRepos = helmExtraRepos;
+	}
+
+	public HelmRepository getUploadRepoStable() {
+		return uploadRepoStable;
+	}
+
+	public void setUploadRepoStable(HelmRepository uploadRepoStable) {
+		this.uploadRepoStable = uploadRepoStable;
+	}
+
+	public HelmRepository getUploadRepoSnapshot() {
+		return uploadRepoSnapshot;
+	}
+
+	public void setUploadRepoSnapshot(HelmRepository uploadRepoSnapshot) {
+		this.uploadRepoSnapshot = uploadRepoSnapshot;
 	}
 }
 
