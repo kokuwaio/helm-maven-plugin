@@ -150,7 +150,7 @@ Configure plugin:
 - `<helmExtraRepos>`
   - description: adds extra repositories while init
   - required: false
-  - type: list of <helmRepo><name></name><url></url></helmRepo>
+  - type: list of [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java)
   - user property: helm.extraRepos
   
 - `<uploadRepoStable>`
