@@ -1,5 +1,6 @@
 package com.kiwigrid.helm.maven.plugin;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Authenticator;
@@ -41,13 +42,16 @@ public class UploadMojo extends AbstractHelmMojo {
 	}
 
 	private void uploadSingle(String file) throws IOException, BadUploadException {
-		HttpURLConnection connection = (HttpURLConnection) new URL(getHelmUploadUrl()).openConnection();
+		final File fileToUpload = new File(file);
+		String uploadUrl = getHelmUploadUrl() + fileToUpload.getName();
+
+		final HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("PUT");
 		connection.setRequestProperty("Content-Type", "application/gzip");
 		configureAuthenticationIfSet();
 
-		try (FileInputStream fileInputStream = new FileInputStream(file)) {
+		try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
 			IOUtils.copy(fileInputStream, connection.getOutputStream());
 		}
 		if (connection.getResponseCode() >= 400) {

@@ -151,6 +151,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
 			uploadUrl = uploadRepoSnapshot.getUrl();
 		}
+
+		// Append slash if not already in place
+		if(!uploadUrl.endsWith("/")) {
+			uploadUrl += "/";
+		}
+
 		return uploadUrl;
 	}
 
