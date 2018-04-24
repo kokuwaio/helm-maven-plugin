@@ -8,6 +8,7 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import com.kiwigrid.helm.maven.plugin.exception.BadUploadException;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -31,14 +32,15 @@ public class UploadMojo extends AbstractHelmMojo {
 			getLog().info("Uploading " + chartPackageFile + "...");
 			try {
 				uploadSingle(chartPackageFile);
-			} catch (IOException e) {
+			} catch (BadUploadException | IOException e) {
+				getLog().error(e.getMessage());
 				throw new MojoExecutionException("Error uploading " + chartPackageFile + " to " + getHelmUploadUrl(),
 						e);
 			}
 		}
 	}
 
-	private void uploadSingle(String file) throws IOException {
+	private void uploadSingle(String file) throws IOException, BadUploadException {
 		HttpURLConnection connection = (HttpURLConnection) new URL(getHelmUploadUrl()).openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("PUT");
@@ -50,7 +52,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 		if (connection.getResponseCode() >= 400) {
 			String response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
-			getLog().error(Integer.toString(connection.getResponseCode()) + " - " + response);
+			throw new BadUploadException(response);
 		} else {
 			String response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
 			getLog().info(Integer.toString(connection.getResponseCode()) + " - " + response);
