@@ -60,6 +60,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.extraRepos")
 	private HelmRepository[] helmExtraRepos;
 
+	@Parameter(property = "helm.useMultipart", defaultValue = "false")
+	private String helmUseMultipart;
+
+	@Parameter(property = "helm.useMultipartName", defaultValue = "chart")
+	private String helmUseMultipartName;
+
 	Path getHelmExecuteablePath() throws MojoExecutionException {
 		if (helmExecuteable == null) {
 			helmExecuteable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
@@ -246,6 +252,22 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setUploadRepoSnapshot(HelmRepository uploadRepoSnapshot) {
 		this.uploadRepoSnapshot = uploadRepoSnapshot;
+	}
+
+	public String getHelmUseMultipart() {
+		return helmUseMultipart;
+	}
+
+	public void setHelmUseMultipart(final String helmUseMultipart) {
+		this.helmUseMultipart = helmUseMultipart;
+	}
+
+	public String getHelmUseMultipartName() {
+		return helmUseMultipartName;
+	}
+
+	public void setHelmUseMultipartName(final String helmUseMultipartName) {
+		this.helmUseMultipartName = helmUseMultipartName;
 	}
 }
 
