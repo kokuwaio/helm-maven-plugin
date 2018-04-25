@@ -80,7 +80,7 @@ Configure plugin:
 - Test Helm charts (Helm lint)
 - Recursive chart detection (subcharts)
 - Helm does not need to be installed
-- Upload via PUT
+- Upload via PUT and POST
 
 # Usage
 
@@ -164,3 +164,17 @@ Configure plugin:
   - required: false
   - type: [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java)
   - user property: helm.uploadRepo.snapshot
+
+- `<useMultipart>`
+  - description: Upload to repository using POST multipart form data 
+  - required: false
+  - default value: false
+  - type: boolean
+  - user property: helm.useMultipart
+  
+- `<useMultipartName>`
+  - description: Set the form-data field for file data
+  - required: false
+  - default value: chart
+  - type: string
+  - user property: helm.useMultipartName
