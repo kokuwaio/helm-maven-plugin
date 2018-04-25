@@ -29,7 +29,7 @@ public class UploadMojo extends AbstractHelmMojo {
 			throws MojoExecutionException
 	{
 		getLog().info("Uploading to " + getHelmUploadUrl() + "\n");
-		for (String chartPackageFile : getChartTgzs(getChartDirectory())) {
+		for (String chartPackageFile : getChartTgzs(getOutputDirectory())) {
 			getLog().info("Uploading " + chartPackageFile + "...");
 			try {
 				uploadSingle(chartPackageFile);
