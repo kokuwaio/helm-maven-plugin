@@ -56,7 +56,6 @@ public class UploadMojo extends AbstractHelmMojo {
 
 		String boundaryString = "----"+UUID.randomUUID().toString();
 
-// Indicate that we want to write to the HTTP request body
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
 		connection.addRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundaryString);
@@ -80,11 +79,9 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 		outputStreamToRequestBody.flush();
 
-// Mark the end of the multipart http request
 		httpRequestBodyWriter.write("\n--" + boundaryString + "--\n");
 		httpRequestBodyWriter.flush();
 
-// Close the streams
 		outputStreamToRequestBody.close();
 		httpRequestBodyWriter.close();
 
