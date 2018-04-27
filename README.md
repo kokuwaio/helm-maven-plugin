@@ -6,6 +6,8 @@ This is a Maven plugin for testing, packaging and uploading HELM charts.
 
 Visit https://docs.helm.sh for detailed information.
 
+Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) and [Artifactory](https://jfrog.com/artifactory/) is supported.
+
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin)
 
 [![Build Status](https://travis-ci.org/kiwigrid/helm-maven-plugin.svg?branch=master)](https://travis-ci.org/kiwigrid/helm-maven-plugin)
@@ -23,7 +25,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>2.1</version>
+  <version>2.4</version>
 </dependency>
 ```
 
@@ -48,13 +50,16 @@ Configure plugin:
         <uploadRepoStable>
             <name>stable-repo</name>
             <url>${repoBaseUrl}/helm-stable</url>
-            <!-- Basic authentication is supported from HELM version >= 2.9 -->
+            <!-- Artifacotry requieres basic authentication --> 
+            <!-- which is supported from HELM version >= 2.9 -->
+            <type>ARTIFACTORY</type>
             <username>foo</username>
             <password>bar</password>
         </uploadRepoStable>
         <uploadRepoSnapshot>
             <name>snapshot-repo</name>
             <url>${repoBaseUrl}/helm-snapshots</url>
+            <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
@@ -80,7 +85,7 @@ Configure plugin:
 - Test Helm charts (Helm lint)
 - Recursive chart detection (subcharts)
 - Helm does not need to be installed
-- Upload via PUT
+- Upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) or [Artifactory](https://jfrog.com/artifactory/)
 
 # Usage
 
@@ -103,7 +108,7 @@ Configure plugin:
 
 - `<chartVersion>`
   - description: Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
-  - required: false
+  - required: true
   - type: string
   - user property: helm.chartVersion
 
@@ -155,7 +160,7 @@ Configure plugin:
   
 - `<uploadRepoStable>`
   - description: Upload repository for stable charts
-  - required: false
+  - required: true
   - type: [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java)
   - user property: helm.uploadRepo.stable
   

@@ -1,4 +1,4 @@
-package com.kiwigrid.helm.maven.plugin;
+package com.kiwigrid.helm.maven.plugin.pojo;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -21,6 +21,9 @@ public class HelmRepository {
 
 	@Parameter(property = "helm.repo.password")
 	private String password;
+
+	@Parameter(property = "helm.repo.type")
+	private RepoType type;
 
 	public String getName() {
 		return name;
@@ -52,6 +55,14 @@ public class HelmRepository {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public RepoType getType() {
+		return type;
+	}
+
+	public void setType(RepoType type) {
+		this.type = type;
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -42,7 +43,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartDirectory", required = true)
 	private String chartDirectory;
 
-	@Parameter(property = "helm.chartVersion")
+	@Parameter(property = "helm.chartVersion",  required = true)
 	private String chartVersion;
 
 	@Parameter(property = "helm.uploadRepo.stable")
@@ -146,18 +147,24 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 */
 	String getHelmUploadUrl() {
 		String uploadUrl = uploadRepoStable.getUrl();
-		if(chartVersion.endsWith("-SNAPSHOT")
+		if (chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
-				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
+				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl()))
+		{
 			uploadUrl = uploadRepoSnapshot.getUrl();
 		}
 
-		// Append slash if not already in place
-		if(!uploadUrl.endsWith("/")) {
-			uploadUrl += "/";
-		}
-
 		return uploadUrl;
+	}
+
+	HelmRepository getHelmUploadRepo() {
+		if (chartVersion.endsWith("-SNAPSHOT")
+				&& uploadRepoSnapshot != null
+				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl()))
+		{
+			return uploadRepoSnapshot;
+		}
+		return uploadRepoStable;
 	}
 
 	public String getHelmExecuteable() {
