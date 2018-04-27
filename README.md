@@ -33,7 +33,7 @@ Configure plugin:
 ```
 ...
 <properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-rc3-linux-amd64.tar.gz</helm.download.url>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz</helm.download.url>
   <repoBaseUrl>>https://repo.example.com/artifactory</repoBaseUrl>
 </properties>
 ...
