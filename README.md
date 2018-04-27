@@ -50,7 +50,7 @@ Configure plugin:
         <uploadRepoStable>
             <name>stable-repo</name>
             <url>${repoBaseUrl}/helm-stable</url>
-            <!-- Artifacotry requieres basic authentication --> 
+            <!-- Artifacotry requires basic authentication --> 
             <!-- which is supported from HELM version >= 2.9 -->
             <type>ARTIFACTORY</type>
             <username>foo</username>
