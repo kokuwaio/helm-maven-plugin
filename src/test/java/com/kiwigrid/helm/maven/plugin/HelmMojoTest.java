@@ -19,25 +19,27 @@ import static org.mockito.Mockito.doNothing;
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
 @MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
+@MojoProperty(name = "chartVersion", value = "0.0.1")
 public class HelmMojoTest {
 
-    @DisplayName("Init helm with different download urls.")
-    @ParameterizedTest
-    @ValueSource(strings = { "darwin", "linux", "windows" })
-    public void testInitMojo(String os, InitMojo mojo) throws Exception {
+	@DisplayName("Init helm with different download urls.")
+	@ParameterizedTest
+	@ValueSource(strings = { "darwin", "linux", "windows" })
+	public void testInitMojo(String os, InitMojo mojo) throws Exception {
 
-        // prepare execution
+		// prepare execution
 
-        doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
-        mojo.setHelmDownloadUrl("https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-" + os + "-amd64.tar.gz");
+		doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
+		mojo.setHelmDownloadUrl("https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-" + os + "-amd64.tar.gz");
 
-        // run init
+		// run init
 
-        mojo.execute();
+		mojo.execute();
 
-        // check helm file
+		// check helm file
 
-        Path helm = Paths.get(mojo.getHelmExecuteableDirectory(), "windows".equals(os) ? "helm.exe" : "helm").toAbsolutePath();
-        assertTrue(Files.exists(helm), "Helm executable not found at: " + helm);
-    }
+		Path helm = Paths.get(mojo.getHelmExecuteableDirectory(), "windows".equals(os) ? "helm.exe" : "helm")
+				.toAbsolutePath();
+		assertTrue(Files.exists(helm), "Helm executable not found at: " + helm);
+	}
 }

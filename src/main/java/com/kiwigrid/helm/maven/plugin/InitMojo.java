@@ -2,6 +2,7 @@ package com.kiwigrid.helm.maven.plugin;
 
 import java.io.File;
 
+import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
