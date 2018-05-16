@@ -48,6 +48,10 @@ public class UploadMojo extends AbstractHelmMojo {
 
 		HttpURLConnection connection;
 
+		if(uploadRepo.getType() == null){
+			throw new IllegalArgumentException("Repository type missing. Check your plugin configuration.");
+		}
+
 		switch (uploadRepo.getType()) {
 		case ARTIFACTORY:
 			connection = getConnectionForUploadToArtifactory(fileToUpload);

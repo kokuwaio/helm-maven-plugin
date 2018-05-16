@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 @MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.9.0-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
-public class UpdateMojoTest {
+public class UploadMojoTest {
 
 	@Test
 	public void uploadToArtifactoryRequiresCredentials(UploadMojo mojo) throws MojoExecutionException {
@@ -123,6 +123,23 @@ public class UpdateMojoTest {
 		uploadMojo.execute();
 
 		verify(uploadMojo).getConnectionForUploadToArtifactory(fileToUpload);
+	}
+
+	@Test
+	public void repositoryTypeRequired(UploadMojo uploadMojo) throws MojoExecutionException {
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setName("unknown-repo");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		uploadMojo.setUploadRepoStable(helmRepo);
+
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(helmRepo).when(uploadMojo).getHelmUploadRepo();
+		doReturn(tgzs).when(uploadMojo).getChartTgzs(anyString());
+
+		assertThrows(IllegalArgumentException.class, uploadMojo::execute, "Missing repo type must fail.");
 	}
 
 	/** Writes to nowhere */
