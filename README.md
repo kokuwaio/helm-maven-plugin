@@ -29,7 +29,7 @@ Add following dependency to your pom.xml:
 </dependency>
 ```
 
-Configure plugin:
+Configure plugin with explizit credentials:
 ```
 ...
 <properties>
@@ -79,6 +79,43 @@ Configure plugin:
 </build>
 ```
 
+Configure plugin using credentials from settings.xml:
+```
+...
+<properties>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz</helm.download.url>
+  <repoBaseUrl>>https://repo.example.com/artifactory</repoBaseUrl>
+</properties>
+...
+<build>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>2.5</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <uploadRepoStable>
+            <name>stable-repo</name>
+            <url>${repoBaseUrl}/helm-stable</url>
+            <type>ARTIFACTORY</type>
+        </uploadRepoStable>
+        <uploadRepoSnapshot>
+            <name>snapshot-repo</name>
+            <url>${repoBaseUrl}/helm-snapshots</url>
+            <type>CHARTMUSEUM</type>
+        </uploadRepoSnapshot>
+        <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
+        <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
+</build>
+```
+
 # Features
 
 - Package Helm charts from standard folder structure
@@ -86,6 +123,7 @@ Configure plugin:
 - Recursive chart detection (subcharts)
 - Helm does not need to be installed
 - Upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) or [Artifactory](https://jfrog.com/artifactory/)
+- Repository names are interpreted as server ids to retrieve basic authentication from server list in settings.xml.
 
 # Usage
 

@@ -3,6 +3,7 @@ package com.kiwigrid.helm.maven.plugin;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.PasswordAuthentication;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +17,8 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Server;
+import org.apache.maven.settings.Settings;
 
 /**
  * Base class for mojos
@@ -43,7 +46,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartDirectory", required = true)
 	private String chartDirectory;
 
-	@Parameter(property = "helm.chartVersion",  required = true)
+	@Parameter(property = "helm.chartVersion", required = true)
 	private String chartVersion;
 
 	@Parameter(property = "helm.uploadRepo.stable")
@@ -60,6 +63,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.extraRepos")
 	private HelmRepository[] helmExtraRepos;
+
+	/**
+	 * The current user system settings for use in Maven.
+	 */
+	@Parameter(defaultValue = "${settings}", readonly = true)
+	private Settings settings;
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
 		if (helmExecuteable == null) {
@@ -167,6 +176,38 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return uploadRepoStable;
 	}
 
+	/**
+	 * Get credentials for given helm repo. If username is not provided the repo
+	 * name will be used to search for credentials in <code>settings.xml</code>.
+	 *
+	 * @param repository Helm repo with id and optional credentials.
+	 * @return Authentication object or <code>null</code> if no credentials are present.
+	 * @throws IllegalArgumentException Unable to get authentication because of misconfioguration.
+	 */
+	PasswordAuthentication getAuthentication(HelmRepository repository) throws IllegalArgumentException {
+		String id = repository.getName();
+
+		if (repository.getUsername() != null) {
+			if (repository.getPassword() == null) {
+				throw new IllegalArgumentException("Repo " + id + " has a username but no password defined.");
+			}
+			getLog().debug("Repo " + id + " has credentials definded, skip searching in server list.");
+			return new PasswordAuthentication(repository.getUsername(), repository.getPassword().toCharArray());
+		}
+
+		Server server = settings.getServer(id);
+		if (server == null) {
+			getLog().info("No credentials found for " + id + " in configuration or settings.xml server list.");
+			return null;
+		}
+
+		getLog().debug("Use credentials from server list for " + id + ".");
+		if (server.getUsername() == null || server.getPassword() == null) {
+			throw new IllegalArgumentException("Repo " + id + " was found in server list but has no username/password.");
+		}
+		return new PasswordAuthentication(server.getUsername(), server.getPassword().toCharArray());
+	}
+
 	public String getHelmExecuteable() {
 		return helmExecuteable;
 	}
@@ -254,7 +295,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	public void setUploadRepoSnapshot(HelmRepository uploadRepoSnapshot) {
 		this.uploadRepoSnapshot = uploadRepoSnapshot;
 	}
+
+	public Settings getSettings() {
+		return settings;
+	}
 }
-
-
-

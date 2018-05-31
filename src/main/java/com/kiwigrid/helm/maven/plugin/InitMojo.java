@@ -1,6 +1,7 @@
 package com.kiwigrid.helm.maven.plugin;
 
 import java.io.File;
+import java.net.PasswordAuthentication;
 
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -49,6 +50,7 @@ public class InitMojo extends AbstractHelmMojo {
 		if (getHelmExtraRepos() != null) {
 			for (HelmRepository repository : getHelmExtraRepos()) {
 				getLog().info("Adding repo " + repository);
+				PasswordAuthentication auth = getAuthentication(repository);
 				callCli(getHelmExecuteableDirectory()
 								+ File.separator
 								+ "helm repo add "
@@ -56,8 +58,7 @@ public class InitMojo extends AbstractHelmMojo {
 								+ " "
 								+ repository.getUrl()
 								+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "")
-								+ (StringUtils.isNotEmpty(repository.getUsername()) ? " --username=" + repository.getUsername() : "")
-								+ (StringUtils.isNotEmpty(repository.getPassword()) ? " --password=" + repository.getPassword() : ""),
+								+ (auth != null ? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword()) : ""),
 						"Unable add repo",
 						false);
 			}

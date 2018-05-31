@@ -105,17 +105,15 @@ public class UploadMojo extends AbstractHelmMojo {
 
 	private void verifyAndSetAuthentication() {
 
-		HelmRepository uploadRepo = getHelmUploadRepo();
-		if (StringUtils.isBlank(uploadRepo.getUsername())
-				|| StringUtils.isBlank(uploadRepo.getPassword()))
-		{
+		PasswordAuthentication authentication = getAuthentication(getHelmUploadRepo());
+		if (authentication == null) {
 			throw new IllegalArgumentException("Credentials has to be configured for uploading to Artifactory.");
 		}
 
 		Authenticator.setDefault(new Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(uploadRepo.getUsername(), uploadRepo.getPassword().toCharArray());
+				return authentication;
 			}
 		});
 	}
