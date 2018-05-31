@@ -177,7 +177,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Get credentials for given help repo. If username is not provided the repo name will be used to search for credentials in <code>settings.xml</code>.
+	 * Get credentials for given helm repo. If username is not provided the repo
+	 * name will be used to search for credentials in <code>settings.xml</code>.
 	 *
 	 * @param repository Helm repo with id and optional credentials.
 	 * @return Authentication object or <code>null</code> if no credentials are present.
