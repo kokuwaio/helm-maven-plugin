@@ -14,6 +14,7 @@ import org.apache.maven.plugin.descriptor.MojoDescriptor;
 import org.apache.maven.plugin.descriptor.Parameter;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.descriptor.PluginDescriptorBuilder;
+import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.InterpolationFilterReader;
 import org.codehaus.plexus.util.ReflectionUtils;
@@ -74,11 +75,11 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
             // create mojo with default values
 
             AbstractHelmMojo mojo = spy(mojoType);
-            for (Parameter paramter : descriptor.getParameters()) {
-                if (paramter.getDefaultValue() == null) {
+            for (Parameter parameter : descriptor.getParameters()) {
+                if (parameter.getDefaultValue() == null || !parameter.isEditable()) {
                     continue;
                 }
-                getField(mojoType, paramter.getName()).set(mojo, resolve(context, paramter.getDefaultValue()));
+                getField(mojoType, parameter.getName()).set(mojo, resolve(context, parameter.getDefaultValue()));
             }
 
             // read mojo values from annotations
@@ -89,6 +90,10 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
             for (MojoProperty mojoProperty : mojoProperties) {
                 getField(mojoType, mojoProperty.name()).set(mojo, resolve(context, mojoProperty.value()));
             }
+
+            // settings
+
+            getField(mojoType, "settings").set(mojo, new Settings());
 
             // validate that every parameter is set
 
