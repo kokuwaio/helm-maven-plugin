@@ -25,15 +25,15 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>2.6</version>
+  <version>2.7</version>
 </dependency>
 ```
 
-Configure plugin with explizit credentials:
+Configure plugin with explicit credentials:
 ```
 ...
 <properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz</helm.download.url>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz</helm.download.url>
   <repoBaseUrl>>https://repo.example.com/artifactory</repoBaseUrl>
 </properties>
 ...
@@ -63,6 +63,7 @@ Configure plugin with explizit credentials:
         </uploadRepoSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+        <skipRefresh>false</skipRefresh>
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
         </excludes>
@@ -83,7 +84,7 @@ Configure plugin using credentials from settings.xml:
 ```
 ...
 <properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz</helm.download.url>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz</helm.download.url>
   <repoBaseUrl>>https://repo.example.com/artifactory</repoBaseUrl>
 </properties>
 ...
@@ -138,72 +139,17 @@ Configure plugin using credentials from settings.xml:
 
 ## Configuration
 
-- `<chartDirectory>` 
-  - description: root directory of your charts
-  - required: true
-  - type: string
-  - user property: helm.chartDirectory
-
-- `<chartVersion>`
-  - description: Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
-  - required: true
-  - type: string
-  - user property: helm.chartVersion
-
-- `<helmDownloadUrl>`
-  - description: URL to download helm
-  - required: false
-  - type: string
-  - user property: helm.downloadUrl
-
-- `<excludes>`
-  - description: list of chart directories to exclude
-  - required: false
-  - type: list of strings
-  - user property: helm.excludes
-
-- `<helmExecutableDirectory>`
-  - description: directory of your helm installation
-  - required: false
-  - default value: ${project.build.directory}/helm
-  - type: string
-  - user property: helm.executableDirectory
-
-- `<helmExecutable>`
-  - description: path to your helm executable
-  - required: false
-  - default value: "${project.build.directory}/helm/linux-amd64/helm
-  - type: string
-  - user property: helm.executable
-
-- `<outputDirectory>`
-  - description: chart output directory
-  - required: false
-  - default value: ${project.build.directory}/helm/repo
-  - type: string
-  - user property: helm.outputDirectory
-
-- `<helmHomeDirectory>`
-  - description: path to helm home directory; useful for concurrent Jenkins builds!
-  - required: false
-  - default value: ~/.helm
-  - type: string
-  - user property: helm.homeDirectory
-
-- `<helmExtraRepos>`
-  - description: adds extra repositories while init
-  - required: false
-  - type: list of [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java)
-  - user property: helm.extraRepos
-  
-- `<uploadRepoStable>`
-  - description: Upload repository for stable charts
-  - required: true
-  - type: [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java)
-  - user property: helm.uploadRepo.stable
-  
-- `<uploadRepoSnapshot>`
-  - description: Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
-  - required: false
-  - type: [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java)
-  - user property: helm.uploadRepo.snapshot
+Parameter | Type | User Property | Required | Description
+--- | --- | --- | --- | ---
+`<chartDirectory>` | string | helm.chartDirectory | true | root directory of your charts
+`<chartVersion>` | string | helm.chartVersion | true | Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
+`<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm
+`<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
+`<helmExecutableDirectory>` | string | helm.executableDirectory | false | directory of your helm installation (default: `${project.build.directory}/helm`)
+`<helmExecutable>` | string | helm.executable | false | path to your helm executable (default: `${project.build.directory}/helm/linux-amd64/helm`) 
+`<outputDirectory>` | string | helm.outputDirectory | false | chart output directory (default: `${project.build.directory}/helm/repo`)
+`<helmHomeDirectory>` | string | helm.homeDirectory | false | path to helm home directory; useful for concurrent Jenkins builds! (default: `~/.helm`)
+`<helmExtraRepos>` | list of [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.extraRepos | false | adds extra repositories while init
+`<uploadRepoStable>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
+`<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
+`<skipRefresh>` | boolean | helm.init.skipRefresh | false | do not refresh (download) the local repository cache while init

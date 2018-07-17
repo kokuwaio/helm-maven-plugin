@@ -7,6 +7,7 @@ import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -17,6 +18,9 @@ import org.codehaus.plexus.util.StringUtils;
  */
 @Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InitMojo extends AbstractHelmMojo {
+
+	@Parameter(property = "helm.init.skipRefresh")
+	private boolean skipRefresh;
 
 	public void execute()
 			throws MojoExecutionException
@@ -42,7 +46,7 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().info("Run helm init...");
 		callCli(getHelmExecuteableDirectory()
 						+ File.separator
-						+ "helm init --client-only"
+						+ "helm init --client-only" + (skipRefresh ? " --skip-refresh" : "")
 						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
 				"Unable to call helm init",
 				false);
@@ -63,5 +67,13 @@ public class InitMojo extends AbstractHelmMojo {
 						false);
 			}
 		}
+	}
+
+	public boolean isSkipRefresh() {
+		return skipRefresh;
+	}
+
+	public void setSkipRefresh(boolean skipRefresh) {
+		this.skipRefresh = skipRefresh;
 	}
 }
