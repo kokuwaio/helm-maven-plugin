@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
-@MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.9.0-linux-amd64.tar.gz")
+@MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
 public class UploadMojoTest {
