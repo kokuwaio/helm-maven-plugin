@@ -59,13 +59,11 @@ public class InitMojoTest {
 		mojo.execute();
 
 		// check captured argument
-		List<String> helmCommands = helmCommandCaptor.getAllValues()
+		String helmInitCommand = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains("helm "))
-				.collect(Collectors.toList());
+				.filter(cmd -> cmd.contains("helm init"))
+				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm init command expected"));
 
-		assertEquals(1, helmCommands.size(), "Only helm init command expected");
-		String helmInitCommand = helmCommands.get(0);
 		assertTrue(helmInitCommand.contains("--client-only"), "Option 'client-only' expected");
 		assertFalse(helmInitCommand.contains("--skip-refresh"), "Option 'skip-refresh' must not be active by default.");
 	}
