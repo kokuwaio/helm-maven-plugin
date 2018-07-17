@@ -21,10 +21,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
-@MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-linux-amd64.tar.gz")
+@MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
-public class HelmMojoTest {
+public class InitMojoTest {
 
 	@DisplayName("Init helm with different download urls.")
 	@ParameterizedTest
