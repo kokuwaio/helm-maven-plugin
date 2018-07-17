@@ -75,7 +75,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			helmExecuteable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
 		}
 		Path path = Paths.get(helmExecuteableDirectory, helmExecuteable).toAbsolutePath();
-		if (!Files.exists(path)) {
+		if (!path.toFile().exists()) {
 			throw new MojoExecutionException("Helm executeable at " + path + " not found.");
 		}
 		return path;
@@ -141,7 +141,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	List<String> getChartTgzs(String path) throws MojoExecutionException {
 		try (Stream<Path> files = Files.walk(Paths.get(path))) {
 			return files.filter(p -> p.getFileName().toString().endsWith("tgz"))
-					.map(p -> p.toString())
+					.map(Path::toString)
 					.collect(Collectors.toList());
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan repo directory at " + path, e);
@@ -182,7 +182,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 *
 	 * @param repository Helm repo with id and optional credentials.
 	 * @return Authentication object or <code>null</code> if no credentials are present.
-	 * @throws IllegalArgumentException Unable to get authentication because of misconfioguration.
+	 * @throws IllegalArgumentException Unable to get authentication because of misconfiguration.
 	 */
 	PasswordAuthentication getAuthentication(HelmRepository repository) throws IllegalArgumentException {
 		String id = repository.getName();

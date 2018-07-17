@@ -12,7 +12,6 @@ import java.nio.charset.Charset;
 import com.kiwigrid.helm.maven.plugin.exception.BadUploadException;
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
