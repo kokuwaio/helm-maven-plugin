@@ -39,6 +39,12 @@ public class PackageMojo extends AbstractHelmMojo {
 				helmCommand = helmCommand + " --version " + getChartVersion();
 			}
 
+			if (getAppVersion() != null) {
+				getLog().info(String.format("Setting App version to %s", getAppVersion()));
+				helmCommand = helmCommand + " --app-version " + getAppVersion();
+		    }
+
+
 			callCli(helmCommand, "Unable to package chart at " + inputDirectory, true);
 		}
 	}
