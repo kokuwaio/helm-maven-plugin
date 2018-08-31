@@ -28,7 +28,6 @@ import static org.mockito.Mockito.*;
 @MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
-@MojoProperty(name = "appVersion", value = "1.0")
 public class UploadMojoTest {
 
 	@Test
