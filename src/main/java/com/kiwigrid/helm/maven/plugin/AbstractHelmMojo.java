@@ -49,7 +49,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartVersion", required = true)
 	private String chartVersion;
 
-	@Parameter(property = "helm.AppVersion")
+	@Parameter(property = "helm.appVersion")
 	private String appVersion;
 
 	@Parameter(property = "helm.uploadRepo.stable")
