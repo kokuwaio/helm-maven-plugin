@@ -143,6 +143,7 @@ Parameter | Type | User Property | Required | Description
 --- | --- | --- | --- | ---
 `<chartDirectory>` | string | helm.chartDirectory | true | root directory of your charts
 `<chartVersion>` | string | helm.chartVersion | true | Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
+`<appVersion>` | string | helm.appVersion | false | Version of the Application. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
 `<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm
 `<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
 `<helmExecutableDirectory>` | string | helm.executableDirectory | false | directory of your helm installation (default: `${project.build.directory}/helm`)
