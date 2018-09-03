@@ -25,7 +25,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>2.7</version>
+  <version>2.8</version>
 </dependency>
 ```
 
@@ -43,7 +43,7 @@ Configure plugin with explicit credentials:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>2.6</version>
+      <version>2.8</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -94,7 +94,7 @@ Configure plugin using credentials from settings.xml:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>2.6</version>
+      <version>2.8</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -143,7 +143,7 @@ Parameter | Type | User Property | Required | Description
 --- | --- | --- | --- | ---
 `<chartDirectory>` | string | helm.chartDirectory | true | root directory of your charts
 `<chartVersion>` | string | helm.chartVersion | true | Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
-`<appVersion>` | string | helm.appVersion | false | Version of the Application. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
+`<appVersion>` | string | helm.appVersion | false | The version of the app. This needn't be SemVer.
 `<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm
 `<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
 `<helmExecutableDirectory>` | string | helm.executableDirectory | false | directory of your helm installation (default: `${project.build.directory}/helm`)
