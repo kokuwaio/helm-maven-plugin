@@ -66,7 +66,10 @@ public class UploadMojo extends AbstractHelmMojo {
 			IOUtils.copy(fileInputStream, connection.getOutputStream());
 		}
 		if (connection.getResponseCode() >= 400) {
-			String response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
+			String response = "HTTP errorCode: " + connection.getResponseCode();
+			if (connection.getErrorStream() != null) {
+				response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
+			}
 			throw new BadUploadException(response);
 		} else {
 			String response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
@@ -80,6 +83,8 @@ public class UploadMojo extends AbstractHelmMojo {
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/gzip");
+
+		verifyAndSetAuthentication(false);
 
 		return connection;
 	}
@@ -97,23 +102,23 @@ public class UploadMojo extends AbstractHelmMojo {
 		connection.setRequestMethod("PUT");
 		connection.setRequestProperty("Content-Type", "application/gzip");
 
-		verifyAndSetAuthentication();
+		verifyAndSetAuthentication(true);
 
 		return connection;
 	}
 
-	private void verifyAndSetAuthentication() {
+	private void verifyAndSetAuthentication(boolean required) {
 
 		PasswordAuthentication authentication = getAuthentication(getHelmUploadRepo());
-		if (authentication == null) {
-			throw new IllegalArgumentException("Credentials has to be configured for uploading to Artifactory.");
+		if (authentication != null) {
+			Authenticator.setDefault(new Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return authentication;
+				}
+			});
+		} else if (required) {
+			throw new IllegalArgumentException("Credentials has to be configured for uploading to repository.");
 		}
-
-		Authenticator.setDefault(new Authenticator() {
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return authentication;
-			}
-		});
 	}
 }
