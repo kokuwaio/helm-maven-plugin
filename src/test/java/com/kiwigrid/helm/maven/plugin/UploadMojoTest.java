@@ -95,6 +95,53 @@ public class UploadMojoTest {
 	}
 
 	@Test
+	public void verifyHttpConnectionForChartmuseumUploadWithCredentials(UploadMojo uploadMojo) throws IOException {
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.CHARTMUSEUM);
+		helmRepo.setName("my-chartmuseum");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		helmRepo.setUsername("foo");
+		helmRepo.setPassword("bar");
+		uploadMojo.setUploadRepoStable(helmRepo);
+
+		// Call
+		HttpURLConnection httpURLConnection = uploadMojo.getConnectionForUploadToChartmuseum();
+
+		// Verify
+		assertEquals("POST", httpURLConnection.getRequestMethod());
+		assertEquals(helmRepo.getUrl(), httpURLConnection.getURL().toString());
+
+		String contentTypeHeader = httpURLConnection.getRequestProperty("Content-Type");
+		assertNotNull(contentTypeHeader);
+		assertEquals("application/gzip", contentTypeHeader);
+	}
+
+	@Test
+	public void verifyHttpConnectionForChartmuseumUploadWithWrongCredentials(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.CHARTMUSEUM);
+		helmRepo.setName("my-chartmuseum");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		helmRepo.setUsername("foo");
+		helmRepo.setPassword("bar");
+		uploadMojo.setUploadRepoStable(helmRepo);
+
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(helmRepo).when(uploadMojo).getHelmUploadRepo();
+		doReturn(tgzs).when(uploadMojo).getChartTgzs(anyString());
+
+		HttpURLConnection connection = Mockito.mock(HttpURLConnection.class);
+		doReturn(new NullOutputStream()).when(connection).getOutputStream();
+		doReturn(401).when(connection).getResponseCode();
+		doReturn(connection).when(uploadMojo).getConnectionForUploadToChartmuseum();
+
+		assertThrows(MojoExecutionException.class, uploadMojo::execute, "Wrong credentials must fail.");
+	}
+
+	@Test
 	public void verifyUploadToArtifactory(UploadMojo uploadMojo) throws MojoExecutionException, IOException {
 		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
 		final File fileToUpload = new File(resource.getFile());
