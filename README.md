@@ -33,8 +33,7 @@ Configure plugin with explicit credentials:
 ```
 ...
 <properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz</helm.download.url>
-  <repoBaseUrl>>https://repo.example.com/artifactory</repoBaseUrl>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz</helm.download.url>
 </properties>
 ...
 <build>
@@ -49,7 +48,7 @@ Configure plugin with explicit credentials:
         <chartVersion>${project.version}</chartVersion>
         <uploadRepoStable>
             <name>stable-repo</name>
-            <url>${repoBaseUrl}/helm-stable</url>
+            <url>https://repo.example.com/artifactory/helm-stable</url>
             <!-- Artifacotry requires basic authentication --> 
             <!-- which is supported from HELM version >= 2.9 -->
             <type>ARTIFACTORY</type>
@@ -58,7 +57,7 @@ Configure plugin with explicit credentials:
         </uploadRepoStable>
         <uploadRepoSnapshot>
             <name>snapshot-repo</name>
-            <url>${repoBaseUrl}/helm-snapshots</url>
+            <url>https://my.chart.museum/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
@@ -84,8 +83,7 @@ Configure plugin using credentials from settings.xml:
 ```
 ...
 <properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.9.1-linux-amd64.tar.gz</helm.download.url>
-  <repoBaseUrl>>https://repo.example.com/artifactory</repoBaseUrl>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz</helm.download.url>
 </properties>
 ...
 <build>
@@ -100,12 +98,12 @@ Configure plugin using credentials from settings.xml:
         <chartVersion>${project.version}</chartVersion>
         <uploadRepoStable>
             <name>stable-repo</name>
-            <url>${repoBaseUrl}/helm-stable</url>
+            <url>https://repo.example.com/artifactory/helm-stable</url>
             <type>ARTIFACTORY</type>
         </uploadRepoStable>
         <uploadRepoSnapshot>
             <name>snapshot-repo</name>
-            <url>${repoBaseUrl}/helm-snapshots</url>
+            <url>https://my.chart.museum:8080/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
         <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
