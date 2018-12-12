@@ -41,7 +41,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 	}
 
-	private void uploadSingle(String file) throws IOException, BadUploadException {
+	private void uploadSingle(String file) throws IOException, BadUploadException, MojoExecutionException {
 		final File fileToUpload = new File(file);
 		final HelmRepository uploadRepo = getHelmUploadRepo();
 
@@ -84,7 +84,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		return connection;
 	}
 
-	protected HttpURLConnection getConnectionForUploadToArtifactory(File file) throws IOException {
+	protected HttpURLConnection getConnectionForUploadToArtifactory(File file) throws IOException, MojoExecutionException {
 		String uploadUrl = getHelmUploadUrl();
 		// Append slash if not already in place
 		if (!uploadUrl.endsWith("/")) {
@@ -102,7 +102,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		return connection;
 	}
 
-	private void verifyAndSetAuthentication() {
+	private void verifyAndSetAuthentication() throws MojoExecutionException {
 
 		PasswordAuthentication authentication = getAuthentication(getHelmUploadRepo());
 		if (authentication == null) {

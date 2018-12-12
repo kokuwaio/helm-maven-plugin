@@ -49,7 +49,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void verifyHttpConnectionForArtifactoryUpload(UploadMojo uploadMojo) throws IOException {
+	public void verifyHttpConnectionForArtifactoryUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
 		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
 		final File fileToUpload = new File(resource.getFile());
 
