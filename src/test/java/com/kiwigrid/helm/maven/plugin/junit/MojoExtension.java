@@ -1,5 +1,8 @@
 package com.kiwigrid.helm.maven.plugin.junit;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.spy;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -8,7 +11,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.kiwigrid.helm.maven.plugin.AbstractHelmMojo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.plugin.descriptor.MojoDescriptor;
 import org.apache.maven.plugin.descriptor.Parameter;
@@ -19,11 +21,20 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.InterpolationFilterReader;
 import org.codehaus.plexus.util.ReflectionUtils;
 import org.codehaus.plexus.util.xml.XmlStreamReader;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.mockito.internal.util.reflection.FieldSetter;
+import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
+import org.sonatype.plexus.components.cipher.PlexusCipherException;
+import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.spy;
+import com.kiwigrid.helm.maven.plugin.AbstractHelmMojo;
 
 @SuppressWarnings("unchecked")
 public class MojoExtension implements ParameterResolver, BeforeAllCallback, BeforeEachCallback {
@@ -94,6 +105,12 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
             // settings
 
             getField(mojoType, "settings").set(mojo, new Settings());
+            
+            // plexus SecDispatcher
+
+            SecDispatcher secDispatcher = spy(DefaultSecDispatcher.class);
+            FieldSetter.setField(secDispatcher, DefaultSecDispatcher.class.getDeclaredField("_cipher"), new DefaultPlexusCipher());
+            getField(mojoType, "securityDispatcher").set(mojo, secDispatcher);
 
             // validate that every parameter is set
 
@@ -106,7 +123,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
             }
 
             return mojo;
-        } catch (ReflectiveOperationException e) {
+        } catch (ReflectiveOperationException | PlexusCipherException e) {
             throw new ParameterResolutionException("Failed to setup mockito.", e);
         }
     }

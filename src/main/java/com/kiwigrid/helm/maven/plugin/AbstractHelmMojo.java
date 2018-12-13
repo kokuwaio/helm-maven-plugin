@@ -229,7 +229,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		}
 	}
 	
-	private SecDispatcher getSecDispatcher() {
+	protected SecDispatcher getSecDispatcher() {
 		if (securityDispatcher instanceof DefaultSecDispatcher) {
 			((DefaultSecDispatcher)securityDispatcher).setConfigurationFile(getHelmSecurity());
 		}
