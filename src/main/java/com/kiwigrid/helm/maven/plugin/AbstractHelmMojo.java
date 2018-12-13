@@ -29,7 +29,7 @@ import org.apache.maven.settings.Settings;
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
-	private String helmExecuteableDirectory;
+	private String helmExecutableDirectory;
 
 	/**
 	 * If no executeable is set this plugin tries to determine helm executeable based on operation system.
@@ -77,7 +77,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		if (helmExecuteable == null) {
 			helmExecuteable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
 		}
-		Path path = Paths.get(helmExecuteableDirectory, helmExecuteable).toAbsolutePath();
+		Path path = Paths.get(helmExecutableDirectory, helmExecuteable).toAbsolutePath();
 		if (!path.toFile().exists()) {
 			throw new MojoExecutionException("Helm executeable at " + path + " not found.");
 		}
@@ -227,12 +227,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		this.outputDirectory = outputDirectory;
 	}
 
-	public String getHelmExecuteableDirectory() {
-		return helmExecuteableDirectory;
+	public String getHelmExecutableDirectory() {
+		return helmExecutableDirectory;
 	}
 
-	public void setHelmExecuteableDirectory(String helmExecuteableDirectory) {
-		this.helmExecuteableDirectory = helmExecuteableDirectory;
+	public void setHelmExecutableDirectory(String helmExecuteableDirectory) {
+		this.helmExecutableDirectory = helmExecuteableDirectory;
 	}
 
 	public String getHelmDownloadUrl() {
