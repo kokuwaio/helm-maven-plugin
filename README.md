@@ -25,7 +25,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>2.8</version>
+  <version>3.0</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@ Configure plugin with explicit credentials:
 ```
 ...
 <properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz</helm.download.url>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.12.0-linux-amd64.tar.gz</helm.download.url>
 </properties>
 ...
 <build>
@@ -42,7 +42,7 @@ Configure plugin with explicit credentials:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>2.8</version>
+      <version>3.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -83,7 +83,7 @@ Configure plugin using credentials from settings.xml:
 ```
 ...
 <properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz</helm.download.url>
+  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.12.0-linux-amd64.tar.gz</helm.download.url>
 </properties>
 ...
 <build>
@@ -92,7 +92,7 @@ Configure plugin using credentials from settings.xml:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>2.8</version>
+      <version>3.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
