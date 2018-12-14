@@ -31,20 +31,20 @@ public class InitMojo extends AbstractHelmMojo {
 				false);
 		getLog().info("Downloading Helm...");
 		callCli("wget -qO "
-						+ getHelmExecuteableDirectory()
+						+ getHelmExecutableDirectory()
 						+ File.separator
 						+ "helm.tar.gz "
 						+ getHelmDownloadUrl(),
 				"Unable to download helm", false);
 		getLog().info("Unpacking Helm...");
 		callCli("tar -xf "
-				+ getHelmExecuteableDirectory()
+				+ getHelmExecutableDirectory()
 				+ File.separator
 				// flatten directory structure using --strip to get helm executeable on basedir, see https://www.systutorials.com/docs/linux/man/1-tar/#lbAS
 				+ "helm.tar.gz --strip=1 --directory="
-				+ getHelmExecuteableDirectory(), "Unable to unpack helm to " + getHelmExecuteableDirectory(), false);
+				+ getHelmExecutableDirectory(), "Unable to unpack helm to " + getHelmExecutableDirectory(), false);
 		getLog().info("Run helm init...");
-		callCli(getHelmExecuteableDirectory()
+		callCli(getHelmExecutableDirectory()
 						+ File.separator
 						+ "helm init --client-only" + (skipRefresh ? " --skip-refresh" : "")
 						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
@@ -55,7 +55,7 @@ public class InitMojo extends AbstractHelmMojo {
 			for (HelmRepository repository : getHelmExtraRepos()) {
 				getLog().info("Adding repo " + repository);
 				PasswordAuthentication auth = getAuthentication(repository);
-				callCli(getHelmExecuteableDirectory()
+				callCli(getHelmExecutableDirectory()
 								+ File.separator
 								+ "helm repo add "
 								+ repository.getName()

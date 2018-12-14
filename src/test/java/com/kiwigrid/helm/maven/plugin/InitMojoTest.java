@@ -42,7 +42,7 @@ public class InitMojoTest {
 
 		// check helm file
 
-		Path helm = Paths.get(mojo.getHelmExecuteableDirectory(), "windows".equals(os) ? "helm.exe" : "helm")
+		Path helm = Paths.get(mojo.getHelmExecutableDirectory(), "windows".equals(os) ? "helm.exe" : "helm")
 				.toAbsolutePath();
 		assertTrue(Files.exists(helm), "Helm executable not found at: " + helm);
 	}
