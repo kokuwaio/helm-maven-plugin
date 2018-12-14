@@ -11,14 +11,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
+import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
+
+import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 
 /**
  * Base class for mojos
@@ -28,6 +33,9 @@ import org.apache.maven.settings.Settings;
  */
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
+	@Component( role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default" )
+	private SecDispatcher securityDispatcher;
+    
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecutableDirectory;
 
@@ -66,6 +74,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.extraRepos")
 	private HelmRepository[] helmExtraRepos;
+	
+	@Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
+	private String helmSecurity;
 
 	/**
 	 * The current user system settings for use in Maven.
@@ -186,8 +197,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @param repository Helm repo with id and optional credentials.
 	 * @return Authentication object or <code>null</code> if no credentials are present.
 	 * @throws IllegalArgumentException Unable to get authentication because of misconfiguration.
+	 * @throws MojoExecutionException Unable to get password from settings.xml
 	 */
-	PasswordAuthentication getAuthentication(HelmRepository repository) throws IllegalArgumentException {
+	PasswordAuthentication getAuthentication(HelmRepository repository) throws IllegalArgumentException, MojoExecutionException {
 		String id = repository.getName();
 
 		if (repository.getUsername() != null) {
@@ -208,7 +220,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		if (server.getUsername() == null || server.getPassword() == null) {
 			throw new IllegalArgumentException("Repo " + id + " was found in server list but has no username/password.");
 		}
-		return new PasswordAuthentication(server.getUsername(), server.getPassword().toCharArray());
+		
+		try {
+			return new PasswordAuthentication(server.getUsername(), getSecDispatcher().decrypt( server.getPassword() ).toCharArray());
+		}
+		catch ( SecDispatcherException e ) {
+			throw new MojoExecutionException( e.getMessage() );
+		}
+	}
+	
+	protected SecDispatcher getSecDispatcher() {
+		if (securityDispatcher instanceof DefaultSecDispatcher) {
+			((DefaultSecDispatcher)securityDispatcher).setConfigurationFile(getHelmSecurity());
+		}
+		return securityDispatcher;
 	}
 
 	public String getHelmExecuteable() {
@@ -305,6 +330,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setUploadRepoSnapshot(HelmRepository uploadRepoSnapshot) {
 		this.uploadRepoSnapshot = uploadRepoSnapshot;
+	}
+
+	public String getHelmSecurity() {
+		return helmSecurity;
+	}
+
+	public void setHelmSecurity(String helmSecurity) {
+		this.helmSecurity = helmSecurity;
 	}
 
 	public Settings getSettings() {

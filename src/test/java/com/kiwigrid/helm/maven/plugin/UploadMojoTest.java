@@ -4,7 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import com.kiwigrid.helm.maven.plugin.junit.SystemPropertyExtension;
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import com.kiwigrid.helm.maven.plugin.pojo.RepoType;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.settings.Server;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -47,9 +51,89 @@ public class UploadMojoTest {
 
 		assertThrows(IllegalArgumentException.class, mojo::execute, "Missing credentials must fail.");
 	}
+	
+	@Test
+	public void uploadToArtifactoryWithRepositoryCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.ARTIFACTORY);
+		helmRepo.setName("my-artifactory");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		helmRepo.setUsername("foo");
+		helmRepo.setPassword("bar");
+		mojo.setUploadRepoStable(helmRepo);		
+		
+		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+		
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		
+		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload));
+	}
+	
+	@Test
+	public void uploadToArtifactoryWithPlainCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final Server server = new Server();
+		server.setId("my-artifactory");
+		server.setUsername("foo");
+		server.setPassword("bar");
+		final List<Server> servers = new ArrayList<>();
+		servers.add(server);
+		mojo.getSettings().setServers(servers);
+		
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.ARTIFACTORY);
+		helmRepo.setName("my-artifactory");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		mojo.setUploadRepoStable(helmRepo);		
+		
+		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+
+		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload));
+	}
+	
+	@Test
+	public void uploadToArtifactoryWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final Server server = new Server();
+		server.setId("my-artifactory");
+		server.setUsername("foo");
+		server.setPassword("{GGhJc6qP+v0Hg2l+dei1MQFZt/55PzyFXY0MUMxcQdQ=}");
+		final List<Server> servers = new ArrayList<>();
+		servers.add(server);
+		mojo.getSettings().setServers(servers);
+		
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.ARTIFACTORY);
+		helmRepo.setName("my-artifactory");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		mojo.setUploadRepoStable(helmRepo);		
+		
+		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(this.getClass().getResource("settings-security.xml").getFile()).when(mojo).getHelmSecurity();
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		
+		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload));
+
+		final PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
+		assertEquals("foo", pwd.getUserName());
+		assertEquals("bar", String.valueOf(pwd.getPassword()));
+	}
 
 	@Test
-	public void verifyHttpConnectionForArtifactoryUpload(UploadMojo uploadMojo) throws IOException {
+	public void verifyHttpConnectionForArtifactoryUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
 		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
 		final File fileToUpload = new File(resource.getFile());
 
