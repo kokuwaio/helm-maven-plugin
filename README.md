@@ -153,3 +153,30 @@ Parameter | Type | User Property | Required | Description
 `<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
 `<skipRefresh>` | boolean | helm.init.skipRefresh | false | do not refresh (download) the local repository cache while init
 `<security>` | string | helm.security | false | path to your [settings-security.xml](https://maven.apache.org/guides/mini/guide-encryption.html) (default: `~/.m2/settings-security.xml`)
+
+## Packaging with the helm lifecycle
+
+To keep your pom files small you can use 'helm' packaging. This binds `helm:init` to the initialize phase, `helm:lint` to the test phase, `helm:package` to the package phase and `helm:upload` to the deploy phase.
+
+```xml
+<pom>
+  <artifactId>my-helm-charts</artifactId>
+  <version>0.0.1</version>
+  <packaging>helm</packaging>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.kiwigrid</groupId>
+        <artifactId>helm-maven-plugin</artifactId>
+        <!-- Mandatory when you use a custom lifecycle -->
+        <extensions>true</extensions>
+        <configuration>
+          ...
+        </configuration>
+      </plugin>
+    </plugins>
+    ....
+  </build>
+</pom>
+```
