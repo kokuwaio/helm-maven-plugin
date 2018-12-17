@@ -169,6 +169,7 @@ To keep your pom files small you can use 'helm' packaging. This binds `helm:init
       <plugin>
         <groupId>com.kiwigrid</groupId>
         <artifactId>helm-maven-plugin</artifactId>
+        <!-- Mandatory when you use a custom lifecycle -->
         <extensions>true</extensions>
         <configuration>
           ...
@@ -179,5 +180,3 @@ To keep your pom files small you can use 'helm' packaging. This binds `helm:init
   </build>
 </pom>
 ```
-
-Please note the `<extensions>true</extensions>` which is mandatory when you use a custom lifecycle.
