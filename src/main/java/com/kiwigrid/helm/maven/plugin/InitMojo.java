@@ -25,6 +25,10 @@ public class InitMojo extends AbstractHelmMojo {
 	public void execute()
 			throws MojoExecutionException
 	{
+		if (skip) {
+			getLog().info("Skip init");
+			return;
+		}
 		getLog().info("Initializing Helm...");
 		getLog().info("Creating output directory...");
 		callCli("mkdir -p " + getOutputDirectory(), "Unable to create output directory at " + getOutputDirectory(),

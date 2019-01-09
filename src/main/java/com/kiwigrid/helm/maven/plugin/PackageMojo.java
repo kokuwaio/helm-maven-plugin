@@ -19,6 +19,10 @@ public class PackageMojo extends AbstractHelmMojo {
 	public void execute()
 			throws MojoExecutionException
 	{
+		if (skip) {
+			getLog().info("Skip package");
+			return;
+		}
 
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			if (getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {

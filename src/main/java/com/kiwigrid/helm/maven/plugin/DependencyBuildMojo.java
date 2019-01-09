@@ -19,6 +19,10 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 	public void execute()
 			throws MojoExecutionException
 	{
+		if (skip) {
+			getLog().info("Skip dependency build");
+			return;
+		}
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			if(getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {
 				getLog().debug("Skip excluded directory " + inputDirectory);

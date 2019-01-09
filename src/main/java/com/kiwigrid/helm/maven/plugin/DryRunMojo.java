@@ -20,6 +20,10 @@ public class DryRunMojo extends AbstractHelmMojo {
 	private String action;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (skip) {
+			getLog().info("Skip dry run");
+			return;
+		}
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("\n\nPerform dry-run for chart " + inputDirectory + "...");
 
