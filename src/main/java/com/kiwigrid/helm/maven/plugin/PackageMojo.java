@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -16,10 +17,13 @@ import org.codehaus.plexus.util.StringUtils;
 @Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE)
 public class PackageMojo extends AbstractHelmMojo {
 
+	@Parameter(property = "helm.package.skip", defaultValue = "false")
+	private boolean skipPackage;
+
 	public void execute()
 			throws MojoExecutionException
 	{
-		if (skip) {
+		if (skip || skipPackage) {
 			getLog().info("Skip package");
 			return;
 		}

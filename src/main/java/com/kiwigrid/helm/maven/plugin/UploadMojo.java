@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Mojo for uploading to helm repo (e.g. chartmuseum)
@@ -25,10 +26,13 @@ import org.apache.maven.plugins.annotations.Mojo;
 @Mojo(name = "upload", defaultPhase = LifecyclePhase.DEPLOY)
 public class UploadMojo extends AbstractHelmMojo {
 
+	@Parameter(property = "helm.upload.skip", defaultValue = "false")
+	private boolean skipUpload;
+
 	public void execute()
 			throws MojoExecutionException
 	{
-		if (skip) {
+		if (skip || skipUpload) {
 			getLog().info("Skip upload");
 			return;
 		}
