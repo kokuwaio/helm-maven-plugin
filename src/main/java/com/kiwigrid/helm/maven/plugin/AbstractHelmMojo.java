@@ -78,6 +78,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
 	private String helmSecurity;
 
+	@Parameter(property = "helm.skip", defaultValue = "false")
+	protected boolean skip;
+
 	/**
 	 * The current user system settings for use in Maven.
 	 */

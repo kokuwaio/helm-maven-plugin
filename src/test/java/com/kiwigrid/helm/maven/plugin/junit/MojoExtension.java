@@ -87,7 +87,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 
             AbstractHelmMojo mojo = spy(mojoType);
             for (Parameter parameter : descriptor.getParameters()) {
-                if (parameter.getDefaultValue() == null || !parameter.isEditable()) {
+                if (parameter.getDefaultValue() == null || !parameter.isEditable() || parameter.getType().equals("boolean")) {
                     continue;
                 }
                 getField(mojoType, parameter.getName()).set(mojo, resolve(context, parameter.getDefaultValue()));

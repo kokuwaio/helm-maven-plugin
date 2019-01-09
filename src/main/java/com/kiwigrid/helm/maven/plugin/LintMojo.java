@@ -19,6 +19,10 @@ public class LintMojo extends AbstractHelmMojo {
 	public void execute()
 			throws MojoExecutionException
 	{
+		if (skip) {
+			getLog().info("Skip lint");
+			return;
+		}
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			if (getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {
 				getLog().debug("Skip excluded directory " + inputDirectory);
