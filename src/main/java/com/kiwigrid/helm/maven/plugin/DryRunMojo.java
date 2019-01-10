@@ -18,9 +18,11 @@ public class DryRunMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;
+	@Parameter(property = "helm.dry-run.skip", defaultValue = "false")
+	private boolean skipDryRun;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		if (skip) {
+		if (skip || skipDryRun) {
 			getLog().info("Skip dry run");
 			return;
 		}

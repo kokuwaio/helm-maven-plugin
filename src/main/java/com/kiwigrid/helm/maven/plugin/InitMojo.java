@@ -19,13 +19,15 @@ import org.codehaus.plexus.util.StringUtils;
 @Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InitMojo extends AbstractHelmMojo {
 
-	@Parameter(property = "helm.init.skipRefresh")
+	@Parameter(property = "helm.init.skipRefresh", defaultValue = "false")
 	private boolean skipRefresh;
+	@Parameter(property = "helm.init.skip", defaultValue = "false")
+	private boolean skipInit;
 
 	public void execute()
 			throws MojoExecutionException
 	{
-		if (skip) {
+		if (skip || skipInit) {
 			getLog().info("Skip init");
 			return;
 		}
