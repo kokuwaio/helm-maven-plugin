@@ -25,7 +25,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>3.3</version>
+  <version>3.4</version>
 </dependency>
 ```
 
@@ -42,7 +42,7 @@ Configure plugin with explicit credentials:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>3.3</version>
+      <version>3.4</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -92,7 +92,7 @@ Configure plugin using credentials from settings.xml:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>3.3</version>
+      <version>3.4</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
