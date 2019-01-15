@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -23,8 +24,6 @@ import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
-import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
-
 /**
  * Base class for mojos
  *
@@ -33,9 +32,9 @@ import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
  */
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
-	@Component( role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default" )
+	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
-    
+
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecutableDirectory;
 
@@ -74,7 +73,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.extraRepos")
 	private HelmRepository[] helmExtraRepos;
-	
+
 	@Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
 	private String helmSecurity;
 
@@ -147,9 +146,15 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	List<String> getChartDirectories(String path) throws MojoExecutionException {
 		try (Stream<Path> files = Files.walk(Paths.get(path))) {
-			return files.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
+			List<String> chartDirs = files.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
 					.map(p -> p.getParent().toString())
 					.collect(Collectors.toList());
+
+			if (chartDirs.isEmpty()) {
+				getLog().warn("No Charts detected - no Chart.yaml files found below " + path);
+			}
+
+			return chartDirs;
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan chart directory at " + path, e);
 		}
@@ -202,7 +207,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @throws IllegalArgumentException Unable to get authentication because of misconfiguration.
 	 * @throws MojoExecutionException Unable to get password from settings.xml
 	 */
-	PasswordAuthentication getAuthentication(HelmRepository repository) throws IllegalArgumentException, MojoExecutionException {
+	PasswordAuthentication getAuthentication(HelmRepository repository)
+			throws IllegalArgumentException, MojoExecutionException
+	{
 		String id = repository.getName();
 
 		if (repository.getUsername() != null) {
@@ -221,20 +228,22 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		getLog().debug("Use credentials from server list for " + id + ".");
 		if (server.getUsername() == null || server.getPassword() == null) {
-			throw new IllegalArgumentException("Repo " + id + " was found in server list but has no username/password.");
+			throw new IllegalArgumentException("Repo "
+					+ id
+					+ " was found in server list but has no username/password.");
 		}
-		
+
 		try {
-			return new PasswordAuthentication(server.getUsername(), getSecDispatcher().decrypt( server.getPassword() ).toCharArray());
-		}
-		catch ( SecDispatcherException e ) {
-			throw new MojoExecutionException( e.getMessage() );
+			return new PasswordAuthentication(server.getUsername(),
+					getSecDispatcher().decrypt(server.getPassword()).toCharArray());
+		} catch (SecDispatcherException e) {
+			throw new MojoExecutionException(e.getMessage());
 		}
 	}
-	
+
 	protected SecDispatcher getSecDispatcher() {
 		if (securityDispatcher instanceof DefaultSecDispatcher) {
-			((DefaultSecDispatcher)securityDispatcher).setConfigurationFile(getHelmSecurity());
+			((DefaultSecDispatcher) securityDispatcher).setConfigurationFile(getHelmSecurity());
 		}
 		return securityDispatcher;
 	}
