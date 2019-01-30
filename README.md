@@ -22,7 +22,7 @@ By default the plugin downloads HELM in a specific version. Next to that it is p
 In both cases HELM will be executed in the background.
 
 Add following dependency to your pom.xml:
-```
+```xml
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
