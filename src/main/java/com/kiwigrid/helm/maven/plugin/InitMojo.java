@@ -35,6 +35,33 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().info("Creating output directory...");
 		callCli("mkdir -p " + getOutputDirectory(), "Unable to create output directory at " + getOutputDirectory(),
 				false);
+
+		if(isUseLocalHelmBinary()) {
+			verifyLocalHelmBinary();
+			getLog().info("Using local HELM binary ["+ getHelmExecutableDirectory() +"]");
+		} else {
+			downloadAndUnpackHelm();
+		}
+
+		if (getHelmExtraRepos() != null) {
+			for (HelmRepository repository : getHelmExtraRepos()) {
+				getLog().info("Adding repo " + repository);
+				PasswordAuthentication auth = getAuthentication(repository);
+				callCli(getHelmExecutableDirectory()
+								+ File.separator
+								+ "helm repo add "
+								+ repository.getName()
+								+ " "
+								+ repository.getUrl()
+								+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "")
+								+ (auth != null ? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword()) : ""),
+						"Unable add repo",
+						false);
+			}
+		}
+	}
+
+	protected void downloadAndUnpackHelm() throws MojoExecutionException {
 		getLog().info("Downloading Helm...");
 		callCli("wget -qO "
 						+ getHelmExecutableDirectory()
@@ -56,23 +83,10 @@ public class InitMojo extends AbstractHelmMojo {
 						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
 				"Unable to call helm init",
 				false);
+	}
 
-		if (getHelmExtraRepos() != null) {
-			for (HelmRepository repository : getHelmExtraRepos()) {
-				getLog().info("Adding repo " + repository);
-				PasswordAuthentication auth = getAuthentication(repository);
-				callCli(getHelmExecutableDirectory()
-								+ File.separator
-								+ "helm repo add "
-								+ repository.getName()
-								+ " "
-								+ repository.getUrl()
-								+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "")
-								+ (auth != null ? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword()) : ""),
-						"Unable add repo",
-						false);
-			}
-		}
+	private void verifyLocalHelmBinary() throws MojoExecutionException {
+		callCli(getHelmExecuteablePath() + " version --client", "Unable to verify local HELM binary", false);
 	}
 
 	public boolean isSkipRefresh() {

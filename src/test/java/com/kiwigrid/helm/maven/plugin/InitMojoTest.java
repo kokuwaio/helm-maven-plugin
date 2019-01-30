@@ -1,5 +1,7 @@
 package com.kiwigrid.helm.maven.plugin;
 
+import java.io.File;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 import com.kiwigrid.helm.maven.plugin.junit.MojoExtension;
 import com.kiwigrid.helm.maven.plugin.junit.MojoProperty;
 import com.kiwigrid.helm.maven.plugin.junit.SystemPropertyExtension;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,26 +32,23 @@ public class InitMojoTest {
 	@DisplayName("Init helm with different download urls.")
 	@ParameterizedTest
 	@ValueSource(strings = { "darwin", "linux", "windows" })
-	public void initMojoHappyPath(String os, InitMojo mojo) throws Exception {
+	public void initMojoHappyPathWhenDownloadHelm(String os, InitMojo mojo) throws Exception {
 
 		// prepare execution
-
 		doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
 		mojo.setHelmDownloadUrl("https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-" + os + "-amd64.tar.gz");
 
 		// run init
-
 		mojo.execute();
 
 		// check helm file
-
 		Path helm = Paths.get(mojo.getHelmExecutableDirectory(), "windows".equals(os) ? "helm.exe" : "helm")
 				.toAbsolutePath();
 		assertTrue(Files.exists(helm), "Helm executable not found at: " + helm);
 	}
 
 	@Test
-	public void verifyDefaultInitCommand(InitMojo mojo) throws Exception {
+	public void verifyDefaultInitCommandWhenDownloadingHelm(InitMojo mojo) throws Exception {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
@@ -88,5 +88,26 @@ public class InitMojoTest {
 		assertEquals(1, helmCommands.size(), "Only helm init command expected");
 		String helmInitCommand = helmCommands.get(0);
 		assertTrue(helmInitCommand.contains("--skip-refresh"), "Option 'skip-refresh' expected");
+	}
+
+	@Test
+	public void verifyLocalHelmBinaryUsage(InitMojo mojo) throws MojoExecutionException {
+
+		final URL resource = this.getClass().getResource("helm.tar.gz");
+		final String helmExecutableDir = new File(resource.getFile()).getParent();
+		mojo.callCli("tar -xf "
+				+ helmExecutableDir
+				+ File.separator
+				// flatten directory structure using --strip to get helm executeable on basedir, see https://www.systutorials.com/docs/linux/man/1-tar/#lbAS
+				+ "helm.tar.gz --strip=1 --directory="
+				+ helmExecutableDir, "Unable to unpack helm to " + helmExecutableDir, false);
+
+
+		// configure mojo
+		mojo.setUseLocalHelmBinary(true);
+		mojo.setHelmExecutableDirectory(helmExecutableDir);
+
+		// execute
+		mojo.execute();
 	}
 }

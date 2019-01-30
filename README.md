@@ -18,24 +18,98 @@ Currently (October 2017) there is no simple Maven plugin to package existing HEL
 
 # How?
 
-The plugin downloads HELM in a specific version and runs the tool in the background.
+By default the plugin downloads HELM in a specific version. Next to that it is possible to specify a local HELM binary.
+In both cases HELM will be executed in the background.
 
 Add following dependency to your pom.xml:
 ```
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>3.4</version>
+  <version>4.0</version>
 </dependency>
 ```
 
-Configure plugin with explicit credentials:
+## Configuration Examples
+
+### Usage with Local Binary
+```xml
+<build>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>4.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section to use local binary -->
+		<useLocalHelmBinary>true</useLocalHelmBinary>
+		<helmExecutableDirectory>/usr/local/bin</helmExecutableDirectory>        
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
+</build>
 ```
-...
-<properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.12.0-linux-amd64.tar.gz</helm.download.url>
-</properties>
-...
+
+### Usage with Downloaded Binary
+```xml
+<build>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>4.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section when using binary download -->
+        <helmDownloadUrl>https://storage.googleapis.com/kubernetes-helm/helm-v2.12.3-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
+</build>
+```
+
+### Configure Plugin to Use Credentials from Settings.Xml for Upload
+```xml
+<build>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>3.4</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section to configure upload repos -->
+        <uploadRepoStable>
+            <name>stable-repo</name>
+            <url>https://repo.example.com/artifactory/helm-stable</url>
+            <type>ARTIFACTORY</type>
+        </uploadRepoStable>
+        <uploadRepoSnapshot>
+            <name>snapshot-repo</name>
+            <url>https://my.chart.museum:8080/api/charts</url>
+            <type>CHARTMUSEUM</type>
+        </uploadRepoSnapshot>
+        <helmDownloadUrl>https://storage.googleapis.com/kubernetes-helm/helm-v2.12.3-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
+</build>
+```
+
+### More Complex Example
+```xml
 <build>
   <plugins>
   ...
@@ -60,54 +134,21 @@ Configure plugin with explicit credentials:
             <url>https://my.chart.museum/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
-        <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
+        <helmDownloadUrl>https://storage.googleapis.com/kubernetes-helm/helm-v2.12.3-linux-amd64.tar.gz</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+        <!-- Skip a single goal -->
         <skipRefresh>false</skipRefresh>
+        <!-- Exclude a directory to avoid processing -->
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
         </excludes>
+        <!-- Add an additional repo -->
         <helmExtraRepos>
           <helmRepo>
-            <name>incubator</name>
-            <url>https://kubernetes-charts-incubator.storage.googleapis.com</url>
+            <name>kiwigrid</name>
+            <url>https://kiwigrid.github.io</url>
           </helmRepo>
         </helmExtraRepos>
-      </configuration>
-    </plugin>
-  ...
-  </plugins>
-</build>
-```
-
-Configure plugin using credentials from settings.xml:
-```
-...
-<properties>
-  <helm.download.url>https://storage.googleapis.com/kubernetes-helm/helm-v2.12.0-linux-amd64.tar.gz</helm.download.url>
-</properties>
-...
-<build>
-  <plugins>
-  ...
-    <plugin>
-      <groupId>com.kiwigrid</groupId>
-      <artifactId>helm-maven-plugin</artifactId>
-      <version>3.4</version>
-      <configuration>
-        <chartDirectory>${project.basedir}</chartDirectory>
-        <chartVersion>${project.version}</chartVersion>
-        <uploadRepoStable>
-            <name>stable-repo</name>
-            <url>https://repo.example.com/artifactory/helm-stable</url>
-            <type>ARTIFACTORY</type>
-        </uploadRepoStable>
-        <uploadRepoSnapshot>
-            <name>snapshot-repo</name>
-            <url>https://my.chart.museum:8080/api/charts</url>
-            <type>CHARTMUSEUM</type>
-        </uploadRepoSnapshot>
-        <helmDownloadUrl>${helm.download.url}</helmDownloadUrl>
-        <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
       </configuration>
     </plugin>
   ...
@@ -122,7 +163,7 @@ Configure plugin using credentials from settings.xml:
 - Recursive chart detection (subcharts)
 - Helm does not need to be installed
 - Upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) or [Artifactory](https://jfrog.com/artifactory/)
-- Repository names are interpreted as server ids to retrieve basic authentication from server list in settings.xml.
+- Repository names are interpreted as server IDs to retrieve basic authentication from server list in settings.xml.
 
 # Usage
 
@@ -144,8 +185,8 @@ Parameter | Type | User Property | Required | Description
 `<appVersion>` | string | helm.appVersion | false | The version of the app. This needn't be SemVer.
 `<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm
 `<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
+`<useLocalHelmBinary>` | boolean | helm.useLocalHelmBinary | false | Controls whether a local binary should be used instead of downloading it. If set to `true` path has to be set with property `executableDirectory`
 `<helmExecutableDirectory>` | string | helm.executableDirectory | false | directory of your helm installation (default: `${project.build.directory}/helm`)
-`<helmExecutable>` | string | helm.executable | false | path to your helm executable (default: `${project.build.directory}/helm/linux-amd64/helm`) 
 `<outputDirectory>` | string | helm.outputDirectory | false | chart output directory (default: `${project.build.directory}/helm/repo`)
 `<helmHomeDirectory>` | string | helm.homeDirectory | false | path to helm home directory; useful for concurrent Jenkins builds! (default: `~/.helm`)
 `<helmExtraRepos>` | list of [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.extraRepos | false | adds extra repositories while init
@@ -161,7 +202,7 @@ Parameter | Type | User Property | Required | Description
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
 `<security>` | string | helm.security | false | path to your [settings-security.xml](https://maven.apache.org/guides/mini/guide-encryption.html) (default: `~/.m2/settings-security.xml`)
 
-## Packaging with the helm lifecycle
+## Packaging with the Helm Lifecycle
 
 To keep your pom files small you can use 'helm' packaging. This binds `helm:init` to the initialize phase, `helm:lint` to the test phase, `helm:package` to the package phase and `helm:upload` to the deploy phase.
 
