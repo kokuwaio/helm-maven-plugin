@@ -76,7 +76,7 @@ Add following dependency to your pom.xml:
 </build>
 ```
 
-### Configure Plugin to Use Credentials from Settings.Xml for Upload
+### Configure Plugin to Use Credentials from settings.xml for Upload
 ```xml
 <build>
   <plugins>
