@@ -32,28 +32,6 @@ Add following dependency to your pom.xml:
 
 ## Configuration Examples
 
-### Usage with Local Binary
-```xml
-<build>
-  <plugins>
-  ...
-    <plugin>
-      <groupId>com.kiwigrid</groupId>
-      <artifactId>helm-maven-plugin</artifactId>
-      <version>4.0</version>
-      <configuration>
-        <chartDirectory>${project.basedir}</chartDirectory>
-        <chartVersion>${project.version}</chartVersion>
-        <!-- This is the related section to use local binary -->
-		<useLocalHelmBinary>true</useLocalHelmBinary>
-		<helmExecutableDirectory>/usr/local/bin</helmExecutableDirectory>        
-      </configuration>
-    </plugin>
-  ...
-  </plugins>
-</build>
-```
-
 ### Usage with Downloaded Binary
 ```xml
 <build>
@@ -69,6 +47,28 @@ Add following dependency to your pom.xml:
         <!-- This is the related section when using binary download -->
         <helmDownloadUrl>https://storage.googleapis.com/kubernetes-helm/helm-v2.12.3-linux-amd64.tar.gz</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
+</build>
+```
+
+### Usage with Local Binary
+```xml
+<build>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>4.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section to use local binary -->
+        <useLocalHelmBinary>true</useLocalHelmBinary>
+        <helmExecutableDirectory>/usr/local/bin</helmExecutableDirectory>        
       </configuration>
     </plugin>
   ...
