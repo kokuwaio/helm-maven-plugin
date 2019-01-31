@@ -3,12 +3,12 @@
 
 	<groupId>com.kiwigrid</groupId>
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>3.5-SNAPSHOT</version>
+	<version>4.0-SNAPSHOT</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
 		A plugin for executing HELM (https://docs.helm.sh).
-		HELM itself will be downloaded during build.
+		HELM itself will be downloaded during build or local binary can be provided.
 	</description>
 	<url>https://github.com/kiwigrid/helm-maven-plugin</url>
 

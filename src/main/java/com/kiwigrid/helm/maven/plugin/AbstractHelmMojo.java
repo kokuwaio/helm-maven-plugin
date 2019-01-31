@@ -35,14 +35,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
 
+	@Parameter(property = "helm.useLocalHelmBinary", defaultValue = "false")
+	private boolean useLocalHelmBinary;
+
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecutableDirectory;
-
-	/**
-	 * If no executeable is set this plugin tries to determine helm executeable based on operation system.
-	 */
-	@Parameter(property = "helm.executable")
-	private String helmExecuteable;
 
 	@Parameter(property = "helm.outputDirectory", defaultValue = "${project.build.directory}/helm/repo")
 	private String outputDirectory;
@@ -87,12 +84,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private Settings settings;
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
-		if (helmExecuteable == null) {
-			helmExecuteable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
-		}
-		Path path = Paths.get(helmExecutableDirectory, helmExecuteable).toAbsolutePath();
+		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
+		Path path = Paths.get(helmExecutableDirectory, helmExecutable).toAbsolutePath();
 		if (!path.toFile().exists()) {
-			throw new MojoExecutionException("Helm executeable at " + path + " not found.");
+			throw new MojoExecutionException("Helm executable at " + path + " not found.");
 		}
 		return path;
 	}
@@ -248,14 +243,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return securityDispatcher;
 	}
 
-	public String getHelmExecuteable() {
-		return helmExecuteable;
-	}
-
-	public void setHelmExecuteable(String helmExecuteable) {
-		this.helmExecuteable = helmExecuteable;
-	}
-
 	public String getOutputDirectory() {
 		return outputDirectory;
 	}
@@ -354,5 +341,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public Settings getSettings() {
 		return settings;
+	}
+
+	public boolean isUseLocalHelmBinary() {
+		return useLocalHelmBinary;
+	}
+
+	public void setUseLocalHelmBinary(boolean useLocalHelmBinary) {
+		this.useLocalHelmBinary = useLocalHelmBinary;
 	}
 }
