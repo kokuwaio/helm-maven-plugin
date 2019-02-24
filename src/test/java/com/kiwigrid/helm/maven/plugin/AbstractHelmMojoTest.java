@@ -48,8 +48,8 @@ class AbstractHelmMojoTest {
         @Test
         void helmIsAutoDetectedFromPATH() throws MojoExecutionException, IOException {
 
-            final Path actualHelmPath = addHelmToTestPath();
-            assertEquals(actualHelmPath, subjectSpy.getHelmExecuteablePath());
+            final Path expectedPath = addHelmToTestPath();
+            assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
         }
 
         @Test
@@ -64,8 +64,8 @@ class AbstractHelmMojoTest {
 
             final String explicitExecutableDirectory = "/fish/in/da/sea";
             subjectSpy.setHelmExecutableDirectory(explicitExecutableDirectory);
-            final Path actualHelmPath = addHelmToTestPath();
-            assertEquals(actualHelmPath, subjectSpy.getHelmExecuteablePath());
+            final Path expectedPath = addHelmToTestPath();
+            assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
             assertNotEquals(explicitExecutableDirectory, subjectSpy.getHelmExecuteablePath());
         }
     }
@@ -83,8 +83,8 @@ class AbstractHelmMojoTest {
         @Test
         void helmIsInTheExplicitlyConfiguredDirectory() throws MojoExecutionException, IOException {
 
-            final Path actualHelmPath = addHelmToTestPath();
-            assertEquals(actualHelmPath, subjectSpy.getHelmExecuteablePath());
+            final Path expectedPath = addHelmToTestPath();
+            assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
         }
 
         @Test
