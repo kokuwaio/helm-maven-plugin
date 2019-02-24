@@ -1,6 +1,7 @@
 package com.kiwigrid.helm.maven.plugin;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.PasswordAuthentication;
@@ -8,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +40,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.useLocalHelmBinary", defaultValue = "false")
 	private boolean useLocalHelmBinary;
+
+	@Parameter(property = "helm.autoDetectLocalHelmBinary", defaultValue = "true")
+	private boolean autoDetectLocalHelmBinary;
 
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecutableDirectory;
@@ -85,11 +91,37 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
 		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
-		Path path = Paths.get(helmExecutableDirectory, helmExecutable).toAbsolutePath();
-		if (!path.toFile().exists()) {
-			throw new MojoExecutionException("Helm executable at " + path + " not found.");
+		Optional<Path> path;
+		if(isUseLocalHelmBinary() && isAutoDetectLocalHelmBinary()){
+			path = findInPath(helmExecutable);
+		}else {
+			path = Optional.of(Paths.get(helmExecutableDirectory, helmExecutable))
+							.map(Path::toAbsolutePath)
+							.filter(Files::exists);
 		}
-		return path;
+
+		return path.orElseThrow(() -> new MojoExecutionException("Helm executable is not found."));
+	}
+
+	/**
+	 * Finds the absolute path to a given {@code executable} in {@code PATH} environment variable.
+	 * @param executable the name of the executable to search for
+	 * @return the absolute path to the executable if found, otherwise an empty optional.
+	 */
+	private Optional<Path> findInPath(final String executable) {
+
+		final String[] paths = getPathsFromEnvironmentVariables();
+		return Stream.of(paths)
+					 .map(Paths::get)
+					 .map(path -> path.resolve(executable))
+					 .filter(Files::exists)
+					 .map(Path::toAbsolutePath)
+					 .findFirst();
+	}
+
+	String[] getPathsFromEnvironmentVariables() {
+
+		return System.getenv("PATH").split(Pattern.quote(File.pathSeparator));
 	}
 
 	/**
@@ -349,5 +381,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setUseLocalHelmBinary(boolean useLocalHelmBinary) {
 		this.useLocalHelmBinary = useLocalHelmBinary;
+	}
+
+	public boolean isAutoDetectLocalHelmBinary() {
+		return autoDetectLocalHelmBinary;
+	}
+
+	public void setAutoDetectLocalHelmBinary(final boolean autoDetectLocalHelmBinary) { 
+		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary; 
 	}
 }
