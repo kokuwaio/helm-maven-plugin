@@ -55,6 +55,9 @@ Add following dependency to your pom.xml:
 ```
 
 ### Usage with Local Binary
+
+When `useLocalHelmBinary` is enabled, the plugin by default will search for the `helm` executable in `PATH`:
+
 ```xml
 <build>
   <plugins>
@@ -66,8 +69,32 @@ Add following dependency to your pom.xml:
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
-        <!-- This is the related section to use local binary -->
+        <!-- This is the related section to use local binary with auto-detection enabled. -->
         <useLocalHelmBinary>true</useLocalHelmBinary>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
+</build>
+```
+
+The following is an example configuration that explicitly sets the directory in which to look for the `helm` executable,
+and disables the auto-detection feature:
+
+```xml
+<build>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>4.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section to use local binary with auto-detection disabled. -->
+        <useLocalHelmBinary>true</useLocalHelmBinary>
+        <autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
         <helmExecutableDirectory>/usr/local/bin</helmExecutableDirectory>        
       </configuration>
     </plugin>
