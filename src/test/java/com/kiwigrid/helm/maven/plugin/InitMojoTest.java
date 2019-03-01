@@ -20,6 +20,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 
@@ -108,6 +109,9 @@ public class InitMojoTest {
 		mojo.setHelmExecutableDirectory(helmExecutableDir);
 
 		// execute
+		assumeTrue(isOSUnix()); // Because the download URL is hardcoded to linux, only proceed if the OS is indeed linux.
 		mojo.execute();
 	}
+
+	private boolean isOSUnix() { return System.getProperty("os.name").matches(".*n[i|u]x.*"); }
 }

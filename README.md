@@ -55,6 +55,9 @@ Add following dependency to your pom.xml:
 ```
 
 ### Usage with Local Binary
+
+When `useLocalHelmBinary` is enabled, the plugin by default will search for the `helm` executable in `PATH`:
+
 ```xml
 <build>
   <plugins>
@@ -66,8 +69,32 @@ Add following dependency to your pom.xml:
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
-        <!-- This is the related section to use local binary -->
+        <!-- This is the related section to use local binary with auto-detection enabled. -->
         <useLocalHelmBinary>true</useLocalHelmBinary>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
+</build>
+```
+
+The following is an example configuration that explicitly sets the directory in which to look for the `helm` executable,
+and disables the auto-detection feature:
+
+```xml
+<build>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>4.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section to use local binary with auto-detection disabled. -->
+        <useLocalHelmBinary>true</useLocalHelmBinary>
+        <autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
         <helmExecutableDirectory>/usr/local/bin</helmExecutableDirectory>        
       </configuration>
     </plugin>
@@ -186,6 +213,7 @@ Parameter | Type | User Property | Required | Description
 `<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm
 `<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
 `<useLocalHelmBinary>` | boolean | helm.useLocalHelmBinary | false | Controls whether a local binary should be used instead of downloading it. If set to `true` path has to be set with property `executableDirectory`
+`<autoDetectLocalHelmBinary>` | boolean | helm.autoDetectLocalHelmBinary | true | Controls whether the local binary should be auto-detected from `PATH` environment variable. If set to `false` the binary in `<helmExecutableDirectory>` is used. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
 `<helmExecutableDirectory>` | string | helm.executableDirectory | false | directory of your helm installation (default: `${project.build.directory}/helm`)
 `<outputDirectory>` | string | helm.outputDirectory | false | chart output directory (default: `${project.build.directory}/helm/repo`)
 `<helmHomeDirectory>` | string | helm.homeDirectory | false | path to helm home directory; useful for concurrent Jenkins builds! (default: `~/.helm`)
