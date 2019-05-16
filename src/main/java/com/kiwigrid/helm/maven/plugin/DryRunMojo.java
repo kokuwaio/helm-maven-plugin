@@ -32,6 +32,7 @@ public class DryRunMojo extends AbstractHelmMojo {
 			callCli(getHelmExecuteablePath()
 					+ " " + action
 					+ " " + inputDirectory
+					+ " --dry-run"
 					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
 					"There are test failures", true);
 		}
