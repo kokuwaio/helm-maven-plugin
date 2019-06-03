@@ -36,13 +36,13 @@ public class InitMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
 
-	public void execute()
-			throws MojoExecutionException
-	{
+	public void execute() throws MojoExecutionException {
+		
 		if (skip || skipInit) {
 			getLog().info("Skip init");
 			return;
 		}
+
 		getLog().info("Initializing Helm...");
 		Path outputDirectory = Paths.get(getOutputDirectory()).toAbsolutePath();
 		if (!Files.exists(outputDirectory)) {
@@ -92,12 +92,10 @@ public class InitMojo extends AbstractHelmMojo {
 				new GZIPInputStream(new URL(getHelmDownloadUrl()).openStream()))) {
 
 			// create directory if not present
-
 			Path directory = Paths.get(getHelmExecutableDirectory());
 			Files.createDirectories(directory);
 
 			// get helm executable entry
-
 			while (is.getNextEntry() != null) {
 
 				String name = is.getCurrentEntry().getName();
