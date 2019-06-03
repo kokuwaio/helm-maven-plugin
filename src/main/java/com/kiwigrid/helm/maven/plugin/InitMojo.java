@@ -1,9 +1,19 @@
 package com.kiwigrid.helm.maven.plugin;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.zip.GZIPInputStream;
 
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -32,9 +42,15 @@ public class InitMojo extends AbstractHelmMojo {
 			return;
 		}
 		getLog().info("Initializing Helm...");
-		getLog().info("Creating output directory...");
-		callCli("mkdir -p " + getOutputDirectory(), "Unable to create output directory at " + getOutputDirectory(),
-				false);
+		Path outputDirectory = Paths.get(getOutputDirectory()).toAbsolutePath();
+		if (!Files.exists(outputDirectory)) {
+			getLog().info("Creating output directory...");
+			try {
+				Files.createDirectories(outputDirectory);
+			} catch (IOException e) {
+				throw new MojoExecutionException("Unable to create output directory at " + outputDirectory, e);
+			}
+		}
 
 		if(isUseLocalHelmBinary()) {
 			verifyLocalHelmBinary();
@@ -62,20 +78,44 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	protected void downloadAndUnpackHelm() throws MojoExecutionException {
-		getLog().info("Downloading Helm...");
-		callCli("wget -qO "
-						+ getHelmExecutableDirectory()
-						+ File.separator
-						+ "helm.tar.gz "
-						+ getHelmDownloadUrl(),
-				"Unable to download helm", false);
-		getLog().info("Unpacking Helm...");
-		callCli("tar -xf "
-				+ getHelmExecutableDirectory()
-				+ File.separator
-				// flatten directory structure using --strip to get helm executeable on basedir, see https://www.systutorials.com/docs/linux/man/1-tar/#lbAS
-				+ "helm.tar.gz --force-local --strip=1 --directory="
-				+ getHelmExecutableDirectory(), "Unable to unpack helm to " + getHelmExecutableDirectory(), false);
+
+		if (Files.exists(Paths.get(getOutputDirectory(), SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm"))) {
+			getLog().info("Found helm executable, skip init.");
+			return;
+		}
+
+		getLog().info("Downloading Helm ...");
+		boolean found = false;
+		try (TarArchiveInputStream is = new TarArchiveInputStream(
+				new GZIPInputStream(new URL(getHelmDownloadUrl()).openStream()))) {
+
+			// create directory if not present
+
+			Path directory = Paths.get(getHelmExecutableDirectory());
+			Files.createDirectories(directory);
+
+			// get helm executable entry
+
+			while (is.getNextEntry() != null) {
+				String name = is.getCurrentEntry().getName();
+				if (is.getCurrentEntry().isDirectory() || (!name.endsWith("helm.exe") && !name.endsWith("helm"))) {
+					getLog().debug("Skip archive entry with name: " + name);
+					continue;
+				}
+				getLog().debug("Use archive entry with name: " + name);
+				Path helm = directory.resolve(name.endsWith(".exe") ? "helm.exe" : "helm");
+				IOUtils.copy(is, new FileOutputStream(helm.toFile()));
+				found = true;
+				break;
+			}
+
+		} catch (IOException e) {
+			throw new MojoExecutionException("Unable to download and extract helm executable.", e);
+		}
+		if (!found) {
+			throw new MojoExecutionException("Unable to find helm executable in tar file.");
+		}
+
 		getLog().info("Run helm init...");
 		callCli(getHelmExecutableDirectory()
 						+ File.separator
