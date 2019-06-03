@@ -8,6 +8,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
@@ -97,14 +99,21 @@ public class InitMojo extends AbstractHelmMojo {
 			// get helm executable entry
 
 			while (is.getNextEntry() != null) {
+
 				String name = is.getCurrentEntry().getName();
 				if (is.getCurrentEntry().isDirectory() || (!name.endsWith("helm.exe") && !name.endsWith("helm"))) {
 					getLog().debug("Skip archive entry with name: " + name);
 					continue;
 				}
+
 				getLog().debug("Use archive entry with name: " + name);
 				Path helm = directory.resolve(name.endsWith(".exe") ? "helm.exe" : "helm");
 				IOUtils.copy(is, new FileOutputStream(helm.toFile()));
+
+				Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(helm);
+				permissions.add(PosixFilePermission.OWNER_EXECUTE);
+				Files.setPosixFilePermissions(helm, permissions);
+
 				found = true;
 				break;
 			}
