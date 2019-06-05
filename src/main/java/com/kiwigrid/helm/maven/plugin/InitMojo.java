@@ -81,7 +81,8 @@ public class InitMojo extends AbstractHelmMojo {
 
 	protected void downloadAndUnpackHelm() throws MojoExecutionException {
 
-		if (Files.exists(Paths.get(getOutputDirectory(), SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm"))) {
+		Path directory = Paths.get(getHelmExecutableDirectory());
+		if (Files.exists(directory.resolve(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm"))) {
 			getLog().info("Found helm executable, skip init.");
 			return;
 		}
@@ -92,7 +93,6 @@ public class InitMojo extends AbstractHelmMojo {
 				new GZIPInputStream(new URL(getHelmDownloadUrl()).openStream()))) {
 
 			// create directory if not present
-			Path directory = Paths.get(getHelmExecutableDirectory());
 			Files.createDirectories(directory);
 
 			// get helm executable entry
@@ -106,7 +106,9 @@ public class InitMojo extends AbstractHelmMojo {
 
 				getLog().debug("Use archive entry with name: " + name);
 				Path helm = directory.resolve(name.endsWith(".exe") ? "helm.exe" : "helm");
-				IOUtils.copy(is, new FileOutputStream(helm.toFile()));
+				try (FileOutputStream output = new FileOutputStream(helm.toFile())) {
+					IOUtils.copy(is, output);
+				}
 
 				Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(helm);
 				permissions.add(PosixFilePermission.OWNER_EXECUTE);
