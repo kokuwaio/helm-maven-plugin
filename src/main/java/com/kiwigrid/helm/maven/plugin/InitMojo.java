@@ -135,6 +135,13 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
+		getLog().info("Run helm init...");
+		callCli(getHelmExecutableDirectory()
+						+ File.separator
+						+ "helm init --client-only" + (skipRefresh ? " --skip-refresh" : "")
+						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
+				"Unable to call helm init",
+				false);
 		callCli(getHelmExecuteablePath() + " version --client", "Unable to verify local HELM binary", false);
 	}
 
