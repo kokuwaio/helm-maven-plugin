@@ -129,8 +129,8 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		initHelmClient();
 		callCli(getHelmExecuteablePath() + " version --client", "Unable to verify local HELM binary", false);
+		initHelmClient();
 	}
 
 	public boolean isSkipRefresh() {
@@ -143,7 +143,8 @@ public class InitMojo extends AbstractHelmMojo {
 
 	private void initHelmClient() throws MojoExecutionException {
 		getLog().info("Run helm init...");
-		callCli(getHelmExecutableDirectory()
+
+		callCli(getHelmExecuteablePath()
 						+ File.separator
 						+ "helm init --client-only" + (skipRefresh ? " --skip-refresh" : "")
 						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
