@@ -145,8 +145,7 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().info("Run helm init...");
 
 		callCli(getHelmExecuteablePath()
-						+ File.separator
-						+ "helm init --client-only" + (skipRefresh ? " --skip-refresh" : "")
+						+ " init --client-only" + (skipRefresh ? " --skip-refresh" : "")
 						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
 				"Unable to call helm init",
 				false);
