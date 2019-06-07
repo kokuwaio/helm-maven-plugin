@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
 @MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-linux-amd64.tar.gz")
@@ -37,7 +38,10 @@ public class InitMojoTest {
 
 		// prepare execution
 		doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
-		mojo.setHelmDownloadUrl("https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-" + os + "-amd64.tar.gz");
+		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
+		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
+		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
+		mojo.setHelmDownloadUrl("https://kubernetes-helm.storage.googleapis.com/helm-v2.14.1-" + os + "-amd64.tar.gz");
 
 		// run init
 		mojo.execute();
