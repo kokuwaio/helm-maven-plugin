@@ -28,10 +28,7 @@ public class LintMojo extends AbstractHelmMojo {
 			return;
 		}
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			if (getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {
-				getLog().debug("Skip excluded directory " + inputDirectory);
-				continue;
-			}
+
 			getLog().info("\n\nTesting chart " + inputDirectory + "...");
 			callCli(getHelmExecuteablePath()
 					+ " lint "

@@ -28,10 +28,6 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 			return;
 		}
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			if(getExcludes() != null && Arrays.asList(getExcludes()).contains(inputDirectory)) {
-				getLog().debug("Skip excluded directory " + inputDirectory);
-				continue;
-			}
 			getLog().info("Build chart dependencies for " + inputDirectory + "...");
 			callCli(getHelmExecuteablePath()
 					+ " dependency build "
