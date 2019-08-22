@@ -8,8 +8,11 @@ import java.net.PasswordAuthentication;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +26,8 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.MatchPatterns;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
@@ -172,9 +177,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	List<String> getChartDirectories(String path) throws MojoExecutionException {
+		List<String> exclusions = new ArrayList<>();
+
+		if(getExcludes() != null) {
+			exclusions.addAll(Arrays.asList(getExcludes()));
+		}
+
+		exclusions.addAll(FileUtils.getDefaultExcludesAsList());
+
+		MatchPatterns exclusionPatterns = MatchPatterns.from(exclusions);
+
 		try (Stream<Path> files = Files.walk(Paths.get(path))) {
 			List<String> chartDirs = files.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
 					.map(p -> p.getParent().toString())
+					.filter(shouldIncludeDirectory(exclusionPatterns))
 					.collect(Collectors.toList());
 
 			if (chartDirs.isEmpty()) {
@@ -185,6 +201,21 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan chart directory at " + path, e);
 		}
+	}
+
+	private Predicate<String> shouldIncludeDirectory(MatchPatterns exclusionPatterns) {
+		return inputDirectory -> {
+
+			final boolean isCaseSensitive = Boolean.FALSE;
+			boolean matches = exclusionPatterns.matches(inputDirectory, isCaseSensitive);
+
+			if (matches) {
+				getLog().debug("Skip excluded directory " + inputDirectory);
+				return Boolean.FALSE;
+			}
+
+			return Boolean.TRUE;
+		};
 	}
 
 	List<String> getChartTgzs(String path) throws MojoExecutionException {

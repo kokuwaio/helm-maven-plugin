@@ -168,6 +168,7 @@ and disables the auto-detection feature:
         <!-- Exclude a directory to avoid processing -->
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
+          <exclude>${project.basedir}/**/excluded*</exclude>
         </excludes>
         <!-- Add an additional repo -->
         <helmExtraRepos>
