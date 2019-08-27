@@ -97,12 +97,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	Path getHelmExecuteablePath() throws MojoExecutionException {
 		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
 		Optional<Path> path;
-		if(isUseLocalHelmBinary() && isAutoDetectLocalHelmBinary()){
+		if (isUseLocalHelmBinary() && isAutoDetectLocalHelmBinary()) {
 			path = findInPath(helmExecutable);
-		}else {
+		} else {
 			path = Optional.of(Paths.get(helmExecutableDirectory, helmExecutable))
-							.map(Path::toAbsolutePath)
-							.filter(Files::exists);
+					.map(Path::toAbsolutePath)
+					.filter(Files::exists);
 		}
 
 		return path.orElseThrow(() -> new MojoExecutionException("Helm executable is not found."));
@@ -110,6 +110,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	/**
 	 * Finds the absolute path to a given {@code executable} in {@code PATH} environment variable.
+	 *
 	 * @param executable the name of the executable to search for
 	 * @return the absolute path to the executable if found, otherwise an empty optional.
 	 */
@@ -117,11 +118,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		final String[] paths = getPathsFromEnvironmentVariables();
 		return Stream.of(paths)
-					 .map(Paths::get)
-					 .map(path -> path.resolve(executable))
-					 .filter(Files::exists)
-					 .map(Path::toAbsolutePath)
-					 .findFirst();
+				.map(Paths::get)
+				.map(path -> path.resolve(executable))
+				.filter(Files::exists)
+				.map(Path::toAbsolutePath)
+				.findFirst();
 	}
 
 	String[] getPathsFromEnvironmentVariables() {
@@ -179,7 +180,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	List<String> getChartDirectories(String path) throws MojoExecutionException {
 		List<String> exclusions = new ArrayList<>();
 
-		if(getExcludes() != null) {
+		if (getExcludes() != null) {
 			exclusions.addAll(Arrays.asList(getExcludes()));
 		}
 
@@ -418,7 +419,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return autoDetectLocalHelmBinary;
 	}
 
-	public void setAutoDetectLocalHelmBinary(final boolean autoDetectLocalHelmBinary) { 
-		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary; 
+	public void setAutoDetectLocalHelmBinary(final boolean autoDetectLocalHelmBinary) {
+		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary;
 	}
 }
