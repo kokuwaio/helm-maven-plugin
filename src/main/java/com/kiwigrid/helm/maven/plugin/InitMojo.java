@@ -56,7 +56,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		if(isUseLocalHelmBinary()) {
 			verifyLocalHelmBinary();
-			getLog().info("Using local HELM binary ["+ getHelmExecutableDirectory() +"]");
+			getLog().info("Using local HELM binary ["+ getHelmExecuteablePath() +"]");
 		} else {
 			downloadAndUnpackHelm();
 		}
@@ -65,9 +65,8 @@ public class InitMojo extends AbstractHelmMojo {
 			for (HelmRepository repository : getHelmExtraRepos()) {
 				getLog().info("Adding repo " + repository);
 				PasswordAuthentication auth = getAuthentication(repository);
-				callCli(getHelmExecutableDirectory()
-								+ File.separator
-								+ "helm repo add "
+				callCli(getHelmExecuteablePath()
+								+ " repo add "
 								+ repository.getName()
 								+ " "
 								+ repository.getUrl()
