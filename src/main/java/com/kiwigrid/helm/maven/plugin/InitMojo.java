@@ -109,9 +109,7 @@ public class InitMojo extends AbstractHelmMojo {
 					IOUtils.copy(is, output);
 				}
 
-				Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(helm);
-				permissions.add(PosixFilePermission.OWNER_EXECUTE);
-				Files.setPosixFilePermissions(helm, permissions);
+				addExecPermission(helm);
 
 				found = true;
 				break;
@@ -125,6 +123,18 @@ public class InitMojo extends AbstractHelmMojo {
 		}
 
 		initHelmClient();
+	}
+
+	private void addExecPermission(final Path helm) throws IOException {
+		final Set<PosixFilePermission> permissions;
+		try {
+			permissions = Files.getPosixFilePermissions(helm);
+		} catch (UnsupportedOperationException e) {
+			getLog().debug("Exec file permission is not set", e);
+			return;
+		}
+		permissions.add(PosixFilePermission.OWNER_EXECUTE);
+		Files.setPosixFilePermissions(helm, permissions);
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
