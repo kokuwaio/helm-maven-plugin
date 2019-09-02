@@ -73,7 +73,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
 			IOUtils.copy(fileInputStream, connection.getOutputStream());
 		}
-		if (connection.getResponseCode() >= 400) {
+		if (connection.getResponseCode() >= 300) {
 			String response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
 			throw new BadUploadException(response);
 		} else {
