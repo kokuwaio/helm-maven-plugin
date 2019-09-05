@@ -1,19 +1,31 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.UserPrincipal;
+import java.util.List;
 import java.util.Set;
-import java.util.zip.GZIPInputStream;
 
-import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -21,6 +33,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
+
+import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 
 /**
  * Mojo for initializing helm
@@ -85,20 +99,22 @@ public class InitMojo extends AbstractHelmMojo {
 			getLog().info("Found helm executable, skip init.");
 			return;
 		}
-
+		
 		getLog().info("Downloading Helm ...");
 		boolean found = false;
-		try (TarArchiveInputStream is = new TarArchiveInputStream(
-				new GZIPInputStream(new URL(getHelmDownloadUrl()).openStream()))) {
+		try (InputStream dis = new URL(getHelmDownloadUrl()).openStream();
+			 InputStream cis = createCompressorInputStream(dis);
+			 ArchiveInputStream is = createArchiverInputStream(cis)) {
 
 			// create directory if not present
 			Files.createDirectories(directory);
 
 			// get helm executable entry
-			while (is.getNextEntry() != null) {
+			ArchiveEntry entry = null;
+			while ((entry = is.getNextEntry()) != null) {
 
-				String name = is.getCurrentEntry().getName();
-				if (is.getCurrentEntry().isDirectory() || (!name.endsWith("helm.exe") && !name.endsWith("helm"))) {
+				String name = entry.getName();
+				if (entry.isDirectory() || (!name.endsWith("helm.exe") && !name.endsWith("helm"))) {
 					getLog().debug("Skip archive entry with name: " + name);
 					continue;
 				}
@@ -117,7 +133,8 @@ public class InitMojo extends AbstractHelmMojo {
 
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to download and extract helm executable.", e);
-		}
+		} 
+
 		if (!found) {
 			throw new MojoExecutionException("Unable to find helm executable in tar file.");
 		}
@@ -126,15 +143,29 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void addExecPermission(final Path helm) throws IOException {
-		final Set<PosixFilePermission> permissions;
-		try {
-			permissions = Files.getPosixFilePermissions(helm);
-		} catch (UnsupportedOperationException e) {
-			getLog().debug("Exec file permission is not set", e);
-			return;
+		Set<String> fileAttributeView = FileSystems.getDefault().supportedFileAttributeViews();
+		
+		if (fileAttributeView.contains("posix")) {
+			final Set<PosixFilePermission> permissions;
+			try {
+				permissions = Files.getPosixFilePermissions(helm);
+			} catch (UnsupportedOperationException e) {
+				getLog().debug("Exec file permission is not set", e);
+				return;
+			}
+			permissions.add(PosixFilePermission.OWNER_EXECUTE);
+			Files.setPosixFilePermissions(helm, permissions);
+			
+		} else if (fileAttributeView.contains("acl")) {
+			String username = System.getProperty("user.name");
+			UserPrincipal userPrincipal = FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName(username);
+			AclEntry aclEntry = AclEntry.newBuilder().setPermissions(AclEntryPermission.EXECUTE).setType(AclEntryType.ALLOW).setPrincipal(userPrincipal).build();
+
+			AclFileAttributeView acl = Files.getFileAttributeView(helm, AclFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
+			List<AclEntry> aclEntries = acl.getAcl();
+			aclEntries.add(aclEntry);
+			acl.setAcl(aclEntries);
 		}
-		permissions.add(PosixFilePermission.OWNER_EXECUTE);
-		Files.setPosixFilePermissions(helm, permissions);
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
@@ -153,10 +184,55 @@ public class InitMojo extends AbstractHelmMojo {
 	private void initHelmClient() throws MojoExecutionException {
 		getLog().info("Run helm init...");
 
-		callCli(getHelmExecuteablePath()
-						+ " init --client-only" + (skipRefresh ? " --skip-refresh" : "")
-						+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
+		String cmd = getHelmExecuteablePath()
+				+ " init --client-only" + (skipRefresh ? " --skip-refresh" : "")
+				+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "");
+		
+		getLog().info("Running: " + cmd);
+		callCli(cmd,
 				"Unable to call helm init",
 				false);
+	}
+
+	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {
+		// Stream must support mark to allow for auto detection of archiver
+		if (!is.markSupported()) {
+			is = new BufferedInputStream(is);
+		}
+
+		try {
+			ArchiveStreamFactory archiveStreamFactory = new ArchiveStreamFactory();
+			return archiveStreamFactory.createArchiveInputStream(is);
+
+		} catch (ArchiveException e) {
+			throw new MojoExecutionException("Unsupported archive type downloaded", e);
+		}
+	}
+
+	private InputStream createCompressorInputStream(InputStream is) throws MojoExecutionException {
+		// Stream must support mark to allow for auto detection of compressor
+		if (!is.markSupported()) {
+			is = new BufferedInputStream(is);
+		}
+
+		// Detect if stream is compressed
+		String compressorType = null;
+		try {
+			compressorType = CompressorStreamFactory.detect(is);
+		} catch (CompressorException e) {
+			getLog().debug("Unknown type of compressed stream", e);
+		}
+		
+		// If compressed then wrap with compressor stream
+		if (compressorType != null) {
+			try {
+				CompressorStreamFactory compressorFactory = new CompressorStreamFactory();
+				return compressorFactory.createCompressorInputStream(compressorType, is);
+			} catch (CompressorException e) {
+				throw new MojoExecutionException("Unsupported compressor type: " + compressorType);
+			}
+		}
+
+		return is;
 	}
 }
