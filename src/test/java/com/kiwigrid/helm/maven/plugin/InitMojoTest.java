@@ -123,7 +123,7 @@ public class InitMojoTest {
 	}
 	
 	private String getOsSpecificDownloadURL() {
-		return getOsSpecificDownloadURL(Os.OS_FAMILY);
+		return getOsSpecificDownloadURL(Os.OS_FAMILY == Os.FAMILY_UNIX ? "linux" : Os.OS_FAMILY);
 	}
 	
 	private String getOsSpecificDownloadURL(final String os) {
