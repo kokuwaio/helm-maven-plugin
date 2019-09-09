@@ -121,11 +121,11 @@ public class InitMojoTest {
 	private boolean isOSUnix() {
 		return System.getProperty("os.name").matches(".*n[i|u]x.*");
 	}
-	
+
 	private String getOsSpecificDownloadURL() {
 		return getOsSpecificDownloadURL(Os.OS_FAMILY == Os.FAMILY_UNIX ? "linux" : Os.OS_FAMILY);
 	}
-	
+
 	private String getOsSpecificDownloadURL(final String os) {
 		return "https://get.helm.sh/helm-v2.14.3-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
 	}

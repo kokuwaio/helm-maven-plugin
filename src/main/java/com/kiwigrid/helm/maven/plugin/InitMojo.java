@@ -51,7 +51,7 @@ public class InitMojo extends AbstractHelmMojo {
 	private boolean skipInit;
 
 	public void execute() throws MojoExecutionException {
-		
+
 		if (skip || skipInit) {
 			getLog().info("Skip init");
 			return;
@@ -99,7 +99,7 @@ public class InitMojo extends AbstractHelmMojo {
 			getLog().info("Found helm executable, skip init.");
 			return;
 		}
-		
+
 		getLog().info("Downloading Helm ...");
 		boolean found = false;
 		try (InputStream dis = new URL(getHelmDownloadUrl()).openStream();
@@ -144,7 +144,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 	private void addExecPermission(final Path helm) throws IOException {
 		Set<String> fileAttributeView = FileSystems.getDefault().supportedFileAttributeViews();
-		
+
 		if (fileAttributeView.contains("posix")) {
 			final Set<PosixFilePermission> permissions;
 			try {
@@ -155,7 +155,7 @@ public class InitMojo extends AbstractHelmMojo {
 			}
 			permissions.add(PosixFilePermission.OWNER_EXECUTE);
 			Files.setPosixFilePermissions(helm, permissions);
-			
+
 		} else if (fileAttributeView.contains("acl")) {
 			String username = System.getProperty("user.name");
 			UserPrincipal userPrincipal = FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName(username);
@@ -187,7 +187,7 @@ public class InitMojo extends AbstractHelmMojo {
 		String cmd = getHelmExecuteablePath()
 				+ " init --client-only" + (skipRefresh ? " --skip-refresh" : "")
 				+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "");
-		
+
 		getLog().info("Running: " + cmd);
 		callCli(cmd,
 				"Unable to call helm init",
@@ -222,7 +222,7 @@ public class InitMojo extends AbstractHelmMojo {
 		} catch (CompressorException e) {
 			getLog().debug("Unknown type of compressed stream", e);
 		}
-		
+
 		// If compressed then wrap with compressor stream
 		if (compressorType != null) {
 			try {
