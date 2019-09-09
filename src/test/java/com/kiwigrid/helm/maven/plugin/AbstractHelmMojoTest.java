@@ -1,20 +1,5 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
 import static java.nio.file.Files.write;
 import static java.util.Arrays.asList;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
@@ -24,6 +9,20 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class AbstractHelmMojoTest {
 
@@ -74,7 +73,7 @@ class AbstractHelmMojoTest {
     void getChartDirectoriesReturnChartDirectoriesWithAntPatternsExclusion() throws MojoExecutionException {
         Path baseChartsDirectory = getBaseChartsDirectory();
 
-        subjectSpy.setExcludes(new String[]{"**/exclude*"});
+        subjectSpy.setExcludes(new String[]{"**" + File.separator + "exclude*"});
 
         List<String> chartDirectories = subjectSpy.getChartDirectories(baseChartsDirectory.toString());
 
@@ -146,7 +145,7 @@ class AbstractHelmMojoTest {
     private Path addHelmToTestPath() throws IOException { return write(testHelmExecutablePath, new byte[]{}); }
 
     private Path getBaseChartsDirectory() {
-        return Paths.get(this.getClass().getResource("Chart.yaml").getFile()).getParent();
+    	return new File(getClass().getResource("Chart.yaml").getFile()).toPath().getParent();
     }
 
     @AfterEach

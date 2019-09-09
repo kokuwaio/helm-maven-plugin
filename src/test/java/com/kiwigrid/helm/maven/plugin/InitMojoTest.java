@@ -12,6 +12,7 @@ import com.kiwigrid.helm.maven.plugin.junit.MojoExtension;
 import com.kiwigrid.helm.maven.plugin.junit.MojoProperty;
 import com.kiwigrid.helm.maven.plugin.junit.SystemPropertyExtension;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.plexus.util.Os;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +42,7 @@ public class InitMojoTest {
 		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
 		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
 		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
-		mojo.setHelmDownloadUrl("https://get.helm.sh/helm-v2.14.3-" + os + "-amd64.tar.gz");
+		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL(os));
 
 		// run init
 		mojo.execute();
@@ -58,7 +59,7 @@ public class InitMojoTest {
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
 		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
-		mojo.setHelmDownloadUrl("https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz");
+		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 
 		// run init
 		mojo.execute();
@@ -66,7 +67,7 @@ public class InitMojoTest {
 		// check captured argument
 		String helmInitCommand = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains("helm init"))
+				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe init" : "helm init"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm init command expected"));
 
 		assertTrue(helmInitCommand.contains("--client-only"), "Option 'client-only' expected");
@@ -79,7 +80,7 @@ public class InitMojoTest {
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
 		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
-		mojo.setHelmDownloadUrl("https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz");
+		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setSkipRefresh(true);
 
 		// run init
@@ -88,7 +89,7 @@ public class InitMojoTest {
 		// check captured argument
 		List<String> helmCommands = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains("helm "))
+				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe " : "helm "))
 				.collect(Collectors.toList());
 		assertEquals(1, helmCommands.size(), "Only helm init command expected");
 		String helmInitCommand = helmCommands.get(0);
@@ -97,6 +98,8 @@ public class InitMojoTest {
 
 	@Test
 	public void verifyLocalHelmBinaryUsage(InitMojo mojo) throws MojoExecutionException {
+		// Because the download URL is hardcoded to linux, only proceed if the OS is indeed linux.
+		assumeTrue(isOSUnix());
 
 		final URL resource = this.getClass().getResource("helm.tar.gz");
 		final String helmExecutableDir = new File(resource.getFile()).getParent();
@@ -112,11 +115,18 @@ public class InitMojoTest {
 		mojo.setHelmExecutableDirectory(helmExecutableDir);
 
 		// execute
-		assumeTrue(isOSUnix()); // Because the download URL is hardcoded to linux, only proceed if the OS is indeed linux.
 		mojo.execute();
 	}
 
 	private boolean isOSUnix() {
 		return System.getProperty("os.name").matches(".*n[i|u]x.*");
+	}
+
+	private String getOsSpecificDownloadURL() {
+		return getOsSpecificDownloadURL(Os.OS_FAMILY == Os.FAMILY_UNIX ? "linux" : Os.OS_FAMILY);
+	}
+
+	private String getOsSpecificDownloadURL(final String os) {
+		return "https://get.helm.sh/helm-v2.14.3-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
 	}
 }
