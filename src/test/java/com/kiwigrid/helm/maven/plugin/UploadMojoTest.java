@@ -4,15 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.PasswordAuthentication;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kiwigrid.helm.maven.plugin.exception.BadUploadException;
 import com.kiwigrid.helm.maven.plugin.junit.MojoExtension;
 import com.kiwigrid.helm.maven.plugin.junit.MojoProperty;
 import com.kiwigrid.helm.maven.plugin.junit.SystemPropertyExtension;
@@ -224,6 +221,35 @@ public class UploadMojoTest {
 		doReturn(tgzs).when(uploadMojo).getChartTgzs(anyString());
 
 		assertThrows(IllegalArgumentException.class, uploadMojo::execute, "Missing repo type must fail.");
+	}
+
+	@Test
+	public void verfifyNullErrorStreamOnFailedUpload(UploadMojo uploadMojo)
+			throws IOException, MojoExecutionException
+	{
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.CHARTMUSEUM);
+		helmRepo.setName("my-chartmuseum");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		uploadMojo.setUploadRepoStable(helmRepo);
+
+		URL testChart = this.getClass().getResource("app-0.1.0.tgz");
+
+		final HttpURLConnection urlConnectionMock = Mockito.mock(HttpURLConnection.class);
+		doReturn(new NullOutputStream()).when(urlConnectionMock).getOutputStream();
+		doReturn(301).when(urlConnectionMock).getResponseCode();
+		doReturn(null).when(urlConnectionMock).getErrorStream();
+		doReturn(null).when(urlConnectionMock).getInputStream();
+		doNothing().when(urlConnectionMock).connect();
+		doReturn(urlConnectionMock).when(uploadMojo).getConnectionForUploadToChartmuseum();
+
+		try {
+			uploadMojo.uploadSingle(testChart.getFile());
+		} catch (BadUploadException e) {
+			assertNotNull(e.getMessage(), "Exception must provide a message");
+			return;
+		}
+		fail("BadUploadException expected on failed upload");
 	}
 
 	/** Writes to nowhere */

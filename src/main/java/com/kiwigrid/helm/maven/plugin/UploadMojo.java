@@ -49,7 +49,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 	}
 
-	private void uploadSingle(String file) throws IOException, BadUploadException, MojoExecutionException {
+	protected void uploadSingle(String file) throws IOException, BadUploadException, MojoExecutionException {
 		final File fileToUpload = new File(file);
 		final HelmRepository uploadRepo = getHelmUploadRepo();
 
@@ -74,11 +74,21 @@ public class UploadMojo extends AbstractHelmMojo {
 			IOUtils.copy(fileInputStream, connection.getOutputStream());
 		}
 		if (connection.getResponseCode() >= 300) {
-			String response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
+			String response;
+			if (connection.getErrorStream() != null) {
+				response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
+			} else if (connection.getInputStream() != null) {
+				response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+			} else {
+				response = "No details provided";
+			}
 			throw new BadUploadException(response);
 		} else {
-			String response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
-			getLog().info(Integer.toString(connection.getResponseCode()) + " - " + response);
+			String message = Integer.toString(connection.getResponseCode());
+			if (connection.getInputStream() != null) {
+				message += " - " + IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+			}
+			getLog().info(message);
 		}
 		connection.disconnect();
 	}
