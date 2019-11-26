@@ -45,7 +45,7 @@ Add following dependency to your pom.xml:
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
         <!-- This is the related section when using binary download -->
-        <helmDownloadUrl>https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
       </configuration>
     </plugin>
@@ -126,7 +126,7 @@ and disables the auto-detection feature:
             <url>https://my.chart.museum:8080/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
-        <helmDownloadUrl>https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
       </configuration>
     </plugin>
@@ -161,7 +161,7 @@ and disables the auto-detection feature:
             <url>https://my.chart.museum/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
-        <helmDownloadUrl>https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
         <!-- Skip a single goal -->
         <skipRefresh>false</skipRefresh>

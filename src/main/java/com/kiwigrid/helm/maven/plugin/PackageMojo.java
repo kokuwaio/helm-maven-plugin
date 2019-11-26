@@ -1,12 +1,13 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.util.Arrays;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mojo for packaging charts
@@ -32,23 +33,24 @@ public class PackageMojo extends AbstractHelmMojo {
 
 			getLog().info("Packaging chart " + inputDirectory + "...");
 
-			String helmCommand = getHelmExecuteablePath()
-					+ " package "
-					+ inputDirectory
-					+ " -d "
-					+ getOutputDirectory()
-					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "");
+			List<String> command = new ArrayList<>();
+			command.add(getHelmExecuteablePath().toString());
+			command.add("package");
+			command.add(inputDirectory);
+			command.add("--destination=" + getOutputDirectory());
+			if (StringUtils.isNotEmpty(getHelmHomeDirectory())) command.add("--home=" + getHelmHomeDirectory());
 
 			if (getChartVersion() != null) {
 				getLog().info(String.format("Setting chart version to %s", getChartVersion()));
-				helmCommand = helmCommand + " --version " + getChartVersion();
+				command.add("--version=" + getChartVersion());
 			}
 
 			if (getAppVersion() != null) {
 				getLog().info(String.format("Setting App version to %s", getAppVersion()));
-				helmCommand = helmCommand + " --app-version " + getAppVersion();
+				command.add("--app-version=" + getAppVersion());
 			}
-			callCli(helmCommand, "Unable to package chart at " + inputDirectory, true);
+
+			callCli(command, "Unable to package chart at " + inputDirectory, true);
 		}
 	}
 

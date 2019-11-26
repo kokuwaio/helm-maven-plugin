@@ -1,12 +1,13 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.util.Arrays;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mojo for testing charts
@@ -28,13 +29,14 @@ public class LintMojo extends AbstractHelmMojo {
 			return;
 		}
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
+			List<String> command = new ArrayList<>();
+			command.add(getHelmExecuteablePath().toString());
+			command.add("lint");
+			command.add(inputDirectory);
+			if (StringUtils.isNotEmpty(getHelmHomeDirectory())) command.add("--home=" + getHelmHomeDirectory());
 
 			getLog().info("\n\nTesting chart " + inputDirectory + "...");
-			callCli(getHelmExecuteablePath()
-					+ " lint "
-					+ inputDirectory
-					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
-					"There are test failures", true);
+			callCli(command, "There are test failures", true);
 		}
 	}
 }

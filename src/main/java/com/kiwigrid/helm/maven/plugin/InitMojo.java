@@ -1,25 +1,6 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.PasswordAuthentication;
-import java.net.URL;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.AclEntry;
-import java.nio.file.attribute.AclEntryPermission;
-import java.nio.file.attribute.AclEntryType;
-import java.nio.file.attribute.AclFileAttributeView;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.UserPrincipal;
-import java.util.List;
-import java.util.Set;
-
+import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -34,7 +15,17 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
-import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.nio.file.*;
+import java.nio.file.attribute.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Mojo for initializing helm
@@ -70,7 +61,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		if(isUseLocalHelmBinary()) {
 			verifyLocalHelmBinary();
-			getLog().info("Using local HELM binary ["+ getHelmExecuteablePath() +"]");
+			getLog().info("Using local HELM binary ["+ replaceSpaces(getHelmExecuteablePath()) +"]");
 		} else {
 			downloadAndUnpackHelm();
 		}
@@ -79,15 +70,20 @@ public class InitMojo extends AbstractHelmMojo {
 			for (HelmRepository repository : getHelmExtraRepos()) {
 				getLog().info("Adding repo " + repository);
 				PasswordAuthentication auth = getAuthentication(repository);
-				callCli(getHelmExecuteablePath()
-								+ " repo add "
-								+ repository.getName()
-								+ " "
-								+ repository.getUrl()
-								+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "")
-								+ (auth != null ? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword()) : ""),
-						"Unable add repo",
-						false);
+
+				List<String> command = new ArrayList<>();
+				command.add(getHelmExecuteablePath().toString());
+				command.add("repo");
+				command.add("add");
+				command.add(repository.getName());
+				command.add(repository.getUrl());
+				if (StringUtils.isNotEmpty(getHelmHomeDirectory())) command.add("--home=" + getHelmHomeDirectory());
+				if (auth != null) {
+					command.add("--username=" + auth.getUserName());
+					command.add("--password=" + String.valueOf(auth.getPassword()));
+				}
+
+				callCli(command, "Unable add repo", false);
 			}
 		}
 	}
@@ -169,7 +165,13 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		callCli(getHelmExecuteablePath() + " version --client", "Unable to verify local HELM binary", false);
+		List<String> command = new ArrayList<>();
+		command.add(replaceSpaces(getHelmExecuteablePath()));
+		command.add("version");
+		command.add("--client");
+
+		callCli(command, "Unable to verify local HELM binary", false);
+
 		initHelmClient();
 	}
 
@@ -184,14 +186,15 @@ public class InitMojo extends AbstractHelmMojo {
 	private void initHelmClient() throws MojoExecutionException {
 		getLog().info("Run helm init...");
 
-		String cmd = getHelmExecuteablePath()
-				+ " init --client-only" + (skipRefresh ? " --skip-refresh" : "")
-				+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "");
+		List<String> command = new ArrayList<>();
+		command.add(replaceSpaces(getHelmExecuteablePath()));
+		command.add("init");
+		command.add("--client-only");
+		if (skipRefresh) command.add("--skip-refresh");
+		if (StringUtils.isNotEmpty(getHelmHomeDirectory())) command.add("--home=" + getHelmHomeDirectory());
 
-		getLog().info("Running: " + cmd);
-		callCli(cmd,
-				"Unable to call helm init",
-				false);
+		getLog().info("Running: initHelmClient");
+		callCli(command, "Unable to call helm init", false);
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {

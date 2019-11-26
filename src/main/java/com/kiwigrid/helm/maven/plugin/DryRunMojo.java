@@ -7,6 +7,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Mojo for simulate a dry run.
  *
@@ -29,12 +32,14 @@ public class DryRunMojo extends AbstractHelmMojo {
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("\n\nPerform dry-run for chart " + inputDirectory + "...");
 
-			callCli(getHelmExecuteablePath()
-					+ " " + action
-					+ " " + inputDirectory
-					+ " --dry-run"
-					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
-					"There are test failures", true);
+			List<String> command = new ArrayList<>();
+			command.add(getHelmExecuteablePath().toString());
+			command.add(action);
+			command.add(inputDirectory);
+			command.add("--dry-run");
+			if (StringUtils.isNotEmpty(getHelmHomeDirectory())) command.add("--home=" + getHelmHomeDirectory());
+
+			callCli(command, "There are test failures", true);
 		}
 	}
 

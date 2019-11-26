@@ -1,12 +1,13 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.util.Arrays;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mojo for building chart dependencies
@@ -29,11 +30,15 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 		}
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("Build chart dependencies for " + inputDirectory + "...");
-			callCli(getHelmExecuteablePath()
-					+ " dependency build "
-					+ inputDirectory
-					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
-					"Failed to resolve dependencies", true);
+
+			List<String> command = new ArrayList<>();
+			command.add(replaceSpaces(getHelmExecuteablePath()));
+			command.add("dependency");
+			command.add("build");
+			command.add(replaceSpaces(inputDirectory));
+			if (StringUtils.isNotEmpty(getHelmHomeDirectory())) command.add("--home=" + getHelmHomeDirectory());
+
+			callCli(command, "Failed to resolve dependencies", true);
 		}
 	}
 }

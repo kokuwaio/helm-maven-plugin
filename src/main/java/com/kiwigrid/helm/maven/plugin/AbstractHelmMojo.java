@@ -1,5 +1,20 @@
 package com.kiwigrid.helm.maven.plugin;
 
+import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Server;
+import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.MatchPatterns;
+import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,21 +31,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.settings.Server;
-import org.apache.maven.settings.Settings;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.MatchPatterns;
-import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
-import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
-import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 /**
  * Base class for mojos
@@ -108,6 +108,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return path.orElseThrow(() -> new MojoExecutionException("Helm executable is not found."));
 	}
 
+	String replaceSpaces(Path path) {
+		return path.toString().replace(" ", "\\ ");
+	}
+
+	String replaceSpaces(String path) {
+		return path.replace(" ", "\\ ");
+	}
+
 	/**
 	 * Finds the absolute path to a given {@code executable} in {@code PATH} environment variable.
 	 *
@@ -133,18 +141,22 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	/**
 	 * Calls cli with specified command
 	 *
-	 * @param command the command to be executed
+	 * @param commandList the command with parameters to be executed
 	 * @param errorMessage a readable error message that will be shown in case of exceptions
 	 * @param verbose logs STDOUT to Maven info log
 	 * @throws MojoExecutionException on error
 	 */
-	void callCli(String command, String errorMessage, final boolean verbose) throws MojoExecutionException {
+	void callCli(List<String> commandList, String errorMessage, final boolean verbose) throws MojoExecutionException {
 
 		int exitValue;
 
-		getLog().debug(command);
+		String[] command = new String[commandList.size()];
+		command = commandList.toArray(command);
+		getLog().debug(commandList.stream().collect(Collectors.joining(" ")));
 
 		try {
+
+			getLog().info("callCli: command [" + commandList.stream().collect(Collectors.joining(",")) + "]");
 			final Process p = Runtime.getRuntime().exec(command);
 			new Thread(() -> {
 				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -169,10 +181,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			p.waitFor();
 			exitValue = p.exitValue();
 		} catch (Exception e) {
+			getLog().error("Error processing command [" + command + "]", e);
 			throw new MojoExecutionException("Error processing command [" + command + "]", e);
 		}
 
 		if (exitValue != 0) {
+			getLog().error("Bad result processing command [" + command + "] -> " + exitValue);
 			throw new MojoExecutionException(errorMessage);
 		}
 	}
@@ -308,7 +322,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	public String getOutputDirectory() {
-		return outputDirectory;
+		getLog().info("outputDirectory: " + replaceSpaces(outputDirectory));
+		return replaceSpaces(outputDirectory);
 	}
 
 	public void setOutputDirectory(String outputDirectory) {
@@ -316,7 +331,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	public String getHelmExecutableDirectory() {
-		return helmExecutableDirectory;
+		getLog().info("helmExecutableDirectory: " + replaceSpaces(helmExecutableDirectory));
+		return replaceSpaces(helmExecutableDirectory);
 	}
 
 	public void setHelmExecutableDirectory(String helmExecuteableDirectory) {
