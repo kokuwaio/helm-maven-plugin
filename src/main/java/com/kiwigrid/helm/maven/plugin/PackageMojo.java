@@ -37,7 +37,9 @@ public class PackageMojo extends AbstractHelmMojo {
 					+ inputDirectory
 					+ " -d "
 					+ getOutputDirectory()
-					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "");
+					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
+					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
+					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "");
 
 			if (getChartVersion() != null) {
 				getLog().info(String.format("Setting chart version to %s", getChartVersion()));

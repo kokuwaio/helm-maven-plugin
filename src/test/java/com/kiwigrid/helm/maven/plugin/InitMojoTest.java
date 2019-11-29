@@ -27,7 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
-@MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz")
+@MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
 public class InitMojoTest {
@@ -54,7 +54,7 @@ public class InitMojoTest {
 	}
 
 	@Test
-	public void verifyDefaultInitCommandWhenDownloadingHelm(InitMojo mojo) throws Exception {
+	public void verifyAddingStableByDefault(InitMojo mojo) throws Exception {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
@@ -65,23 +65,24 @@ public class InitMojoTest {
 		mojo.execute();
 
 		// check captured argument
-		String helmInitCommand = helmCommandCaptor.getAllValues()
+		String helmDefaultCommand = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe init" : "helm init"))
-				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm init command expected"));
+				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
+				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
-		assertTrue(helmInitCommand.contains("--client-only"), "Option 'client-only' expected");
-		assertFalse(helmInitCommand.contains("--skip-refresh"), "Option 'skip-refresh' must not be active by default.");
+		assertTrue(helmDefaultCommand.contains("repo add stable https://kubernetes-charts.storage.googleapis.com"), "Adding stable repo by default expected");
 	}
 
 	@Test
-	public void initMojoSkipRefreshIfConfigured(InitMojo mojo) throws Exception {
+	public void verifyCustomConfigOptions(InitMojo mojo) throws Exception {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
 		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
-		mojo.setSkipRefresh(true);
+		mojo.setRegistryConfig("/path/to/my/registry.json");
+		mojo.setRepositoryCache("/path/to/my/repository/cache");
+		mojo.setRepositoryConfig("/path/to/my/repositories.yaml");
 
 		// run init
 		mojo.execute();
@@ -92,8 +93,10 @@ public class InitMojoTest {
 				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe " : "helm "))
 				.collect(Collectors.toList());
 		assertEquals(1, helmCommands.size(), "Only helm init command expected");
-		String helmInitCommand = helmCommands.get(0);
-		assertTrue(helmInitCommand.contains("--skip-refresh"), "Option 'skip-refresh' expected");
+		String helmDefaultCommand = helmCommands.get(0);
+		assertTrue(helmDefaultCommand.contains("--registry-config /path/to/my/registry.json"), "Option 'registry-config' not set");
+		assertTrue(helmDefaultCommand.contains("--repository-cache /path/to/my/repository/cache"), "Option 'repository-cache' not set");
+		assertTrue(helmDefaultCommand.contains("--repository-config /path/to/my/repositories.yaml"), "Option 'repository-config' not set");
 	}
 
 	@Test

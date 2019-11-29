@@ -76,8 +76,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.downloadUrl")
 	private String helmDownloadUrl;
 
-	@Parameter(property = "helm.homeDirectory")
-	private String helmHomeDirectory;
+	@Parameter(property = "helm.registryConfig")
+	private String registryConfig;
+
+	@Parameter(property = "helm.repositoryCache")
+	private String repositoryCache;
+
+	@Parameter(property = "helm.repositoryConfig")
+	private String repositoryConfig;
 
 	@Parameter(property = "helm.extraRepos")
 	private HelmRepository[] helmExtraRepos;
@@ -347,12 +353,28 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		this.chartDirectory = chartDirectory;
 	}
 
-	public String getHelmHomeDirectory() {
-		return helmHomeDirectory;
+	public String getRegistryConfig() {
+		return registryConfig;
 	}
 
-	public void setHelmHomeDirectory(String helmHomeDirectory) {
-		this.helmHomeDirectory = helmHomeDirectory;
+	public void setRegistryConfig(String registryConfig) {
+		this.registryConfig = registryConfig;
+	}
+
+	public String getRepositoryCache() {
+		return repositoryCache;
+	}
+
+	public void setRepositoryCache(String repositoryCache) {
+		this.repositoryCache = repositoryCache;
+	}
+
+	public String getRepositoryConfig() {
+		return repositoryConfig;
+	}
+
+	public void setRepositoryConfig(String repositoryConfig) {
+		this.repositoryConfig = repositoryConfig;
 	}
 
 	public String getChartVersion() {
