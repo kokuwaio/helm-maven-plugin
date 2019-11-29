@@ -12,6 +12,12 @@ Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmu
 
 [![Build Status](https://travis-ci.org/kiwigrid/helm-maven-plugin.svg?branch=master)](https://travis-ci.org/kiwigrid/helm-maven-plugin)
 
+## Helm v3
+
+From version **5.0** Helm v3 is required.
+There is no longer support for Helm v2.
+For convenience reasons the stable repo is added by default.
+
 # Why?
 
 Currently (October 2017) there is no simple Maven plugin to package existing HELM charts.
@@ -26,7 +32,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>4.13</version>
+  <version>5.0</version>
 </dependency>
 ```
 
@@ -40,13 +46,12 @@ Add following dependency to your pom.xml:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>4.13</version>
+      <version>5.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
         <!-- This is the related section when using binary download -->
-        <helmDownloadUrl>https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz</helmDownloadUrl>
-        <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
       </configuration>
     </plugin>
   ...
@@ -65,7 +70,7 @@ When `useLocalHelmBinary` is enabled, the plugin by default will search for the 
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>4.13</version>
+      <version>5.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -88,7 +93,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>4.13</version>
+      <version>5.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -111,7 +116,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>4.13</version>
+      <version>5.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -126,8 +131,7 @@ and disables the auto-detection feature:
             <url>https://my.chart.museum:8080/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
-        <helmDownloadUrl>https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz</helmDownloadUrl>
-        <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
       </configuration>
     </plugin>
   ...
@@ -143,7 +147,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>4.13</version>
+      <version>5.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -161,10 +165,13 @@ and disables the auto-detection feature:
             <url>https://my.chart.museum/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
-        <helmDownloadUrl>https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
         <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
-        <!-- Skip a single goal -->
-        <skipRefresh>false</skipRefresh>
+        <registryConfig>~/.config/helm/registry.json</registryConfig>
+        <repositoryCache>~/.cache/helm/repository</repositoryCache>
+        <repositoryConfig>~/.config/helm/repositories.yaml</repositoryConfig>
+        <!-- Lint with strict mode -->
+        <lintStrict>true</lintStrict>
         <!-- Exclude a directory to avoid processing -->
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
@@ -217,12 +224,14 @@ Parameter | Type | User Property | Required | Description
 `<autoDetectLocalHelmBinary>` | boolean | helm.autoDetectLocalHelmBinary | true | Controls whether the local binary should be auto-detected from `PATH` environment variable. If set to `false` the binary in `<helmExecutableDirectory>` is used. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
 `<helmExecutableDirectory>` | string | helm.executableDirectory | false | directory of your helm installation (default: `${project.build.directory}/helm`)
 `<outputDirectory>` | string | helm.outputDirectory | false | chart output directory (default: `${project.build.directory}/helm/repo`)
-`<helmHomeDirectory>` | string | helm.homeDirectory | false | path to helm home directory; useful for concurrent Jenkins builds! (default: `~/.helm`)
+`<registryConfig>` | string | helm.registryConfig | false | path to the registry config file
+`<repositoryCache>` | string | helm.repositoryCache | false | path to the file containing cached repository indexes
+`<repositoryConfig>` | string | helm.repositoryConfig | false | path to the file containing repository names and URLs
 `<helmExtraRepos>` | list of [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.extraRepos | false | adds extra repositories while init
 `<uploadRepoStable>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
 `<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
+`lintStrict` | boolean | false | run lint command with strict option (fail on lint warnings)
 `<skip>` | boolean | helm.skip | false | skip plugin execution
-`<skipRefresh>` | boolean | helm.init.skipRefresh | false | do not refresh (download) the local repository cache while init
 `<skipInit>` | boolean | helm.init.skip | false | skip init goal
 `<skipLint>` | boolean | helm.lint.skip | false | skip lint goal
 `<skipDryRun>` | boolean | helm.dry-run.skip | false | skip dry-run goal

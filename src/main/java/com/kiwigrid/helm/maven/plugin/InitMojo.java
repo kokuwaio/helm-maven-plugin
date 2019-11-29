@@ -45,8 +45,6 @@ import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 @Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InitMojo extends AbstractHelmMojo {
 
-	@Parameter(property = "helm.init.skipRefresh", defaultValue = "false")
-	private boolean skipRefresh;
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
 
@@ -59,7 +57,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		getLog().info("Initializing Helm...");
 		Path outputDirectory = Paths.get(getOutputDirectory()).toAbsolutePath();
-		if (!Files.exists(outputDirectory)) {
+		if (!outputDirectory.toFile().exists()) {
 			getLog().info("Creating output directory...");
 			try {
 				Files.createDirectories(outputDirectory);
@@ -75,16 +73,28 @@ public class InitMojo extends AbstractHelmMojo {
 			downloadAndUnpackHelm();
 		}
 
+		getLog().info("Adding default repo [stable]");
+		callCli(getHelmExecuteablePath()
+						+ " repo add stable https://kubernetes-charts.storage.googleapis.com"
+						+ " "
+						+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config " + getRegistryConfig() : "")
+						+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache " + getRepositoryCache() : "")
+						+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config " + getRepositoryConfig() : ""),
+				"Unable add repo",
+				false);
+
 		if (getHelmExtraRepos() != null) {
 			for (HelmRepository repository : getHelmExtraRepos()) {
-				getLog().info("Adding repo " + repository);
+				getLog().info("Adding repo [" + repository +"]");
 				PasswordAuthentication auth = getAuthentication(repository);
 				callCli(getHelmExecuteablePath()
 								+ " repo add "
 								+ repository.getName()
 								+ " "
 								+ repository.getUrl()
-								+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "")
+								+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
+								+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
+								+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "")
 								+ (auth != null ? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword()) : ""),
 						"Unable add repo",
 						false);
@@ -138,8 +148,6 @@ public class InitMojo extends AbstractHelmMojo {
 		if (!found) {
 			throw new MojoExecutionException("Unable to find helm executable in tar file.");
 		}
-
-		initHelmClient();
 	}
 
 	private void addExecPermission(final Path helm) throws IOException {
@@ -169,29 +177,7 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		callCli(getHelmExecuteablePath() + " version --client", "Unable to verify local HELM binary", false);
-		initHelmClient();
-	}
-
-	public boolean isSkipRefresh() {
-		return skipRefresh;
-	}
-
-	public void setSkipRefresh(boolean skipRefresh) {
-		this.skipRefresh = skipRefresh;
-	}
-
-	private void initHelmClient() throws MojoExecutionException {
-		getLog().info("Run helm init...");
-
-		String cmd = getHelmExecuteablePath()
-				+ " init --client-only" + (skipRefresh ? " --skip-refresh" : "")
-				+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : "");
-
-		getLog().info("Running: " + cmd);
-		callCli(cmd,
-				"Unable to call helm init",
-				false);
+		callCli(getHelmExecuteablePath() + " version", "Unable to verify local HELM binary", false);
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {

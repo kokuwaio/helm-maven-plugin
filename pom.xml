@@ -4,7 +4,7 @@
 
 	<groupId>com.kiwigrid</groupId>
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>4.14-SNAPSHOT</version>
+	<version>5.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -92,7 +92,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>1.18</version>
+			<version>1.19</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

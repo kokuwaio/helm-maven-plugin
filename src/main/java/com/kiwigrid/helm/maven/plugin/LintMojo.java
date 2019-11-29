@@ -20,6 +20,9 @@ public class LintMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.lint.skip", defaultValue = "false")
 	private boolean skipLint;
 
+	@Parameter(property = "helm.lint.strict", defaultValue = "false")
+	private boolean lintStrict;
+
 	public void execute()
 			throws MojoExecutionException
 	{
@@ -33,7 +36,10 @@ public class LintMojo extends AbstractHelmMojo {
 			callCli(getHelmExecuteablePath()
 					+ " lint "
 					+ inputDirectory
-					+ (StringUtils.isNotEmpty(getHelmHomeDirectory()) ? " --home=" + getHelmHomeDirectory() : ""),
+					+ (lintStrict ? " --strict" : "")
+					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
+					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
+					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : ""),
 					"There are test failures", true);
 		}
 	}
