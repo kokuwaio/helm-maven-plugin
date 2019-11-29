@@ -18,6 +18,8 @@ From version **5.0** Helm v3 is required.
 There is no longer support for Helm v2.
 For convenience reasons the stable repo is added by default.
 
+Helm v2 users can still use plugin version [4.13](https://search.maven.org/artifact/com.kiwigrid/helm-maven-plugin/4.13/maven-plugin).
+
 # Why?
 
 Currently (October 2017) there is no simple Maven plugin to package existing HELM charts.
