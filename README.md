@@ -34,7 +34,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>com.kiwigrid</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>5.0</version>
+  <version>5.1</version>
 </dependency>
 ```
 
@@ -48,7 +48,7 @@ Add following dependency to your pom.xml:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.0</version>
+      <version>5.1</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -72,7 +72,7 @@ When `useLocalHelmBinary` is enabled, the plugin by default will search for the 
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.0</version>
+      <version>5.1</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -95,7 +95,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.0</version>
+      <version>5.1</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -118,7 +118,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.0</version>
+      <version>5.1</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -149,7 +149,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>com.kiwigrid</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.0</version>
+      <version>5.1</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -174,6 +174,8 @@ and disables the auto-detection feature:
         <repositoryConfig>~/.config/helm/repositories.yaml</repositoryConfig>
         <!-- Lint with strict mode -->
         <lintStrict>true</lintStrict>
+        <!-- Disable adding of default repo stable https://kubernetes-charts.storage.googleapis.com -->
+        <addDefaultRepo>false</addDefaultRepo>
         <!-- Exclude a directory to avoid processing -->
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
@@ -232,7 +234,8 @@ Parameter | Type | User Property | Required | Description
 `<helmExtraRepos>` | list of [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.extraRepos | false | adds extra repositories while init
 `<uploadRepoStable>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
 `<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
-`lintStrict` | boolean | helm.lint.strict | false | run lint command with strict option (fail on lint warnings)
+`<lintStrict>` | boolean | helm.lint.strict | false | run lint command with strict option (fail on lint warnings)
+`<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (https://kubernetes-charts.storage.googleapis.com) will be added
 `<skip>` | boolean | helm.skip | false | skip plugin execution
 `<skipInit>` | boolean | helm.init.skip | false | skip init goal
 `<skipLint>` | boolean | helm.lint.skip | false | skip lint goal

@@ -60,6 +60,7 @@ public class InitMojoTest {
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
 		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
+		mojo.setAddDefaultRepo(true);
 
 		// run init
 		mojo.execute();
@@ -83,6 +84,7 @@ public class InitMojoTest {
 		mojo.setRegistryConfig("/path/to/my/registry.json");
 		mojo.setRepositoryCache("/path/to/my/repository/cache");
 		mojo.setRepositoryConfig("/path/to/my/repositories.yaml");
+		mojo.setAddDefaultRepo(true);
 
 		// run init
 		mojo.execute();
