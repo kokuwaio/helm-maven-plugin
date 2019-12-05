@@ -48,6 +48,9 @@ public class InitMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
 
+	@Parameter(property = "helm.init.add-default-repo", defaultValue = "true")
+	private boolean addDefaultRepo;
+
 	public void execute() throws MojoExecutionException {
 
 		if (skip || skipInit) {
@@ -73,15 +76,21 @@ public class InitMojo extends AbstractHelmMojo {
 			downloadAndUnpackHelm();
 		}
 
-		getLog().info("Adding default repo [stable]");
-		callCli(getHelmExecuteablePath()
-						+ " repo add stable https://kubernetes-charts.storage.googleapis.com"
-						+ " "
-						+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config " + getRegistryConfig() : "")
-						+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache " + getRepositoryCache() : "")
-						+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config " + getRepositoryConfig() : ""),
-				"Unable add repo",
-				false);
+		if (addDefaultRepo) {
+			getLog().info("Adding default repo [stable]");
+			callCli(getHelmExecuteablePath()
+							+ " repo add stable https://kubernetes-charts.storage.googleapis.com"
+							+ " "
+							+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config " + getRegistryConfig() : "")
+							+ (StringUtils.isNotEmpty(getRepositoryCache()) ?
+							" --repository-cache " + getRepositoryCache() :
+							"")
+							+ (StringUtils.isNotEmpty(getRepositoryConfig()) ?
+							" --repository-config " + getRepositoryConfig() :
+							""),
+					"Unable add repo",
+					false);
+		}
 
 		if (getHelmExtraRepos() != null) {
 			for (HelmRepository repository : getHelmExtraRepos()) {
@@ -148,6 +157,14 @@ public class InitMojo extends AbstractHelmMojo {
 		if (!found) {
 			throw new MojoExecutionException("Unable to find helm executable in tar file.");
 		}
+	}
+
+	public boolean isAddDefaultRepo() {
+		return addDefaultRepo;
+	}
+
+	public void setAddDefaultRepo(boolean addDefaultRepo) {
+		this.addDefaultRepo = addDefaultRepo;
 	}
 
 	private void addExecPermission(final Path helm) throws IOException {
