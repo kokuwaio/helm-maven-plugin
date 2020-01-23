@@ -1,5 +1,15 @@
 package com.kiwigrid.helm.maven.plugin;
 
+import com.kiwigrid.helm.maven.plugin.exception.BadUploadException;
+import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,14 +18,8 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.Charset;
-
-import com.kiwigrid.helm.maven.plugin.exception.BadUploadException;
-import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * Mojo for uploading to helm repo (e.g. chartmuseum)
@@ -98,6 +102,12 @@ public class UploadMojo extends AbstractHelmMojo {
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/gzip");
+
+        HelmRepository helmUploadRepo = getHelmUploadRepo();
+        if (StringUtils.isNotEmpty(helmUploadRepo.getUsername()) && StringUtils.isNotEmpty(helmUploadRepo.getPassword())) {
+            String encoded = Base64.getEncoder().encodeToString((helmUploadRepo.getUsername() + ":" + helmUploadRepo.getPassword()).getBytes(StandardCharsets.UTF_8));  //Java 8
+            connection.setRequestProperty("Authorization", "Basic " + encoded);
+        }
 
 		return connection;
 	}
