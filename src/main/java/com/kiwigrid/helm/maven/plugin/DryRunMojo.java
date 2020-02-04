@@ -32,7 +32,7 @@ public class DryRunMojo extends AbstractHelmMojo {
 			callCli(getHelmExecuteablePath()
 					+ " " + action
 					+ " " + inputDirectory
-					+ " --dry-run"
+					+ " --dry-run --generate-name"
 					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
 					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
 					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : ""),
