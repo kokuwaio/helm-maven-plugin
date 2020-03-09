@@ -128,7 +128,20 @@ public class InitMojoTest {
 	}
 
 	private String getOsSpecificDownloadURL() {
-		return getOsSpecificDownloadURL(Os.OS_FAMILY == Os.FAMILY_UNIX ? "linux" : Os.OS_FAMILY);
+
+		String osForDownload;
+		switch (Os.OS_FAMILY) {
+		case Os.FAMILY_UNIX:
+			osForDownload = "linux";
+			break;
+		case Os.FAMILY_MAC:
+			osForDownload = "darwin";
+			break;
+		default:
+			osForDownload = Os.OS_FAMILY;
+		}
+
+		return getOsSpecificDownloadURL(osForDownload);
 	}
 
 	private String getOsSpecificDownloadURL(final String os) {
