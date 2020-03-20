@@ -128,7 +128,6 @@ public class InitMojoTest {
 	}
 
 	private String getOsSpecificDownloadURL() {
-
 		String osForDownload;
 		switch (Os.OS_FAMILY) {
 		case Os.FAMILY_UNIX:
@@ -145,6 +144,6 @@ public class InitMojoTest {
 	}
 
 	private String getOsSpecificDownloadURL(final String os) {
-		return "https://get.helm.sh/helm-v2.14.3-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
+		return "https://get.helm.sh/helm-v2.15.2-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
 	}
 }

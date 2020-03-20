@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.PasswordAuthentication;
 import java.nio.file.Files;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -194,7 +195,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		MatchPatterns exclusionPatterns = MatchPatterns.from(exclusions);
 
-		try (Stream<Path> files = Files.walk(Paths.get(path))) {
+		try (Stream<Path> files = Files.walk(Paths.get(path), FileVisitOption.FOLLOW_LINKS)) {
 			List<String> chartDirs = files.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
 					.map(p -> p.getParent().toString())
 					.filter(shouldIncludeDirectory(exclusionPatterns))
