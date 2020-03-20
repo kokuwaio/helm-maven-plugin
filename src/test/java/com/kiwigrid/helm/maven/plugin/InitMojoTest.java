@@ -128,18 +128,22 @@ public class InitMojoTest {
 	}
 
 	private String getOsSpecificDownloadURL() {
-		String os;
-		if(Os.OS_FAMILY == Os.FAMILY_UNIX) {
-			os = "linux";
-		} else if(Os.OS_FAMILY == Os.FAMILY_MAC) {
-			os = "darwin";
-		} else {
-			os = Os.OS_FAMILY;
+		String osForDownload;
+		switch (Os.OS_FAMILY) {
+		case Os.FAMILY_UNIX:
+			osForDownload = "linux";
+			break;
+		case Os.FAMILY_MAC:
+			osForDownload = "darwin";
+			break;
+		default:
+			osForDownload = Os.OS_FAMILY;
 		}
-		return getOsSpecificDownloadURL(os);
+
+		return getOsSpecificDownloadURL(osForDownload);
 	}
 
 	private String getOsSpecificDownloadURL(final String os) {
-		return "https://get.helm.sh/helm-v2.14.3-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
+		return "https://get.helm.sh/helm-v2.15.2-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
 	}
 }
