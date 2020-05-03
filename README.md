@@ -26,8 +26,8 @@ Currently (October 2017) there is no simple Maven plugin to package existing HEL
 
 # How?
 
-By default the plugin downloads HELM in a specific version. Next to that it is possible to specify a local HELM binary.
-In both cases HELM will be executed in the background.
+By default, the plugin automatically downloads Helm at the specified version. You can also manually specify the download URL.
+Next to that it is possible to specify a local Helm binary. In all cases Helm will be executed in the background.
 
 Add following dependency to your pom.xml:
 ```xml
@@ -39,6 +39,27 @@ Add following dependency to your pom.xml:
 ```
 
 ## Configuration Examples
+
+### Helm URL Auto Detection
+
+The default setting is to construct the Helm download URL based upon the detected OS and architecture:
+
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>com.kiwigrid</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>5.4</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <helmVersion>3.2.0</helmVersion>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+```
 
 ### Usage with Downloaded Binary
 ```xml
@@ -222,7 +243,8 @@ Parameter | Type | User Property | Required | Description
 `<chartDirectory>` | string | helm.chartDirectory | true | root directory of your charts
 `<chartVersion>` | string | helm.chartVersion | true | Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
 `<appVersion>` | string | helm.appVersion | false | The version of the app. This needn't be SemVer.
-`<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm
+`<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm. Leave empty to autodetect URL based upon OS and architecture.
+`<helmVersion>` | string | helm.version | false | Version of helm to download. Defaults to 3.2.0
 `<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
 `<useLocalHelmBinary>` | boolean | helm.useLocalHelmBinary | false | Controls whether a local binary should be used instead of downloading it. If set to `true` path has to be set with property `executableDirectory`
 `<autoDetectLocalHelmBinary>` | boolean | helm.autoDetectLocalHelmBinary | true | Controls whether the local binary should be auto-detected from `PATH` environment variable. If set to `false` the binary in `<helmExecutableDirectory>` is used. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.

@@ -18,6 +18,7 @@ import java.nio.file.attribute.AclFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.UserPrincipal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -32,6 +33,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
@@ -119,9 +121,17 @@ public class InitMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		getLog().info("Downloading Helm ...");
+		String url = getHelmDownloadUrl();
+		if (StringUtils.isBlank(url)) {
+			String os = getOperatingSystem();
+			String architecture = getArchitecture();
+			String extension = getExtension();
+			url = String.format("https://get.helm.sh/helm-v%s-%s-%s.%s", getHelmVersion(), os, architecture, extension);
+		}
+
+		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
-		try (InputStream dis = new URL(getHelmDownloadUrl()).openStream();
+		try (InputStream dis = new URL(url).openStream();
 			 InputStream cis = createCompressorInputStream(dis);
 			 ArchiveInputStream is = createArchiverInputStream(cis)) {
 
@@ -237,5 +247,40 @@ public class InitMojo extends AbstractHelmMojo {
 		}
 
 		return is;
+	}
+
+	private String getArchitecture() {
+		String architecture = System.getProperty("os.arch").toLowerCase(Locale.US);
+
+		if (architecture.equals("x86_64") || architecture.equals("amd64")) {
+			return "amd64";
+		} else if (architecture.equals("x86") || architecture.equals("i386")) {
+			return "386";
+		} else if (architecture.contains("arm64")) {
+			return "arm64";
+		} else if (architecture.equals("aarch32") || architecture.startsWith("arm")) {
+			return "arm";
+		} else if (architecture.contains("ppc64le") || (architecture.contains("ppc64") && System.getProperty("sun.cpu.endian").equals("little"))) {
+			return "ppc64le";
+		}
+
+		throw new IllegalStateException("Unsupported architecture: " + architecture);
+	}
+
+	private String getExtension() {
+		return Os.OS_FAMILY.equals(Os.FAMILY_WINDOWS) ? "zip" : "tar.gz";
+	}
+
+	private String getOperatingSystem() {
+		switch (Os.OS_FAMILY) {
+			case Os.FAMILY_UNIX:
+				return "linux";
+			case Os.FAMILY_MAC:
+				return "darwin";
+			case Os.FAMILY_WINDOWS:
+				return "windows";
+			default:
+				throw new IllegalStateException("Unsupported OS: " + Os.OS_FAMILY);
+		}
 	}
 }

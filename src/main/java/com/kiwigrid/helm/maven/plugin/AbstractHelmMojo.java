@@ -77,6 +77,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.downloadUrl")
 	private String helmDownloadUrl;
 
+	@Parameter(property = "helm.version", defaultValue = "3.2.0")
+	private String helmVersion;
+
 	@Parameter(property = "helm.registryConfig")
 	private String registryConfig;
 
@@ -336,6 +339,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setHelmDownloadUrl(String helmDownloadUrl) {
 		this.helmDownloadUrl = helmDownloadUrl;
+	}
+
+	public String getHelmVersion() {
+		return helmVersion;
+	}
+
+	public void setHelmVersion(String helmVersion) {
+		this.helmVersion = helmVersion;
 	}
 
 	public String[] getExcludes() {
