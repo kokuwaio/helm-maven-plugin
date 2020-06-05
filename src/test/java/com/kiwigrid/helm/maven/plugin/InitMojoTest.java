@@ -53,6 +53,27 @@ public class InitMojoTest {
 		assertTrue(Files.exists(helm), "Helm executable not found at: " + helm);
 	}
 
+	@DisplayName("Init helm with a automatically detected URL")
+	@Test
+	public void autoDownloadHelm(InitMojo mojo) throws Exception {
+
+		// prepare execution
+		doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
+		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
+		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
+		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
+		mojo.setHelmDownloadUrl(null);
+		mojo.setHelmVersion("3.2.0");
+
+		// run init
+		mojo.execute();
+
+		// check helm file
+		Path helm = Paths.get(mojo.getHelmExecutableDirectory(), "windows".equals(Os.OS_FAMILY) ? "helm.exe" : "helm")
+				.toAbsolutePath();
+		assertTrue(Files.exists(helm), "Helm executable not found at: " + helm);
+	}
+
 	@Test
 	public void verifyAddingStableByDefault(InitMojo mojo) throws Exception {
 
