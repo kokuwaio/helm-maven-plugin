@@ -15,6 +15,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.Os;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.doReturn;
 @MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
+@EnabledOnOs(OS.LINUX)
 public class InitMojoTest {
 
 	@DisplayName("Init helm with different download urls.")

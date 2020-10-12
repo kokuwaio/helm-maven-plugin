@@ -209,6 +209,13 @@ and disables the auto-detection feature:
             <url>https://kiwigrid.github.io</url>
           </helmRepo>
         </helmExtraRepos>
+        <!-- extra value settings for the lint command -->
+        <values>
+          <overrides>
+            <component1.install.path>/opt/component1</component1.install.path>
+          </overrides>
+          <yamlFile>${project.basedir}/src/test/resources/myOverrides.yaml</yamlFile>
+        </values>
       </configuration>
     </plugin>
   ...
@@ -266,6 +273,7 @@ Parameter | Type | User Property | Required | Description
 `<skipPackage>` | boolean | helm.package.skip | false | skip package goal
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
 `<security>` | string | helm.security | false | path to your [settings-security.xml](https://maven.apache.org/guides/mini/guide-encryption.html) (default: `~/.m2/settings-security.xml`)
+`<values>` | [ValueOverride](./src/main/java/com/kiwigrid/helm/maven/plugin/ValueOverride.java) | helm.values | false | override some values for linting with helm.values.overrides (--set option), helm.values.stringOverrides (--set-string option), helm.values.fileOverrides (--set-file option) and last but not least helm.values.yamlFile (--values option)
 
 ## Packaging with the Helm Lifecycle
 

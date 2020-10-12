@@ -1,7 +1,5 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.util.Arrays;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -15,7 +13,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 06.11.17
  */
 @Mojo(name = "lint", defaultPhase = LifecyclePhase.TEST)
-public class LintMojo extends AbstractHelmMojo {
+public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 
 	@Parameter(property = "helm.lint.skip", defaultValue = "false")
 	private boolean skipLint;
@@ -39,7 +37,8 @@ public class LintMojo extends AbstractHelmMojo {
 					+ (lintStrict ? " --strict" : "")
 					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
 					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : ""),
+					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "")
+					+ getValuesOptions(),
 					"There are test failures", true);
 		}
 	}
