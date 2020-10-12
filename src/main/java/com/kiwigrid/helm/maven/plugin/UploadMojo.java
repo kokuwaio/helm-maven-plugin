@@ -70,6 +70,9 @@ public class UploadMojo extends AbstractHelmMojo {
 		case CHARTMUSEUM:
 			connection = getConnectionForUploadToChartmuseum();
 			break;
+		case NEXUS:
+			connection = getConnectionForUploadToNexus(fileToUpload);
+			break;
 		default:
 			throw new IllegalArgumentException("Unsupported repository type for upload.");
 		}
@@ -103,13 +106,17 @@ public class UploadMojo extends AbstractHelmMojo {
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/gzip");
 
-        HelmRepository helmUploadRepo = getHelmUploadRepo();
-        if (StringUtils.isNotEmpty(helmUploadRepo.getUsername()) && StringUtils.isNotEmpty(helmUploadRepo.getPassword())) {
-            String encoded = Base64.getEncoder().encodeToString((helmUploadRepo.getUsername() + ":" + helmUploadRepo.getPassword()).getBytes(StandardCharsets.UTF_8));  //Java 8
-            connection.setRequestProperty("Authorization", "Basic " + encoded);
-        }
+		setBasicAuthHeader(connection);
 
 		return connection;
+	}
+
+	private void setBasicAuthHeader(HttpURLConnection connection) {
+		HelmRepository helmUploadRepo = getHelmUploadRepo();
+		if (StringUtils.isNotEmpty(helmUploadRepo.getUsername()) && StringUtils.isNotEmpty(helmUploadRepo.getPassword())) {
+			String encoded = Base64.getEncoder().encodeToString((helmUploadRepo.getUsername() + ":" + helmUploadRepo.getPassword()).getBytes(StandardCharsets.UTF_8));  //Java 8
+			connection.setRequestProperty("Authorization", "Basic " + encoded);
+		}
 	}
 
 	protected HttpURLConnection getConnectionForUploadToArtifactory(File file) throws IOException, MojoExecutionException {
@@ -126,6 +133,23 @@ public class UploadMojo extends AbstractHelmMojo {
 		connection.setRequestProperty("Content-Type", "application/gzip");
 
 		verifyAndSetAuthentication();
+
+		return connection;
+	}
+
+	protected HttpURLConnection getConnectionForUploadToNexus(File file) throws IOException, MojoExecutionException {
+		String uploadUrl = getHelmUploadUrl();
+		// Append slash if not already in place
+		if (!uploadUrl.endsWith("/")) {
+			uploadUrl += "/";
+		}
+		uploadUrl = uploadUrl + file.getName();
+
+		final HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
+		connection.setDoOutput(true);
+		connection.setRequestMethod("PUT");
+
+		setBasicAuthHeader(connection);
 
 		return connection;
 	}
