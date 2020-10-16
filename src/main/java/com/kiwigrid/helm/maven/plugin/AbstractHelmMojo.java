@@ -62,7 +62,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartDirectory", required = true)
 	private String chartDirectory;
 
-	@Parameter(property = "helm.chartVersion", required = true)
+	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
 
 	@Parameter(property = "helm.appVersion")
@@ -247,7 +247,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 */
 	String getHelmUploadUrl() {
 		String uploadUrl = uploadRepoStable.getUrl();
-		if (chartVersion.endsWith("-SNAPSHOT")
+		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
 				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl()))
 		{
@@ -258,7 +258,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	HelmRepository getHelmUploadRepo() {
-		if (chartVersion.endsWith("-SNAPSHOT")
+		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
 				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl()))
 		{
