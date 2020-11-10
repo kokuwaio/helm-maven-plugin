@@ -17,14 +17,11 @@ import com.kiwigrid.helm.maven.plugin.pojo.HelmPlugin;
 @Mojo(name = "install-plugin", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InstallPluginMojo extends AbstractHelmPluginMojo {
 
-	@Parameter(property = "helm.plugins.install.skip", defaultValue = "false")
-	private boolean skipPlugin;
-
-	@Parameter(property = "helm.plugins")
-	private HelmPlugin[] helmPlugins;
+	@Parameter(property = "helm.install-plugin.skip", defaultValue = "false")
+	private boolean skipInstallPlugin;
 
 	public void execute() throws MojoExecutionException {
-		if (skip || skipPlugin) {
+		if (skip || skipInstallPlugin) {
 			getLog().info("Skip install plugin");
 			return;
 		}

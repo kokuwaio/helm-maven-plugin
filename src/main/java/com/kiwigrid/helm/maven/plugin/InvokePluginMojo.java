@@ -4,7 +4,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import com.kiwigrid.helm.maven.plugin.pojo.HelmPluginWithArgs;
+import com.kiwigrid.helm.maven.plugin.pojo.HelmPlugin;
 
 /**
  * Mojo for installing Helm plugins
@@ -15,24 +15,21 @@ import com.kiwigrid.helm.maven.plugin.pojo.HelmPluginWithArgs;
 @Mojo(name = "invoke-plugin", defaultPhase = LifecyclePhase.TEST)
 public class InvokePluginMojo extends AbstractHelmPluginMojo {
 
-	@Parameter(property = "helm.plugins.invoke.skip", defaultValue = "false")
-	private boolean skipPlugin;
+	@Parameter(property = "helm.invoke-plugin.skip", defaultValue = "false")
+	private boolean skipInvokePlugin;
 
-	@Parameter(property = "helm.plugins")
-	private HelmPluginWithArgs[] helmPlugins;
-
-	@Parameter(property = "helm.plugins.invoke.per-chart", required = false, defaultValue = "true")
+	@Parameter(property = "helm.invoke-plugin.per-chart", required = false, defaultValue = "true")
 	private boolean perChart = true;
 
 	public void execute() throws MojoExecutionException {
-		if (skip || skipPlugin) {
+		if (skip || skipInvokePlugin) {
 			getLog().info("Skip invoke plugin");
 			return;
 		}
 		
 		findCurrentlyInstalledPlugins();
 		
-		for (HelmPluginWithArgs plugin : helmPlugins) {
+		for (HelmPlugin plugin : helmPlugins) {
 			getLog().info("Invoking plugin " + plugin + "...");
 
 			// Ensure it is actually installed, if not fail
@@ -49,7 +46,7 @@ public class InvokePluginMojo extends AbstractHelmPluginMojo {
 		}
 	}
 
-	protected void invokePlugin(HelmPluginWithArgs plugin, String[] extraArgs) throws MojoExecutionException {
+	protected void invokePlugin(HelmPlugin plugin, String[] extraArgs) throws MojoExecutionException {
 		// Attempt to invoke the plugin
 		String helmCommand = getHelmExecuteablePath() + " " + plugin.getName();
 		for (String arg : plugin.getArgs()) {

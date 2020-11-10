@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
 import com.kiwigrid.helm.maven.plugin.pojo.HelmPlugin;
@@ -18,6 +19,9 @@ import com.kiwigrid.helm.maven.plugin.pojo.HelmPlugin;
 public abstract class AbstractHelmPluginMojo extends AbstractHelmMojo {
 
 	protected Map<String, String> currentPlugins;
+	
+	@Parameter(property = "helm.plugins", required = true)
+	protected HelmPlugin[] helmPlugins;
 
 	public AbstractHelmPluginMojo() {
 		super();

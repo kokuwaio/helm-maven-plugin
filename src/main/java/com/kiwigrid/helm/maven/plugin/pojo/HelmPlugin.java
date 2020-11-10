@@ -30,6 +30,9 @@ public class HelmPlugin {
 	
 	@Parameter(property = "helm.plugin.version", required = false)
 	private String version;
+	
+    @Parameter(name = "helm.plugin.args")
+	private String[] args;
 
 	@Override
 	public String toString() {
