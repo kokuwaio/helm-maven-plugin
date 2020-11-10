@@ -319,7 +319,7 @@ Parameter | Type | User Property | Required | Description
 `<repositoryCache>` | string | helm.repositoryCache | false | path to the file containing cached repository indexes
 `<repositoryConfig>` | string | helm.repositoryConfig | false | path to the file containing repository names and URLs
 `<helmExtraRepos>` | list of [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/pojo/HelmRepository.java) | helm.extraRepos | false | adds extra repositories with the `init` goal
-`<helmPlugins>` | list of [HelmPlugin](./src/main/java/com/kiwigrid/helm/maven/plugin/pojo/HekmPlugin.java | helm.plugins | true | Specifies Helm plugins to use with the `install-plugin` and `invoke-plugin` goals
+`<helmPlugins>` | list of [HelmPlugin](./src/main/java/com/kiwigrid/helm/maven/plugin/pojo/HelmPlugin.java) | helm.plugins | true | Specifies Helm plugins to use with the `install-plugin` and `invoke-plugin` goals
 `<perChart>` | boolean | helm.invoke-plugin.perChart | false | If `true` then `invoke-plugin` on each chart, if `false` invoke it only once
 `<uploadRepoStable>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/pojo/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
 `<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/pojo/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
