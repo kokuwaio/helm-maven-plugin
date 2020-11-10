@@ -27,11 +27,11 @@ public class HelmPlugin {
 	 */
 	@Parameter(property = "helm.plugin.url", required = true)
 	private String url;
-	
+
 	@Parameter(property = "helm.plugin.version", required = false)
 	private String version;
-	
-    @Parameter(name = "helm.plugin.args")
+
+	@Parameter(name = "helm.plugin.args")
 	private String[] args;
 
 	@Override
