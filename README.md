@@ -195,7 +195,7 @@ and disables the auto-detection feature:
         <repositoryConfig>~/.config/helm/repositories.yaml</repositoryConfig>
         <!-- Lint with strict mode -->
         <lintStrict>true</lintStrict>
-        <!-- Disable adding of default repo stable https://kubernetes-charts.storage.googleapis.com -->
+        <!-- Disable adding of default repo stable https://charts.helm.sh/stable -->
         <addDefaultRepo>false</addDefaultRepo>
         <!-- Exclude a directory to avoid processing -->
         <excludes>
@@ -264,7 +264,7 @@ Parameter | Type | User Property | Required | Description
 `<uploadRepoStable>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
 `<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
 `<lintStrict>` | boolean | helm.lint.strict | false | run lint command with strict option (fail on lint warnings)
-`<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (https://kubernetes-charts.storage.googleapis.com) will be added
+`<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (https://charts.helm.sh/stable) will be added
 `<skip>` | boolean | helm.skip | false | skip plugin execution
 `<skipInit>` | boolean | helm.init.skip | false | skip init goal
 `<skipLint>` | boolean | helm.lint.skip | false | skip lint goal
