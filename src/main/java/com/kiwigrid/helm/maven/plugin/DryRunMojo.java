@@ -1,5 +1,6 @@
 package com.kiwigrid.helm.maven.plugin;
 
+import lombok.Value;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -13,11 +14,13 @@ import org.codehaus.plexus.util.StringUtils;
  * @author Axel Koehler
  * @since 14.11.17
  */
+@Value
 @Mojo(name = "dry-run", defaultPhase = LifecyclePhase.TEST)
 public class DryRunMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;
+
 	@Parameter(property = "helm.dry-run.skip", defaultValue = "false")
 	private boolean skipDryRun;
 
@@ -39,13 +42,5 @@ public class DryRunMojo extends AbstractHelmMojo {
 					+ getValuesOptions(),
 					"There are test failures", true);
 		}
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
 	}
 }
