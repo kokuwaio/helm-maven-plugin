@@ -12,6 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Deprecated
 public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo {
     @Parameter(property = "helm.values")
     private ValueOverride values;

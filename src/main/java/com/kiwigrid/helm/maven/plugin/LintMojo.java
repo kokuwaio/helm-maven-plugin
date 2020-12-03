@@ -13,7 +13,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 06.11.17
  */
 @Mojo(name = "lint", defaultPhase = LifecyclePhase.TEST)
-public class LintMojo extends AbstractHelmWithValueOverrideMojo {
+public class LintMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "helm.lint.skip", defaultValue = "false")
 	private boolean skipLint;

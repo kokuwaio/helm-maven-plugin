@@ -1,24 +1,8 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.PasswordAuthentication;
-import java.nio.file.Files;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
+import com.kiwigrid.helm.maven.plugin.pojo.ValueOverride;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -33,15 +17,35 @@ import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.PasswordAuthentication;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Base class for mojos
  *
  * @author Fabian Schlegel
  * @since 06.11.17
  */
+@Data
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
-	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
+	@Component(role = SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
 
 	@Parameter(property = "helm.useLocalHelmBinary", defaultValue = "false")
@@ -97,6 +101,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.skip", defaultValue = "false")
 	protected boolean skip;
+
+	@Parameter(property = "helm.values")
+	private ValueOverride values;
 
 	/**
 	 * The current user system settings for use in Maven.
@@ -317,143 +324,41 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return securityDispatcher;
 	}
 
-	public String getOutputDirectory() {
-		return outputDirectory;
+	protected String getValuesOptions() {
+		StringBuilder setValuesOptions = new StringBuilder();
+		if (values != null) {
+			if (isNotEmpty(values.getOverrides())) {
+				setValuesOptions.append(" --set ");
+				appendOverrideMap(setValuesOptions, values.getOverrides());
+			}
+			if (isNotEmpty(values.getStringOverrides())) {
+				setValuesOptions.append(" --set-string ");
+				appendOverrideMap(setValuesOptions, values.getStringOverrides());
+			}
+			if (isNotEmpty(values.getFileOverrides())) {
+				setValuesOptions.append(" --set-file ");
+				appendOverrideMap(setValuesOptions, values.getFileOverrides());
+			}
+			if (StringUtils.isNotBlank(values.getYamlFile())) {
+				setValuesOptions.append(" --values ").append(values.getYamlFile());
+			}
+		}
+		return setValuesOptions.toString();
 	}
 
-	public void setOutputDirectory(String outputDirectory) {
-		this.outputDirectory = outputDirectory;
+	private void appendOverrideMap(StringBuilder setValues, Map<String, String> overrides) {
+		boolean first = true;
+		for (Map.Entry<String, String> valueEntry : overrides.entrySet()) {
+			if (first) {
+				first = false;
+			} else {
+				setValues.append(',');
+			}
+			setValues.append(valueEntry.getKey()).append('=').append(valueEntry.getValue());
+		}
 	}
 
-	public String getHelmExecutableDirectory() {
-		return helmExecutableDirectory;
-	}
-
-	public void setHelmExecutableDirectory(String helmExecuteableDirectory) {
-		this.helmExecutableDirectory = helmExecuteableDirectory;
-	}
-
-	public String getHelmDownloadUrl() {
-		return helmDownloadUrl;
-	}
-
-	public void setHelmDownloadUrl(String helmDownloadUrl) {
-		this.helmDownloadUrl = helmDownloadUrl;
-	}
-
-	public String getHelmVersion() {
-		return helmVersion;
-	}
-
-	public void setHelmVersion(String helmVersion) {
-		this.helmVersion = helmVersion;
-	}
-
-	public String[] getExcludes() {
-		return excludes;
-	}
-
-	public void setExcludes(String[] excludes) {
-		this.excludes = excludes;
-	}
-
-	public String getChartDirectory() {
-		return chartDirectory;
-	}
-
-	public void setChartDirectory(String chartDirectory) {
-		this.chartDirectory = chartDirectory;
-	}
-
-	public String getRegistryConfig() {
-		return registryConfig;
-	}
-
-	public void setRegistryConfig(String registryConfig) {
-		this.registryConfig = registryConfig;
-	}
-
-	public String getRepositoryCache() {
-		return repositoryCache;
-	}
-
-	public void setRepositoryCache(String repositoryCache) {
-		this.repositoryCache = repositoryCache;
-	}
-
-	public String getRepositoryConfig() {
-		return repositoryConfig;
-	}
-
-	public void setRepositoryConfig(String repositoryConfig) {
-		this.repositoryConfig = repositoryConfig;
-	}
-
-	public String getChartVersion() {
-		return chartVersion;
-	}
-
-	public void setChartVersion(String chartVersion) {
-		this.chartVersion = chartVersion;
-	}
-
-	public String getAppVersion() {
-		return appVersion;
-	}
-
-	public void setAppVersion(String appVersion) {
-		this.appVersion = appVersion;
-	}
-
-	public HelmRepository[] getHelmExtraRepos() {
-		return helmExtraRepos;
-	}
-
-	public void setHelmExtraRepos(HelmRepository[] helmExtraRepos) {
-		this.helmExtraRepos = helmExtraRepos;
-	}
-
-	public HelmRepository getUploadRepoStable() {
-		return uploadRepoStable;
-	}
-
-	public void setUploadRepoStable(HelmRepository uploadRepoStable) {
-		this.uploadRepoStable = uploadRepoStable;
-	}
-
-	public HelmRepository getUploadRepoSnapshot() {
-		return uploadRepoSnapshot;
-	}
-
-	public void setUploadRepoSnapshot(HelmRepository uploadRepoSnapshot) {
-		this.uploadRepoSnapshot = uploadRepoSnapshot;
-	}
-
-	public String getHelmSecurity() {
-		return helmSecurity;
-	}
-
-	public void setHelmSecurity(String helmSecurity) {
-		this.helmSecurity = helmSecurity;
-	}
-
-	public Settings getSettings() {
-		return settings;
-	}
-
-	public boolean isUseLocalHelmBinary() {
-		return useLocalHelmBinary;
-	}
-
-	public void setUseLocalHelmBinary(boolean useLocalHelmBinary) {
-		this.useLocalHelmBinary = useLocalHelmBinary;
-	}
-
-	public boolean isAutoDetectLocalHelmBinary() {
-		return autoDetectLocalHelmBinary;
-	}
-
-	public void setAutoDetectLocalHelmBinary(final boolean autoDetectLocalHelmBinary) {
-		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary;
+	private static <K, V> boolean isNotEmpty(Map<K, V> map) {
+		return map != null && !map.isEmpty();
 	}
 }
