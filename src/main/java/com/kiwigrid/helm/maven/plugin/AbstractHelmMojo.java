@@ -111,7 +111,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
-	Path getHelmExecuteablePath() throws MojoExecutionException {
+	Path getHelmExecutablePath() throws MojoExecutionException {
 		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
 		Optional<Path> path;
 		if (isUseLocalHelmBinary() && isAutoDetectLocalHelmBinary()) {

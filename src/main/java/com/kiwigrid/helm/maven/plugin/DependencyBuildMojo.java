@@ -1,7 +1,5 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.util.Arrays;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -29,7 +27,7 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 		}
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("Build chart dependencies for " + inputDirectory + "...");
-			callCli(getHelmExecuteablePath()
+			callCli(getHelmExecutablePath()
 					+ " dependency build "
 					+ inputDirectory
 					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")

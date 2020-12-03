@@ -73,14 +73,14 @@ public class InitMojo extends AbstractHelmMojo {
 
 		if(isUseLocalHelmBinary()) {
 			verifyLocalHelmBinary();
-			getLog().info("Using local HELM binary ["+ getHelmExecuteablePath() +"]");
+			getLog().info("Using local HELM binary ["+ getHelmExecutablePath() +"]");
 		} else {
 			downloadAndUnpackHelm();
 		}
 
 		if (addDefaultRepo) {
 			getLog().info("Adding default repo [stable]");
-			callCli(getHelmExecuteablePath()
+			callCli(getHelmExecutablePath()
 							+ " repo add stable https://kubernetes-charts.storage.googleapis.com"
 							+ " "
 							+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config " + getRegistryConfig() : "")
@@ -98,7 +98,7 @@ public class InitMojo extends AbstractHelmMojo {
 			for (HelmRepository repository : getHelmExtraRepos()) {
 				getLog().info("Adding repo [" + repository +"]");
 				PasswordAuthentication auth = getAuthentication(repository);
-				callCli(getHelmExecuteablePath()
+				callCli(getHelmExecutablePath()
 								+ " repo add "
 								+ repository.getName()
 								+ " "
@@ -204,7 +204,7 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		callCli(getHelmExecuteablePath() + " version", "Unable to verify local HELM binary", false);
+		callCli(getHelmExecutablePath() + " version", "Unable to verify local HELM binary", false);
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {

@@ -1,7 +1,5 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.util.Arrays;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -32,7 +30,7 @@ public class PackageMojo extends AbstractHelmMojo {
 
 			getLog().info("Packaging chart " + inputDirectory + "...");
 
-			String helmCommand = getHelmExecuteablePath()
+			String helmCommand = getHelmExecutablePath()
 					+ " package "
 					+ inputDirectory
 					+ " -d "

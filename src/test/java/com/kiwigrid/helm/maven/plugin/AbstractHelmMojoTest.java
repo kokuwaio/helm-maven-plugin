@@ -96,13 +96,13 @@ class AbstractHelmMojoTest {
         void helmIsAutoDetectedFromPATH() throws MojoExecutionException, IOException {
 
             final Path expectedPath = addHelmToTestPath();
-            assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
+            assertEquals(expectedPath, subjectSpy.getHelmExecutablePath());
         }
 
         @Test
         void executionFailsWhenHelmIsNotFoundInPATH() {
 
-            final MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecuteablePath);
+            final MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecutablePath);
             assertTrue(exception.getMessage().contains("not found"));
         }
 
@@ -112,8 +112,8 @@ class AbstractHelmMojoTest {
             final String explicitExecutableDirectory = "/fish/in/da/sea";
             subjectSpy.setHelmExecutableDirectory(explicitExecutableDirectory);
             final Path expectedPath = addHelmToTestPath();
-            assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
-            assertNotEquals(explicitExecutableDirectory, subjectSpy.getHelmExecuteablePath());
+            assertEquals(expectedPath, subjectSpy.getHelmExecutablePath());
+            assertNotEquals(explicitExecutableDirectory, subjectSpy.getHelmExecutablePath());
         }
     }
 
@@ -131,13 +131,13 @@ class AbstractHelmMojoTest {
         void helmIsInTheExplicitlyConfiguredDirectory() throws MojoExecutionException, IOException {
 
             final Path expectedPath = addHelmToTestPath();
-            assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
+            assertEquals(expectedPath, subjectSpy.getHelmExecutablePath());
         }
 
         @Test
         void executionFailsWhenHelmIsNotFoundInConfiguredDirectory() {
 
-            final MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecuteablePath);
+            final MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecutablePath);
             assertTrue(exception.getMessage().contains("not found"));
         }
     }

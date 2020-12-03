@@ -29,7 +29,7 @@ public class DryRunMojo extends AbstractHelmMojo {
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("\n\nPerform dry-run for chart " + inputDirectory + "...");
 
-			callCli(getHelmExecuteablePath()
+			callCli(getHelmExecutablePath()
 					+ " " + action
 					+ " " + inputDirectory
 					+ " --dry-run --generate-name"

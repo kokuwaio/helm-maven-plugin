@@ -32,7 +32,7 @@ public class LintMojoTest {
 
         ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
         doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
-        doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo).getHelmExecuteablePath();
+        doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo).getHelmExecutablePath();
 
         mojo.execute();
 

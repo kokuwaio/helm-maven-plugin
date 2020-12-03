@@ -31,7 +31,7 @@ public class LintMojo extends AbstractHelmMojo {
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 
 			getLog().info("\n\nTesting chart " + inputDirectory + "...");
-			callCli(getHelmExecuteablePath()
+			callCli(getHelmExecutablePath()
 					+ " lint "
 					+ inputDirectory
 					+ (lintStrict ? " --strict" : "")
