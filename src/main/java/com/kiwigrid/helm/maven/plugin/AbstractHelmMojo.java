@@ -36,6 +36,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
  * Base class for mojos
  *
@@ -318,6 +320,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	protected SecDispatcher getSecDispatcher() {
+
 		if (securityDispatcher instanceof DefaultSecDispatcher) {
 			((DefaultSecDispatcher) securityDispatcher).setConfigurationFile(getHelmSecurity());
 		}
@@ -325,37 +328,29 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	protected String getValuesOptions() {
+
 		StringBuilder setValuesOptions = new StringBuilder();
 		if (values != null) {
 			if (isNotEmpty(values.getOverrides())) {
-				setValuesOptions.append(" --set ");
-				appendOverrideMap(setValuesOptions, values.getOverrides());
+				setValuesOptions.append(" --set ").append(appendOverrideMap(values.getOverrides()));
 			}
 			if (isNotEmpty(values.getStringOverrides())) {
-				setValuesOptions.append(" --set-string ");
-				appendOverrideMap(setValuesOptions, values.getStringOverrides());
+				setValuesOptions.append(" --set-string ").append(appendOverrideMap(values.getStringOverrides()));
 			}
 			if (isNotEmpty(values.getFileOverrides())) {
-				setValuesOptions.append(" --set-file ");
-				appendOverrideMap(setValuesOptions, values.getFileOverrides());
+				setValuesOptions.append(" --set-file ").append(appendOverrideMap(values.getFileOverrides()));
 			}
-			if (StringUtils.isNotBlank(values.getYamlFile())) {
+			if (isNotBlank(values.getYamlFile())) {
 				setValuesOptions.append(" --values ").append(values.getYamlFile());
 			}
 		}
 		return setValuesOptions.toString();
 	}
 
-	private void appendOverrideMap(StringBuilder setValues, Map<String, String> overrides) {
-		boolean first = true;
-		for (Map.Entry<String, String> valueEntry : overrides.entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				setValues.append(',');
-			}
-			setValues.append(valueEntry.getKey()).append('=').append(valueEntry.getValue());
-		}
+	private String appendOverrideMap(Map<String, String> overrides) {
+
+
+		return overrides.keySet().stream().map(key -> key.concat("=").concat(overrides.get(key))).collect(Collectors.joining(","));
 	}
 
 	private static <K, V> boolean isNotEmpty(Map<K, V> map) {
