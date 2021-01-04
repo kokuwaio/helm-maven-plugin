@@ -81,7 +81,7 @@ public class InitMojo extends AbstractHelmMojo {
 		if (addDefaultRepo) {
 			getLog().info("Adding default repo [stable]");
 			callCli(getHelmExecuteablePath()
-							+ " repo add stable https://kubernetes-charts.storage.googleapis.com"
+							+ " repo add stable https://charts.helm.sh/stable"
 							+ " "
 							+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config " + getRegistryConfig() : "")
 							+ (StringUtils.isNotEmpty(getRepositoryCache()) ?

@@ -95,7 +95,7 @@ public class InitMojoTest {
 				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
-		assertTrue(helmDefaultCommand.contains("repo add stable https://kubernetes-charts.storage.googleapis.com"), "Adding stable repo by default expected");
+		assertTrue(helmDefaultCommand.contains("repo add stable https://charts.helm.sh/stable"), "Adding stable repo by default expected");
 	}
 
 	@Test
