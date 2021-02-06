@@ -95,7 +95,8 @@ public class InitMojo extends AbstractHelmMojo {
 				addRepository(getUploadRepoStable());
 			}
 
-			if (getUploadRepoSnapshot() != null) {
+			//add the upload snapshot repo only if it's name differs to the upload repo stable name
+			if (getUploadRepoSnapshot() != null && (getUploadRepoStable()==null || !getUploadRepoStable().getName().equals(getUploadRepoSnapshot().getName()))) {
 				addRepository(getUploadRepoSnapshot());
 			}
 		}
