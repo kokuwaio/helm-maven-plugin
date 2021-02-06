@@ -215,6 +215,41 @@ public class InitMojoTest {
 	}
 
 	@Test
+	public void verifyAddingUploadSnapshotStableRepoSameRepoName(InitMojo mojo) throws Exception {
+
+		// prepare execution
+		final HelmRepository helmUploadStableRepo = new HelmRepository();
+		helmUploadStableRepo.setType(RepoType.ARTIFACTORY);
+		helmUploadStableRepo.setName("my-artifactory");
+		helmUploadStableRepo.setUrl("https://somwhere.com/repo");
+		mojo.setUploadRepoStable(helmUploadStableRepo);
+		final HelmRepository helmUploadSnapshotRepo = new HelmRepository();
+		helmUploadSnapshotRepo.setType(RepoType.ARTIFACTORY);
+		helmUploadSnapshotRepo.setName("my-artifactory");
+		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo");
+		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
+		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
+		mojo.setAddDefaultRepo(true);
+		mojo.setAddUploadRepos(true);
+
+		// run init7
+		mojo.execute();
+
+		// check captured commands
+		Set<String> helmCommands = helmCommandCaptor.getAllValues()
+				.stream()
+				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
+				.map(cmd -> cmd.substring(cmd.indexOf("repo add"))) //remove everything before repo add for easier verification
+				.collect(Collectors.toSet());
+
+		assertEquals(2, helmCommands.size(), "Expected 2 helm commands");
+		assertTrue(helmCommands.contains("repo add my-artifactory https://somwhere.com/repo"), "Adding upload stable repo expected");
+		assertTrue(helmCommands.contains("repo add stable "+ InitMojo.STABLE_HELM_REPO), "Adding helm stable repo expected");
+	}
+
+	@Test
 	public void verifyAddingUploadSnapshotRepoStableNotPresent(InitMojo mojo) throws Exception {
 
 		// prepare execution
