@@ -197,7 +197,6 @@ public class UploadMojo extends AbstractHelmMojo {
 
 	protected void uploadToHarbor(File file) throws IOException, BadUploadException, MojoExecutionException {
 		HttpPost post = new HttpPost(getHelmUploadUrl());
-//		https://harbor.backbase.eu/#/Products/post_chartrepo__repo__charts
 		FileBody fileBody = new FileBody(file, ContentType.MULTIPART_FORM_DATA);
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
