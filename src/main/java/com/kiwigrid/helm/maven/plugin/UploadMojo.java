@@ -2,7 +2,6 @@ package com.kiwigrid.helm.maven.plugin;
 
 import com.kiwigrid.helm.maven.plugin.exception.BadUploadException;
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
-import com.kiwigrid.helm.maven.plugin.pojo.RepoType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -88,36 +87,35 @@ public class UploadMojo extends AbstractHelmMojo {
 			break;
         case HARBOR:
 			uploadToHarbor(fileToUpload);
-			break;
+			return;
 
 		default:
 			throw new IllegalArgumentException("Unsupported repository type for upload.");
 		}
 
-		if (uploadRepo.getType() != RepoType.HARBOR) {
-			try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
-				IOUtils.copy(fileInputStream, connection.getOutputStream());
-			}
-			if (connection.getResponseCode() >= 300) {
-				String response;
-				if (connection.getErrorStream() != null) {
-					response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
-				} else if (connection.getInputStream() != null) {
-					response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
-				} else {
-					response = "No details provided";
-				}
-				throw new BadUploadException(response);
-			} else {
-				String message = Integer.toString(connection.getResponseCode());
-				if (connection.getInputStream() != null) {
-					message += " - " + IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
-				}
-				getLog().info(message);
-			}
-			connection.disconnect();
+		try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
+			IOUtils.copy(fileInputStream, connection.getOutputStream());
 		}
+		if (connection.getResponseCode() >= 300) {
+			String response;
+			if (connection.getErrorStream() != null) {
+				response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
+			} else if (connection.getInputStream() != null) {
+				response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+			} else {
+				response = "No details provided";
+			}
+			throw new BadUploadException(response);
+		} else {
+			String message = Integer.toString(connection.getResponseCode());
+			if (connection.getInputStream() != null) {
+				message += " - " + IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+			}
+			getLog().info(message);
+		}
+		connection.disconnect();
 	}
+
 
 	protected HttpURLConnection getConnectionForUploadToChartmuseum() throws IOException, MojoExecutionException {
 		final HttpURLConnection connection = (HttpURLConnection) new URL(getHelmUploadUrl()).openConnection();
