@@ -295,7 +295,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		}
 
 		getLog().info("Use credentials from server list for " + id + ".");
-		getLog().info("Repo has credentials username:" + server.getUsername() + "password:" + server.getPassword());
 		if (server.getUsername() == null || server.getPassword() == null) {
 			throw new IllegalArgumentException("Repo "
 					+ id
