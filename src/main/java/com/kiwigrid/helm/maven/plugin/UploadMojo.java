@@ -132,7 +132,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		connection.setRequestMethod("PUT");
 		connection.setRequestProperty("Content-Type", "application/gzip");
 
-		verifyAndSetAuthentication();
+		verifyAndSetAuthentication(true);
 
 		return connection;
 	}
@@ -148,24 +148,33 @@ public class UploadMojo extends AbstractHelmMojo {
 		final HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("PUT");
+		connection.setRequestProperty("Content-Type", "application/gzip");
 
-		setBasicAuthHeader(connection);
+		verifyAndSetAuthentication(false);
 
 		return connection;
 	}
 
-	private void verifyAndSetAuthentication() throws MojoExecutionException {
+	/**
+	 *
+	 * @param requireCredentials The need for credentials depends on how the repository is configured.
+	 *                           For instance on nexus it is possible to configure a repository without authentication
+	 * @throws MojoExecutionException
+	 */
+	private void verifyAndSetAuthentication(boolean requireCredentials) throws MojoExecutionException {
 
 		PasswordAuthentication authentication = getAuthentication(getHelmUploadRepo());
-		if (authentication == null) {
+		if (authentication != null) {
+			Authenticator.setDefault(new Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return authentication;
+				}
+			});
+		}else if (requireCredentials) {
 			throw new IllegalArgumentException("Credentials has to be configured for uploading to Artifactory.");
 		}
 
-		Authenticator.setDefault(new Authenticator() {
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return authentication;
-			}
-		});
 	}
+
 }
