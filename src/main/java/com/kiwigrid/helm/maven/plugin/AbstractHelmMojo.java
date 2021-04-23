@@ -158,9 +158,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			final Process p = Runtime.getRuntime().exec(command);
 			new Thread(() -> {
 				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 				String inputLine;
-				String errorLine;
 				try {
 					while ((inputLine = input.readLine()) != null) {
 						if (verbose) {
@@ -169,6 +167,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 							getLog().debug(inputLine);
 						}
 					}
+				} catch (IOException e) {
+					getLog().error(e);
+				}
+			}).start();
+			new Thread(() -> {
+				BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+				String errorLine;
+				try {
 					while ((errorLine = error.readLine()) != null) {
 						getLog().error(errorLine);
 					}
