@@ -171,7 +171,7 @@ public class UploadMojo extends AbstractHelmMojo {
 					return authentication;
 				}
 			});
-		}else if (requireCredentials) {
+		} else if (requireCredentials) {
 			throw new IllegalArgumentException("Credentials has to be configured for uploading to Artifactory.");
 		}
 
