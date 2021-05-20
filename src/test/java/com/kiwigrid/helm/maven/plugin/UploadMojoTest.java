@@ -252,6 +252,131 @@ public class UploadMojoTest {
 		fail("BadUploadException expected on failed upload");
 	}
 
+	@Test
+	public void uploadToNexusWithRepositoryCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.NEXUS);
+		helmRepo.setName("my-nexus");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		helmRepo.setUsername("foo");
+		helmRepo.setPassword("bar");
+		mojo.setUploadRepoStable(helmRepo);
+
+		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+
+		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
+	}
+
+	@Test
+	public void uploadToNexusWithPlainCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final Server server = new Server();
+		server.setId("my-nexus");
+		server.setUsername("foo");
+		server.setPassword("bar");
+		final List<Server> servers = new ArrayList<>();
+		servers.add(server);
+		mojo.getSettings().setServers(servers);
+
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.NEXUS);
+		helmRepo.setName("my-nexus");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		mojo.setUploadRepoStable(helmRepo);
+
+		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+
+		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
+	}
+
+	@Test
+	public void uploadToNexusWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final Server server = new Server();
+		server.setId("my-nexus");
+		server.setUsername("foo");
+		server.setPassword("{GGhJc6qP+v0Hg2l+dei1MQFZt/55PzyFXY0MUMxcQdQ=}");
+		final List<Server> servers = new ArrayList<>();
+		servers.add(server);
+		mojo.getSettings().setServers(servers);
+
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.NEXUS);
+		helmRepo.setName("my-nexus");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		mojo.setUploadRepoStable(helmRepo);
+
+		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(this.getClass().getResource("settings-security.xml").getFile()).when(mojo).getHelmSecurity();
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+
+		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
+
+		final PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
+		assertEquals("foo", pwd.getUserName());
+		assertEquals("bar", String.valueOf(pwd.getPassword()));
+	}
+
+	@Test
+	public void uploadToNexusWithoutCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.NEXUS);
+		helmRepo.setName("my-nexus");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		mojo.setUploadRepoStable(helmRepo);
+
+		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+
+		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
+	}
+
+	@Test
+	public void verifyHttpConnectionForNexusUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
+		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		final File fileToUpload = new File(resource.getFile());
+
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.NEXUS);
+		helmRepo.setName("my-nexus");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		helmRepo.setUsername("foo");
+		helmRepo.setPassword("bar");
+		uploadMojo.setUploadRepoStable(helmRepo);
+
+		// Call
+		HttpURLConnection httpURLConnection = uploadMojo.getConnectionForUploadToNexus(fileToUpload);
+
+		// Verify
+		assertEquals("PUT", httpURLConnection.getRequestMethod());
+		String expectedUploadUrl = helmRepo.getUrl() + "/" + fileToUpload.getName();
+		assertEquals(expectedUploadUrl, httpURLConnection.getURL().toString());
+
+		String contentTypeHeader = httpURLConnection.getRequestProperty("Content-Type");
+		assertNotNull(contentTypeHeader);
+		assertEquals("application/gzip", contentTypeHeader);
+	}
+
 	/** Writes to nowhere */
 	public class NullOutputStream extends OutputStream {
 		@Override
