@@ -67,7 +67,7 @@ public class UploadMojoTest {
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
 		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
 		
-		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload));
+		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
 	}
 	
 	@Test
@@ -94,7 +94,7 @@ public class UploadMojoTest {
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
 		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
 
-		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload));
+		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
 	}
 	
 	@Test
@@ -122,7 +122,7 @@ public class UploadMojoTest {
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
 		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
 		
-		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload));
+		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
 
 		final PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
 		assertEquals("foo", pwd.getUserName());
@@ -143,7 +143,7 @@ public class UploadMojoTest {
 		uploadMojo.setUploadRepoStable(helmRepo);
 
 		// Call
-		HttpURLConnection httpURLConnection = uploadMojo.getConnectionForUploadToArtifactory(fileToUpload);
+		HttpURLConnection httpURLConnection = uploadMojo.getConnectionForUploadToArtifactory(fileToUpload, false);
 
 		// Verify
 		assertEquals("PUT", httpURLConnection.getRequestMethod());
@@ -153,6 +153,38 @@ public class UploadMojoTest {
 		String contentTypeHeader = httpURLConnection.getRequestProperty("Content-Type");
 		assertNotNull(contentTypeHeader);
 		assertEquals("application/gzip", contentTypeHeader);
+	}
+
+	@Test
+	public void uploadToArtifactoryByGroupId(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.ARTIFACTORY);
+		helmRepo.setName("my-artifactory");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		helmRepo.setUsername("foo");
+		helmRepo.setPassword("bar");
+		helmRepo.setUseGroupId(true);
+		mojo.setUploadRepoStable(helmRepo);
+		final String projectGroupId = "example.foo.bar";
+		final String projectVersion = "0.1.0";
+		final String chartFileName = "app-0.1.0.tgz";
+		final URL resource = this.getClass().getResource(chartFileName);
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		doReturn(projectGroupId).when(mojo).getProjectGroupId();
+		doReturn(projectVersion).when(mojo).getProjectVersion();
+
+		HttpURLConnection connection = mojo.getConnectionForUploadToArtifactory(fileToUpload, helmRepo.isUseGroupId());
+		assertEquals(
+				helmRepo.getUrl() + "/"
+						+ projectGroupId.replace(".", "/") + "/"
+						+ projectVersion + "/"
+						+ chartFileName
+				, connection.getURL().toString());
 	}
 
 	@Test
@@ -198,12 +230,12 @@ public class UploadMojoTest {
 		doReturn(new ByteArrayInputStream("ok".getBytes(StandardCharsets.UTF_8))).when(urlConnectionMock)
 				.getInputStream();
 		doNothing().when(urlConnectionMock).connect();
-		doReturn(urlConnectionMock).when(uploadMojo).getConnectionForUploadToArtifactory(fileToUpload);
+		doReturn(urlConnectionMock).when(uploadMojo).getConnectionForUploadToArtifactory(fileToUpload, false);
 
 		// call Mojo
 		uploadMojo.execute();
 
-		verify(uploadMojo).getConnectionForUploadToArtifactory(fileToUpload);
+		verify(uploadMojo).getConnectionForUploadToArtifactory(fileToUpload, false);
 	}
 
 	@Test
