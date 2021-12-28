@@ -188,6 +188,35 @@ public class UploadMojoTest {
 	}
 
 	@Test
+	public void uploadToArtifactoryWithoutByGroupId(UploadMojo mojo) throws IOException, MojoExecutionException {
+		final HelmRepository helmRepo = new HelmRepository();
+		helmRepo.setType(RepoType.ARTIFACTORY);
+		helmRepo.setName("my-artifactory");
+		helmRepo.setUrl("https://somwhere.com/repo");
+		helmRepo.setUsername("foo");
+		helmRepo.setPassword("bar");
+		helmRepo.setUseGroupId(false);
+		mojo.setUploadRepoStable(helmRepo);
+		final String projectGroupId = "example.foo.bar";
+		final String projectVersion = "0.1.0";
+		final String chartFileName = "app-0.1.0.tgz";
+		final URL resource = this.getClass().getResource(chartFileName);
+		final File fileToUpload = new File(resource.getFile());
+		final List<String> tgzs = new ArrayList<>();
+		tgzs.add(resource.getFile());
+
+		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
+		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		doReturn(projectGroupId).when(mojo).getProjectGroupId();
+		doReturn(projectVersion).when(mojo).getProjectVersion();
+
+		HttpURLConnection connection = mojo.getConnectionForUploadToArtifactory(fileToUpload, helmRepo.isUseGroupId());
+		assertEquals(
+				helmRepo.getUrl() + "/" + chartFileName
+				, connection.getURL().toString());
+	}
+
+	@Test
 	public void verifyHttpConnectionForChartmuseumUpload(UploadMojo uploadMojo) throws IOException {
 		final HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.CHARTMUSEUM);
