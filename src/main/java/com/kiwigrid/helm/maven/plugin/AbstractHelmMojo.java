@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
+import com.kiwigrid.helm.maven.plugin.pojo.K8SCluster;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -98,6 +99,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.skip", defaultValue = "false")
 	protected boolean skip;
 
+	@Parameter(property = "helm.k8s")
+	private K8SCluster k8sCluster;
+
+	private String k8sToken = "";
+
 	/**
 	 * The current user system settings for use in Maven.
 	 */
@@ -152,7 +158,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		int exitValue;
 
-		getLog().debug(command);
+		command += getK8SArgs();
+
+		getLog().debug(command.replace(k8sToken, "******"));
 
 		try {
 			final Process p = Runtime.getRuntime().exec(command);
@@ -161,11 +169,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 				String inputLine;
 				try {
 					while ((inputLine = input.readLine()) != null) {
-						if (verbose) {
-							getLog().info(inputLine);
-						} else {
-							getLog().debug(inputLine);
-						}
+						getLog().info(inputLine.replace(k8sToken, "******"));
 					}
 				} catch (IOException e) {
 					getLog().error(e);
@@ -185,12 +189,35 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			p.waitFor();
 			exitValue = p.exitValue();
 		} catch (Exception e) {
-			throw new MojoExecutionException("Error processing command [" + command + "]", e);
+			throw new MojoExecutionException("Error processing command [" + command.replace(k8sToken, "******") + "]", e);
 		}
 
 		if (exitValue != 0) {
 			throw new MojoExecutionException(errorMessage);
 		}
+	}
+
+	String getK8SArgs() {
+		StringBuilder k8sConfigArgs = new StringBuilder();
+		if (k8sCluster != null){
+			if(StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
+				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
+			}
+			if(StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
+				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
+			}
+			if(StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
+				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());
+			}
+			if(StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
+				k8sConfigArgs.append(" --kube-as-group ").append(k8sCluster.getAsGroup());
+			}
+			if(StringUtils.isNotEmpty(k8sCluster.getToken())) {
+				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
+				k8sToken = k8sCluster.getToken();
+			}
+		}
+		return k8sConfigArgs.toString();
 	}
 
 	List<String> getChartDirectories(String path) throws MojoExecutionException {
@@ -291,7 +318,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			if (repository.getPassword() == null) {
 				throw new IllegalArgumentException("Repo " + id + " has a username but no password defined.");
 			}
-			getLog().debug("Repo " + id + " has credentials definded, skip searching in server list.");
+			getLog().debug("Repo " + id + " has credentials defined, skip searching in server list.");
 			return new PasswordAuthentication(repository.getUsername(), repository.getPassword().toCharArray());
 		}
 
@@ -461,5 +488,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setAutoDetectLocalHelmBinary(final boolean autoDetectLocalHelmBinary) {
 		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary;
+	}
+
+	public K8SCluster getK8SCluster() {
+		return k8sCluster;
+	}
+
+	public void setK8SCluster(K8SCluster k8sCluster) {
+		this.k8sCluster = k8sCluster;
 	}
 }
