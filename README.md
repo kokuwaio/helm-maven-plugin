@@ -8,7 +8,7 @@ This is a Maven plugin for testing, packaging and uploading HELM charts.
 
 Visit <https://docs.helm.sh> for detailed information.
 
-Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) and [Artifactory](https://jfrog.com/artifactory/) is supported.
+Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum), [Artifactory](https://jfrog.com/artifactory/) and [Nexus](https://github.com/sonatype/nexus-public) is supported.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin)
 
