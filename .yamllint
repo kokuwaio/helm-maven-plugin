@@ -1,0 +1,10 @@
+extends: default
+
+## see https://yamllint.readthedocs.io/en/stable/rules.html
+rules:
+
+  # no need for document start
+  document-start: disable
+
+  # line length is not important
+  line-length: disable
