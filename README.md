@@ -1,4 +1,6 @@
-# What?
+# Maven Helm Plugin
+
+## What?
 
 This is a Maven plugin for testing, packaging and uploading HELM charts.
 
@@ -12,7 +14,7 @@ Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmu
 
 [![Build Status](https://travis-ci.org/kiwigrid/helm-maven-plugin.svg?branch=master)](https://travis-ci.org/kiwigrid/helm-maven-plugin)
 
-## Helm v3
+### Helm v3
 
 From version **5.0** Helm v3 is required.
 There is no longer support for Helm v2.
@@ -20,11 +22,11 @@ For convenience reasons the stable repo is added by default.
 
 Helm v2 users can still use plugin version [4.13](https://search.maven.org/artifact/com.kiwigrid/helm-maven-plugin/4.13/maven-plugin).
 
-# Why?
+## Why?
 
 Currently (October 2017) there is no simple Maven plugin to package existing HELM charts.
 
-# How?
+## How?
 
 By default, the plugin automatically downloads Helm at the specified version. You can also manually specify the download URL.
 Next to that it is possible to specify a local Helm binary. In all cases Helm will be executed in the background.
@@ -230,7 +232,7 @@ and disables the auto-detection feature:
 </build>
 ```
 
-# Features
+## Features
 
 - Package Helm charts from standard folder structure
 - Test Helm charts (Helm lint)
@@ -239,7 +241,7 @@ and disables the auto-detection feature:
 - Upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) or [Artifactory](https://jfrog.com/artifactory/)
 - Repository names are interpreted as server IDs to retrieve basic authentication from server list in settings.xml.
 
-# Usage
+## Usage
 
 ## Goals
 
