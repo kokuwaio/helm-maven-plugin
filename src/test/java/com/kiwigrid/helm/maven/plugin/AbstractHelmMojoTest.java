@@ -3,11 +3,7 @@ package com.kiwigrid.helm.maven.plugin;
 import static java.nio.file.Files.write;
 import static java.util.Arrays.asList;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 
 import java.io.File;
@@ -16,12 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.kiwigrid.helm.maven.plugin.pojo.K8SCluster;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
 class AbstractHelmMojoTest {
@@ -55,6 +49,81 @@ class AbstractHelmMojoTest {
         assertTrue(chartDirectories.containsAll(expected), "Charts dirs: " + chartDirectories + ", should contain all expected dirs: " + expected);
     }
 
+    @Nested
+    class K8SClusterArgs{
+
+        @Test
+        void k8sClusterArg_WhenNull(){
+            assertNull(subjectSpy.getK8SCluster());
+            assertEquals("", subjectSpy.getK8SArgs());
+        }
+
+        @Test
+        void k8sClusterArg_NotConfigured(){
+            final K8SCluster k8SCluster = new K8SCluster();
+            subjectSpy.setK8SCluster(k8SCluster);
+            assertEquals("", subjectSpy.getK8SArgs());
+        }
+
+        @Test
+        void k8sClusterArg_ApiUrl(){
+            final K8SCluster k8SCluster = new K8SCluster();
+            subjectSpy.setK8SCluster(k8SCluster);
+            k8SCluster.setApiUrl("custom-api-url");
+            assertEquals(" --kube-apiserver custom-api-url", subjectSpy.getK8SArgs());
+        }
+
+        @Test
+        void k8sClusterArg_AsUser(){
+            final K8SCluster k8SCluster = new K8SCluster();
+            subjectSpy.setK8SCluster(k8SCluster);
+            k8SCluster.setAsUser("custom-user");
+            assertEquals(" --kube-as-user custom-user", subjectSpy.getK8SArgs());
+        }
+
+        @Test
+        void k8sClusterArg_AsGroup(){
+            final K8SCluster k8SCluster = new K8SCluster();
+            subjectSpy.setK8SCluster(k8SCluster);
+            k8SCluster.setAsGroup("custom-group");
+            assertEquals(" --kube-as-group custom-group", subjectSpy.getK8SArgs());
+        }
+
+        @Test
+        void k8sClusterArg_Namespace(){
+            final K8SCluster k8SCluster = new K8SCluster();
+            subjectSpy.setK8SCluster(k8SCluster);
+            k8SCluster.setNamespace("custom-ns");
+            assertEquals(" --namespace custom-ns", subjectSpy.getK8SArgs());
+        }
+
+        @Test
+        void k8sClusterArg_Token(){
+            final K8SCluster k8SCluster = new K8SCluster();
+            subjectSpy.setK8SCluster(k8SCluster);
+            k8SCluster.setToken("custom-token");
+            assertEquals(" --kube-token custom-token", subjectSpy.getK8SArgs());
+        }
+        @Test
+        void k8sClusterArg_All(){
+            final K8SCluster k8SCluster = new K8SCluster();
+            subjectSpy.setK8SCluster(k8SCluster);
+            k8SCluster.setApiUrl("custom-api-url");
+            k8SCluster.setAsUser("custom-user");
+            k8SCluster.setAsGroup("custom-group");
+            k8SCluster.setToken("custom-token");
+            k8SCluster.setNamespace("custom-ns");
+            k8SCluster.setToken("custom-token");
+            assertEquals(
+                    " --kube-apiserver custom-api-url"
+                            + " --namespace custom-ns"
+                            + " --kube-as-user custom-user"
+                            + " --kube-as-group custom-group"
+                            + " --kube-token custom-token"
+                    , subjectSpy.getK8SArgs());
+        }
+
+    }
 
     @Test
     void getChartDirectoriesReturnChartDirectoriesWithPlainExclusion() throws MojoExecutionException {
