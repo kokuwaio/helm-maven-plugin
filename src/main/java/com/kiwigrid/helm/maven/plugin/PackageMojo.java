@@ -49,8 +49,8 @@ public class PackageMojo extends AbstractHelmMojo {
 					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "");
 
 			if (getChartVersion() != null) {
-				getLog().info(String.format("Setting chart version to %s", getChartVersion()));
-				helmCommand = helmCommand + " --version " + getChartVersion();
+				getLog().info(String.format("Setting chart version to %s", getChartVersionWithProcessing()));
+				helmCommand = helmCommand + " --version " + getChartVersionWithProcessing();
 			}
 
 			if (getAppVersion() != null) {
