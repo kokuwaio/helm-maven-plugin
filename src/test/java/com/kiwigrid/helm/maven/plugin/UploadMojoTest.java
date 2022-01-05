@@ -67,7 +67,7 @@ public class UploadMojoTest {
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
 		doReturn(tgzs).when(mojo).getChartFiles(anyString());
 
-		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload));
+		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class UploadMojoTest {
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
 		doReturn(tgzs).when(mojo).getChartFiles(anyString());
 
-		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload));
+		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
 
 		final PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
 		assertEquals("foo", pwd.getUserName());
@@ -206,7 +206,7 @@ public class UploadMojoTest {
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		doReturn(tgzs).when(mojo).getChartFiles(anyString());
 		doReturn(projectGroupId).when(mojo).getProjectGroupId();
 		doReturn(projectVersion).when(mojo).getProjectVersion();
 
