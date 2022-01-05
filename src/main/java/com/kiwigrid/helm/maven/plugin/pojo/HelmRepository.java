@@ -41,6 +41,9 @@ public class HelmRepository {
 	@Parameter(property = "helm.repo.type")
 	private RepoType type;
 
+	@Parameter(property = "helm.upload.by.groupId")
+	private boolean useGroupId;
+
 	@Override
 	public String toString() {
 		return "[" + name + " / " + url + "]";

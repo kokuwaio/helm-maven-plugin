@@ -1,0 +1,46 @@
+name: Build
+
+"on":
+  workflow_dispatch: {}
+  push: {}
+
+jobs:
+
+  lint-yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ibiqlik/action-yamllint@v3
+        with:
+          format: colored
+          strict: true
+
+  lint-markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker://avtodev/markdown-lint:v1
+        with:
+          args: /github/workspace
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 11
+          cache: maven
+      - run: mvn -B dependency:go-offline -q
+      - run: mvn -B verify
+        if: github.ref != 'refs/heads/master'
+      - uses: dorny/test-reporter@v1
+        if: failure()
+        with:
+          name: surefire
+          path: '*/target/surefire-reports/*.xml'
+          reporter: java-junit
+          list-suites: failed
+          list-tests: failed
+          fail-on-error: false
