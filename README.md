@@ -1,20 +1,16 @@
 # Maven Helm Plugin
 
-## What?
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin)
+[![CI](https://github.com/kiwigrid/helm-maven-plugin/actions/workflows/snapshot.yaml/badge.svg)](https://github.com/kiwigrid/helm-maven-plugin/actions/workflows/snapshot.yaml)
 
 This is a Maven plugin for testing, packaging and uploading HELM charts.
-
 "HELM is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources."
 
 Visit <https://docs.helm.sh> for detailed information.
 
 Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum), [Artifactory](https://jfrog.com/artifactory/) and [Nexus](https://github.com/sonatype/nexus-public) is supported.
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin)
-
-[![Build Status](https://travis-ci.org/kiwigrid/helm-maven-plugin.svg?branch=master)](https://travis-ci.org/kiwigrid/helm-maven-plugin)
-
-### Helm v3
+## Helm v3
 
 From version **5.0** Helm v3 is required.
 There is no longer support for Helm v2.
