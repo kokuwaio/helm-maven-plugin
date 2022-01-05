@@ -1,10 +1,12 @@
-# What?
+# Maven Helm Plugin
+
+## What?
 
 This is a Maven plugin for testing, packaging and uploading HELM charts.
 
-"HELM is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources." 
+"HELM is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources."
 
-Visit https://docs.helm.sh for detailed information.
+Visit <https://docs.helm.sh> for detailed information.
 
 Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) and [Artifactory](https://jfrog.com/artifactory/) is supported.
 
@@ -12,7 +14,7 @@ Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmu
 
 [![Build Status](https://travis-ci.org/kiwigrid/helm-maven-plugin.svg?branch=master)](https://travis-ci.org/kiwigrid/helm-maven-plugin)
 
-## Helm v3
+### Helm v3
 
 From version **5.0** Helm v3 is required.
 There is no longer support for Helm v2.
@@ -20,16 +22,17 @@ For convenience reasons the stable repo is added by default.
 
 Helm v2 users can still use plugin version [4.13](https://search.maven.org/artifact/com.kiwigrid/helm-maven-plugin/4.13/maven-plugin).
 
-# Why?
+## Why?
 
 Currently (October 2017) there is no simple Maven plugin to package existing HELM charts.
 
-# How?
+## How?
 
 By default, the plugin automatically downloads Helm at the specified version. You can also manually specify the download URL.
 Next to that it is possible to specify a local Helm binary. In all cases Helm will be executed in the background.
 
 Add following dependency to your pom.xml:
+
 ```xml
 <dependency>
   <groupId>com.kiwigrid</groupId>
@@ -62,6 +65,7 @@ The default setting is to construct the Helm download URL based upon the detecte
 ```
 
 ### Usage with Downloaded Binary
+
 ```xml
 <build>
   <plugins>
@@ -132,6 +136,7 @@ and disables the auto-detection feature:
 ```
 
 ### Configure Plugin to Use Credentials from settings.xml for Upload
+
 ```xml
 <build>
   <plugins>
@@ -163,6 +168,7 @@ and disables the auto-detection feature:
 ```
 
 ### More Complex Example
+
 ```xml
 <build>
   <plugins>
@@ -226,7 +232,7 @@ and disables the auto-detection feature:
 </build>
 ```
 
-# Features
+## Features
 
 - Package Helm charts from standard folder structure
 - Test Helm charts (Helm lint)
@@ -235,7 +241,7 @@ and disables the auto-detection feature:
 - Upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) or [Artifactory](https://jfrog.com/artifactory/)
 - Repository names are interpreted as server IDs to retrieve basic authentication from server list in settings.xml.
 
-# Usage
+## Usage
 
 ## Goals
 
@@ -268,7 +274,7 @@ Parameter | Type | User Property | Required | Description
 `<uploadRepoStable>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
 `<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
 `<lintStrict>` | boolean | helm.lint.strict | false | run lint command with strict option (fail on lint warnings)
-`<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (https://charts.helm.sh/stable) will be added
+`<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (<https://charts.helm.sh/stable>) will be added
 `<addUploadRepos>` | boolean | helm.init.add-upload-repos | false | If true, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured
 `<skip>` | boolean | helm.skip | false | skip plugin execution
 `<skipInit>` | boolean | helm.init.skip | false | skip init goal

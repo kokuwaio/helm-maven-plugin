@@ -268,7 +268,7 @@ public class UploadMojoTest {
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		doReturn(tgzs).when(mojo).getChartFiles(anyString());
 
 		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
 	}
@@ -295,7 +295,7 @@ public class UploadMojoTest {
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		doReturn(tgzs).when(mojo).getChartFiles(anyString());
 
 		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
 	}
@@ -323,7 +323,7 @@ public class UploadMojoTest {
 
 		doReturn(this.getClass().getResource("settings-security.xml").getFile()).when(mojo).getHelmSecurity();
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		doReturn(tgzs).when(mojo).getChartFiles(anyString());
 
 		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
 
@@ -346,7 +346,7 @@ public class UploadMojoTest {
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartTgzs(anyString());
+		doReturn(tgzs).when(mojo).getChartFiles(anyString());
 
 		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
 	}
