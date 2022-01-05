@@ -19,7 +19,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.PasswordAuthentication;
+
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -146,6 +149,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return System.getenv("PATH").split(Pattern.quote(File.pathSeparator));
 	}
 
+
 	/**
 	 * Calls cli with specified command
 	 *
@@ -154,8 +158,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @param verbose logs STDOUT to Maven info log
 	 * @throws MojoExecutionException on error
 	 */
-	void callCli(String command, String errorMessage, final boolean verbose) throws MojoExecutionException {
+	void callCli(String command, String errorMessage, boolean verbose) throws MojoExecutionException {
+		callCli(command, errorMessage, verbose, null);
+	}
 
+	/**
+	 * Calls cli with specified command
+	 *
+	 * @param command the command to be executed
+	 * @param errorMessage a readable error message that will be shown in case of exceptions
+	 * @param verbose logs STDOUT to Maven info log
+	 * @param stdin STDIN which is passed to the helm process
+	 * @throws MojoExecutionException on error
+	 */
+	void callCli(String command, String errorMessage, final boolean verbose, String stdin) throws MojoExecutionException {
 		int exitValue;
 
 		getLog().debug(command);
@@ -163,6 +179,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		try {
 			final Process p = Runtime.getRuntime().exec(command);
 			new Thread(() -> {
+				if (StringUtils.isNotEmpty(stdin)) {
+					try (OutputStream outputStream = p.getOutputStream()) {
+						outputStream.write( stdin.getBytes(StandardCharsets.UTF_8) );
+					} catch (IOException ex) {
+						getLog().error("failed to write to stdin of helm", ex);
+					}
+				}
+
 				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				String inputLine;
 				try {
@@ -241,14 +265,19 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		};
 	}
 
-	List<String> getChartTgzs(String path) throws MojoExecutionException {
+	List<String> getChartFiles(String path) throws MojoExecutionException {
 		try (Stream<Path> files = Files.walk(Paths.get(path))) {
-			return files.filter(p -> p.getFileName().toString().endsWith("tgz"))
+			return files.filter(this::isChartFile)
 					.map(Path::toString)
 					.collect(Collectors.toList());
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan repo directory at " + path, e);
 		}
+	}
+
+	private boolean isChartFile(Path p) {
+		String filename = p.getFileName().toString();
+		return filename.endsWith(".tgz") || filename.endsWith("tgz.prov");
 	}
 
 	/**
@@ -327,6 +356,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			((DefaultSecDispatcher) securityDispatcher).setConfigurationFile(getHelmSecurity());
 		}
 		return securityDispatcher;
+	}
+
+	protected String formatIfValueIsNotEmpty(String format, String value) {
+		if (StringUtils.isNotEmpty(value)) {
+			return String.format(format, value);
+		}
+		return "";
 	}
 
 	public String getOutputDirectory() {
