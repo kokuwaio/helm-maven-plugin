@@ -1,25 +1,5 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.PasswordAuthentication;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -34,6 +14,27 @@ import org.codehaus.plexus.util.MatchPatterns;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.PasswordAuthentication;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Base class for mojos
@@ -105,6 +106,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 */
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
+
+	@Parameter( defaultValue="${project.groupId}", readonly=true)
+	String projectGroupId;
+
+	@Parameter( defaultValue="${project.version}", readonly=true)
+	String projectVersion;
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
 		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
@@ -496,5 +503,21 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setAutoDetectLocalHelmBinary(final boolean autoDetectLocalHelmBinary) {
 		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary;
+	}
+
+	public String getProjectGroupId() {
+		return projectGroupId;
+	}
+
+	public void setProjectGroupId(String projectGroupId) {
+		this.projectGroupId = projectGroupId;
+	}
+
+	public String getProjectVersion() {
+		return projectVersion;
+	}
+
+	public void setProjectVersion(String projectVersion) {
+		this.projectVersion = projectVersion;
 	}
 }

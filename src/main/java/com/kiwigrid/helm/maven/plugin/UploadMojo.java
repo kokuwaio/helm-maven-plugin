@@ -64,7 +64,7 @@ public class UploadMojo extends AbstractHelmMojo {
 
 		switch (uploadRepo.getType()) {
 		case ARTIFACTORY:
-			connection = getConnectionForUploadToArtifactory(fileToUpload);
+			connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo.isUseGroupId());
 			break;
 		case CHARTMUSEUM:
 			connection = getConnectionForUploadToChartmuseum();
@@ -118,12 +118,16 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 	}
 
-	protected HttpURLConnection getConnectionForUploadToArtifactory(File file) throws IOException, MojoExecutionException {
+	protected HttpURLConnection getConnectionForUploadToArtifactory(File file, boolean useGroupId) throws IOException, MojoExecutionException {
 		String uploadUrl = getHelmUploadUrl();
 		// Append slash if not already in place
 		if (!uploadUrl.endsWith("/")) {
 			uploadUrl += "/";
 		}
+		if(useGroupId){
+			uploadUrl += getProjectGroupId().replace(".", "/") + "/" + getProjectVersion() + "/";
+		}
+
 		uploadUrl = uploadUrl + file.getName();
 
 		final HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
