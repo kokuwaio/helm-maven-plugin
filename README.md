@@ -243,6 +243,7 @@ and disables the auto-detection feature:
 - `helm:dependency-build` resolves the chart dependencies  
 - `helm:package` packages the given charts (chart.tar.gz)
 - `helm:lint` tests the given charts
+- `helm:template` Locally render templates
 - `helm:dry-run` simulates an install
 - `helm:upload` upload charts via HTTP PUT
 
@@ -272,10 +273,12 @@ Parameter | Type | User Property | Required | Description
 `<skip>` | boolean | helm.skip | false | skip plugin execution
 `<skipInit>` | boolean | helm.init.skip | false | skip init goal
 `<skipLint>` | boolean | helm.lint.skip | false | skip lint goal
+`<skipTemplate>` | boolean | helm.template.skip | false | skip template goal. Default value is true due to the dry-run goal
 `<skipDryRun>` | boolean | helm.dry-run.skip | false | skip dry-run goal
 `<skipDependencyBuild>` | boolean | helm.dependency-build.skip | false | skip dependency-build goal
 `<skipPackage>` | boolean | helm.package.skip | false | skip package goal
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
+`<skipInstall>` | boolean | helm.install.skip | false | skip install goal
 `<security>` | string | helm.security | false | path to your [settings-security.xml](https://maven.apache.org/guides/mini/guide-encryption.html) (default: `~/.m2/settings-security.xml`)
 `<keyring>` | string | helm.package.keyring | false | path to gpg secret keyring for signing
 `<key>` | string  | helm.package.key | false | name of gpg key in keyring
