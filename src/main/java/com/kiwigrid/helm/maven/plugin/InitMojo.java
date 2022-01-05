@@ -191,7 +191,7 @@ public class InitMojo extends AbstractHelmMojo {
 		} 
 
 		if (!found) {
-			throw new MojoExecutionException("Unable to find helm executable in tar file.");
+			throw new MojoExecutionException("Unable to find helm executable in archive.");
 		}
 	}
 

@@ -1,15 +1,5 @@
 package com.kiwigrid.helm.maven.plugin;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.kiwigrid.helm.maven.plugin.junit.MojoExtension;
 import com.kiwigrid.helm.maven.plugin.junit.MojoProperty;
 import com.kiwigrid.helm.maven.plugin.junit.SystemPropertyExtension;
@@ -19,12 +9,20 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.Os;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -36,6 +34,7 @@ import static org.mockito.Mockito.doReturn;
 @MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
+@MojoProperty(name = "helmExecutableDirectory", value = "target/helm")
 public class InitMojoTest {
 
 	@DisplayName("Init helm with different download urls.")
@@ -65,9 +64,6 @@ public class InitMojoTest {
 
 		// prepare execution
 		doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
-		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
-		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
-		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
 		mojo.setHelmDownloadUrl(null);
 		mojo.setHelmVersion("3.2.0");
 
