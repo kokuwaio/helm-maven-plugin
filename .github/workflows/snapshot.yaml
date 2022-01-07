@@ -39,7 +39,7 @@ jobs:
         if: failure()
         with:
           name: surefire
-          path: '*/target/surefire-reports/*.xml'
+          path: '**/target/surefire-reports/*.xml'
           reporter: java-junit
           list-suites: failed
           list-tests: failed
