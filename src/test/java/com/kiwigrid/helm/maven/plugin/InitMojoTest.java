@@ -46,7 +46,7 @@ public class InitMojoTest {
 		doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
 		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
 		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
-		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
+//		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL(os));
 
 		// run init
