@@ -220,6 +220,10 @@ and disables the auto-detection feature:
             <component1.install.path>/opt/component1</component1.install.path>
           </overrides>
           <yamlFile>${project.basedir}/src/test/resources/myOverrides.yaml</yamlFile>
+          <yamlFiles>
+              <yamlFile>${project.basedir}/src/test/resources/myOverrides-1.yaml</yamlFile>
+              <yamlFile>${project.basedir}/src/test/resources/myOverrides-2.yaml</yamlFile>
+          </yamlFiles>
         </values>
       </configuration>
     </plugin>
