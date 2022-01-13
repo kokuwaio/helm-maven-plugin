@@ -1,11 +1,16 @@
 name: Build
 
 "on":
-  workflow_dispatch: {}
   push: {}
+  workflow_dispatch: {}
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
 
 jobs:
-
   lint-yaml:
     runs-on: ubuntu-latest
     steps:
@@ -14,7 +19,6 @@ jobs:
         with:
           format: colored
           strict: true
-
   lint-markdown:
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +26,6 @@ jobs:
       - uses: docker://avtodev/markdown-lint:v1
         with:
           args: /github/workspace
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -39,7 +42,7 @@ jobs:
         if: failure()
         with:
           name: surefire
-          path: '*/target/surefire-reports/*.xml'
+          path: '**/target/surefire-reports/*.xml'
           reporter: java-junit
           list-suites: failed
           list-tests: failed
