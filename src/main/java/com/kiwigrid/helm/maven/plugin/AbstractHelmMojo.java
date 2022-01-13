@@ -65,7 +65,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartDirectory", required = true)
 	private String chartDirectory;
 
-	@Parameter(property = "helm.chartVersion")
+	@Parameter(property = "helm.chartVersion", defaultValue = "${project.version}")
 	private String chartVersion;
 
 	@Parameter(property = "helm.chartVersion.timestampOnSnapshot")
