@@ -1,5 +1,6 @@
 package com.kiwigrid.helm.maven.plugin.pojo;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
@@ -54,4 +55,14 @@ public class ValueOverride {
      */
     @Parameter(property = "helm.values.yamlFile")
     private String yamlFile;
+
+    /**
+     * Multiple Value YAML files that will be passed with option --values or -f of the helm command line.
+     *
+     * <p>
+     * It can be seen as creating a temporary extending chart with its dedicated values.yaml.
+     * </p>
+     */
+    @Parameter(property = "helm.values.yamlFiles")
+    private List<String> yamlFiles;
 }

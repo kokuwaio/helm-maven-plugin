@@ -34,6 +34,13 @@ public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo
             if (StringUtils.isNotBlank(values.getYamlFile())) {
                 setValuesOptions.append(" --values ").append(values.getYamlFile());
             }
+            if (values.getYamlFiles() != null) {
+                for(String yamlFile : values.getYamlFiles()) {
+                    if (StringUtils.isNotBlank(yamlFile)) {
+                        setValuesOptions.append(" --values ").append(yamlFile);
+                    }
+                }
+            }
         }
         return setValuesOptions.toString();
     }

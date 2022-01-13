@@ -2,7 +2,9 @@ package com.kiwigrid.helm.maven.plugin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,12 +63,24 @@ class AbstractHelmWithValueOverrideMojoTest {
     }
 
     @Test
-    public void valueYamlOverride() {
+    public void valueYamlOverride_Single() {
         ValueOverride override = new ValueOverride();
         override.setYamlFile("path/to/values.yaml");
         testMojo.setValues(override);
 
         assertEquals(" --values path/to/values.yaml", testMojo.getValuesOptions());
+    }
+
+    @Test
+    public void valueYamlOverride_MultipleYamlFiles() {
+        ValueOverride override = new ValueOverride();
+        List<String> yamlFiles = new ArrayList<>();
+        yamlFiles.add("path/to/values-1.yaml");
+        yamlFiles.add("path/to/values-2.yaml");
+        override.setYamlFiles(yamlFiles);
+        testMojo.setValues(override);
+
+        assertEquals(" --values path/to/values-1.yaml --values path/to/values-2.yaml", testMojo.getValuesOptions());
     }
 
 
@@ -83,10 +97,15 @@ class AbstractHelmWithValueOverrideMojoTest {
         override.getFileOverrides().put("fkey1", "path/to/file1.txt");
         override.getFileOverrides().put("fkey2", "D:/absolute/path/to/file2.txt");
         override.setYamlFile("path/to/values.yaml");
+        List<String> yamlFiles = new ArrayList<>();
+        yamlFiles.add("path/to/values-1.yaml");
+        yamlFiles.add("path/to/values-2.yaml");
+        override.setYamlFiles(yamlFiles);
         testMojo.setValues(override);
 
         assertEquals(" --set key1=value1,key2=value2 --set-string skey1=svalue1,skey2=svalue2 --set-file " +
-                        "fkey1=path/to/file1.txt,fkey2=D:/absolute/path/to/file2.txt --values path/to/values.yaml",
+                        "fkey1=path/to/file1.txt,fkey2=D:/absolute/path/to/file2.txt --values path/to/values.yaml" +
+                        " --values path/to/values-1.yaml --values path/to/values-2.yaml",
                 testMojo.getValuesOptions());
     }
 
