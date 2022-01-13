@@ -1,6 +1,7 @@
 package com.kiwigrid.helm.maven.plugin;
 
 import com.kiwigrid.helm.maven.plugin.pojo.HelmRepository;
+import com.kiwigrid.helm.maven.plugin.pojo.K8SCluster;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -15,18 +16,16 @@ import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.PasswordAuthentication;
-
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +34,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.kiwigrid.helm.maven.plugin.pojo.K8SCluster;
 
 
 /**
@@ -70,6 +67,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
+
+	@Parameter(property = "helm.chartVersion.timestampOnSnapshot")
+	private boolean timestampOnSnapshot;
+
+	@Parameter(property = "helm.chartVersion.timestampFormat", defaultValue = "yyyyMMddHHmmss")
+	private String timestampFormat;
 
 	@Parameter(property = "helm.appVersion")
 	private String appVersion;
@@ -115,11 +118,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
-	@Parameter( defaultValue="${project.groupId}", readonly=true)
+	@Parameter(defaultValue="${project.groupId}", readonly=true)
 	String projectGroupId;
 
-	@Parameter( defaultValue="${project.version}", readonly=true)
+	@Parameter(defaultValue="${project.version}", readonly=true)
 	String projectVersion;
+
+	private Clock clock = Clock.systemDefaultZone();
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
 		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
@@ -157,6 +162,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return System.getenv("PATH").split(Pattern.quote(File.pathSeparator));
 	}
 
+	String getCurrentTimestamp(){
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(getTimestampFormat());
+		LocalDateTime currentTime = LocalDateTime.now(clock);
+		return dateTimeFormatter.format(currentTime);
+	}
 
 	/**
 	 * Calls cli with specified command
@@ -474,6 +484,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		this.chartVersion = chartVersion;
 	}
 
+	public String getChartVersionWithProcessing() {
+		if (isTimestampOnSnapshot() && chartVersion.endsWith("-SNAPSHOT")) {
+			return chartVersion.replace("SNAPSHOT", getCurrentTimestamp());
+		}
+		return chartVersion;
+	}
+
 	public String getAppVersion() {
 		return appVersion;
 	}
@@ -556,5 +573,21 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setProjectVersion(String projectVersion) {
 		this.projectVersion = projectVersion;
+	}
+
+	public boolean isTimestampOnSnapshot() {
+		return timestampOnSnapshot;
+	}
+
+	public void setTimestampOnSnapshot(boolean timestampOnSnapshot) {
+		this.timestampOnSnapshot = timestampOnSnapshot;
+	}
+
+	public String getTimestampFormat() {
+		return timestampFormat;
+	}
+
+	public void setTimestampFormat(String timestampFormat) {
+		this.timestampFormat = timestampFormat;
 	}
 }
