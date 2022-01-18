@@ -3,26 +3,32 @@ name: Release
 "on":
   workflow_dispatch: {}
 
-# We will add automatic release stuff here as soon as possible
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GIT_ACTION_TOKEN }}
+      - uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
       - uses: actions/setup-java@v2
         with:
           distribution: temurin
           java-version: 11
+          server-id: sonatype-nexus
+          server-username: SERVER_USERNAME
+          server-password: SERVER_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
       - run: mvn -B dependency:go-offline -q
-      - run: mvn -B verify
-        if: github.ref != 'refs/heads/master'
-      - uses: dorny/test-reporter@v1
-        if: failure()
-        with:
-          name: surefire
-          path: '**/target/surefire-reports/*.xml'
-          reporter: java-junit
-          list-suites: failed
-          list-tests: failed
-          fail-on-error: false
+      - run: mvn -B release:prepare
+      - run: mvn -B release:perform
+        env:
+          SERVER_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

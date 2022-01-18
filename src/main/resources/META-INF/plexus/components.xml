@@ -3,18 +3,17 @@
 		<component>
 			<role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
 			<role-hint>helm</role-hint>
-			<implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
-			</implementation>
+			<implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
 			<configuration>
 				<lifecycles>
 					<lifecycle>
 						<id>default</id>
 						<phases>
-							<initialize>com.kiwigrid:helm-maven-plugin:init</initialize>
-							<test>com.kiwigrid:helm-maven-plugin:lint</test>
-							<prepare-package>com.kiwigrid:helm-maven-plugin:dependency-build</prepare-package>
-							<package>com.kiwigrid:helm-maven-plugin:package</package>
-							<deploy>com.kiwigrid:helm-maven-plugin:upload</deploy>
+							<initialize>io.kokuwa.maven:helm-maven-plugin:init</initialize>
+							<test>io.kokuwa.maven:helm-maven-plugin:lint</test>
+							<prepare-package>io.kokuwa.maven:helm-maven-plugin:dependency-build</prepare-package>
+							<package>io.kokuwa.maven:helm-maven-plugin:package</package>
+							<deploy>io.kokuwa.maven:helm-maven-plugin:upload</deploy>
 						</phases>
 					</lifecycle>
 				</lifecycles>

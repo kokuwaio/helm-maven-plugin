@@ -1,7 +1,7 @@
-# Maven Helm Plugin
+# Helm Maven Plugin
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kiwigrid/helm-maven-plugin)
-[![CI](https://github.com/kiwigrid/helm-maven-plugin/actions/workflows/snapshot.yaml/badge.svg)](https://github.com/kiwigrid/helm-maven-plugin/actions/workflows/snapshot.yaml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.kokuwa.maven/helm-maven-plugin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.kokuwa.maven%22%20AND%20a:%22helm-maven-plugin%22)
+[![CI](https://github.com/kokuwaio/helm-maven-plugin/actions/workflows/snapshot.yaml/badge.svg)](https://github.com/kokuwaio/helm-maven-plugin/actions/workflows/snapshot.yaml)
 
 This is a Maven plugin for testing, packaging and uploading HELM charts.
 "HELM is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources."
@@ -16,7 +16,7 @@ From version **5.0** Helm v3 is required.
 There is no longer support for Helm v2.
 For convenience reasons the stable repo is added by default.
 
-Helm v2 users can still use plugin version [4.13](https://search.maven.org/artifact/com.kiwigrid/helm-maven-plugin/4.13/maven-plugin).
+Helm v2 users can still use plugin version [4.13](https://search.maven.org/artifact/io.kokuwa.maven/helm-maven-plugin/4.13/maven-plugin).
 
 ## Why?
 
@@ -31,9 +31,9 @@ Add following dependency to your pom.xml:
 
 ```xml
 <dependency>
-  <groupId>com.kiwigrid</groupId>
+  <groupId>io.kokuwa.maven</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>5.7</version>
+  <version>6.0.0</version>
 </dependency>
 ```
 
@@ -47,9 +47,9 @@ The default setting is to construct the Helm download URL based upon the detecte
 <build>
   <plugins>
     <plugin>
-      <groupId>com.kiwigrid</groupId>
+      <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.7</version>
+      <version>6.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -67,9 +67,9 @@ The default setting is to construct the Helm download URL based upon the detecte
   <plugins>
   ...
     <plugin>
-      <groupId>com.kiwigrid</groupId>
+      <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.7</version>
+      <version>6.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -91,9 +91,9 @@ When `useLocalHelmBinary` is enabled, the plugin by default will search for the 
   <plugins>
   ...
     <plugin>
-      <groupId>com.kiwigrid</groupId>
+      <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.7</version>
+      <version>6.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -114,9 +114,9 @@ and disables the auto-detection feature:
   <plugins>
   ...
     <plugin>
-      <groupId>com.kiwigrid</groupId>
+      <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.7</version>
+      <version>6.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -138,9 +138,9 @@ and disables the auto-detection feature:
   <plugins>
   ...
     <plugin>
-      <groupId>com.kiwigrid</groupId>
+      <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.7</version>
+      <version>6.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -170,9 +170,9 @@ and disables the auto-detection feature:
   <plugins>
   ...
     <plugin>
-      <groupId>com.kiwigrid</groupId>
+      <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>5.7</version>
+      <version>6.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -210,8 +210,8 @@ and disables the auto-detection feature:
         <!-- Add an additional repo -->
         <helmExtraRepos>
           <helmRepo>
-            <name>kiwigrid</name>
-            <url>https://kiwigrid.github.io</url>
+            <name>kokuwa</name>
+            <url>https://kokuwa.github.io</url>
           </helmRepo>
         </helmExtraRepos>
         <!-- extra value settings for the lint command -->
@@ -270,9 +270,9 @@ Parameter | Type | User Property | Required | Description
 `<registryConfig>` | string | helm.registryConfig | false | path to the registry config file
 `<repositoryCache>` | string | helm.repositoryCache | false | path to the file containing cached repository indexes
 `<repositoryConfig>` | string | helm.repositoryConfig | false | path to the file containing repository names and URLs
-`<helmExtraRepos>` | list of [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.extraRepos | false | adds extra repositories while init
-`<uploadRepoStable>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
-`<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/com/kiwigrid/helm/maven/plugin/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
+`<helmExtraRepos>` | list of [HelmRepository](./src/main/java/io/kokuwa/maven/helm/HelmRepository.java) | helm.extraRepos | false | adds extra repositories while init
+`<uploadRepoStable>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
+`<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
 `<lintStrict>` | boolean | helm.lint.strict | false | run lint command with strict option (fail on lint warnings)
 `<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (<https://charts.helm.sh/stable>) will be added
 `<addUploadRepos>` | boolean | helm.init.add-upload-repos | false | If true, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured
@@ -289,7 +289,7 @@ Parameter | Type | User Property | Required | Description
 `<keyring>` | string | helm.package.keyring | false | path to gpg secret keyring for signing
 `<key>` | string  | helm.package.key | false | name of gpg key in keyring
 `<passphrase>` | string | helm.package.passphrase | false | passphrase for gpg key (requires helm 3.4 or newer)
-`<values>` | [ValueOverride](./src/main/java/com/kiwigrid/helm/maven/plugin/ValueOverride.java) | helm.values | false | override some values for linting with helm.values.overrides (--set option), helm.values.stringOverrides (--set-string option), helm.values.fileOverrides (--set-file option) and last but not least helm.values.yamlFile (--values option)
+`<values>` | [ValueOverride](./src/main/java/io/kokuwa/maven/helm/ValueOverride.java) | helm.values | false | override some values for linting with helm.values.overrides (--set option), helm.values.stringOverrides (--set-string option), helm.values.fileOverrides (--set-file option) and last but not least helm.values.yamlFile (--values option)
 
 ## Packaging with the Helm Lifecycle
 
@@ -304,7 +304,7 @@ To keep your pom files small you can use 'helm' packaging. This binds `helm:init
   <build>
     <plugins>
       <plugin>
-        <groupId>com.kiwigrid</groupId>
+        <groupId>io.kokuwa.maven</groupId>
         <artifactId>helm-maven-plugin</artifactId>
         <!-- Mandatory when you use a custom lifecycle -->
         <extensions>true</extensions>
