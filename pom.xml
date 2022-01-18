@@ -102,6 +102,7 @@
 		<version.org.apache.maven.plugins.deploy>3.0.0-M2</version.org.apache.maven.plugins.deploy>
 		<version.org.apache.maven.plugins.gpg>3.0.1</version.org.apache.maven.plugins.gpg>
 		<version.org.apache.maven.plugins.install>3.0.0-M1</version.org.apache.maven.plugins.install>
+		<version.org.apache.maven.plugins.invoker>3.2.2</version.org.apache.maven.plugins.invoker>
 		<version.org.apache.maven.plugins.javadoc>3.3.1</version.org.apache.maven.plugins.javadoc>
 		<version.org.apache.maven.plugins.jar>3.2.1</version.org.apache.maven.plugins.jar>
 		<version.org.apache.maven.plugins.plugin_>3.6.0</version.org.apache.maven.plugins.plugin_>
@@ -207,6 +208,11 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-invoker-plugin</artifactId>
+					<version>${version.org.apache.maven.plugins.invoker}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>${version.org.apache.maven.plugins.javadoc}</version>
 				</plugin>
@@ -263,6 +269,25 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+
+			<!-- run invoker tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-invoker-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>install</goal>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+							<streamLogsOnFailures>true</streamLogsOnFailures>
+							<writeJunitReport>true</writeJunitReport>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<!-- fail if any pom is dirty -->
 			<plugin>
