@@ -194,7 +194,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		command += getK8SArgs();
 
-		getLog().debug(command.replace(k8sToken, "******"));
+		getLog().debug(replaceK8sToken(command));
 
 		try {
 			final Process p = Runtime.getRuntime().exec(command);
@@ -211,7 +211,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 				String inputLine;
 				try {
 					while ((inputLine = input.readLine()) != null) {
-						getLog().info(inputLine.replace(k8sToken, "******"));
+						getLog().info(replaceK8sToken(inputLine));
 					}
 				} catch (IOException e) {
 					getLog().error(e);
@@ -231,7 +231,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			p.waitFor();
 			exitValue = p.exitValue();
 		} catch (Exception e) {
-			throw new MojoExecutionException("Error processing command [" + command.replace(k8sToken, "******") + "]", e);
+			throw new MojoExecutionException("Error processing command [" + replaceK8sToken(command) + "]", e);
 		}
 
 		if (exitValue != 0) {
@@ -402,6 +402,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			return String.format(format, value);
 		}
 		return "";
+	}
+
+	protected String replaceK8sToken(String string) {
+		return StringUtils.isBlank(k8sToken) ? string : string.replace(k8sToken, "*****");
 	}
 
 	public String getOutputDirectory() {
