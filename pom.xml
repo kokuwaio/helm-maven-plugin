@@ -7,6 +7,7 @@
 	<version>6.0.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
+	<name>Helm Maven Plugin</name>
 	<description>
 		A plugin for executing HELM (https://docs.helm.sh).
 		HELM itself will be downloaded during build or local binary can be provided.
@@ -40,9 +41,9 @@
 	</prerequisites>
 
 	<scm>
-		<connection>scm:git:git://github.com/kokuwaio/helm-maven-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:kokuwaio/helm-maven-plugin.git</developerConnection>
-		<url>https://github.com/kokuwaio/helm-maven-plugin/tree/master</url>
+		<url>https://github.com/kokuwaio/helm-maven-plugin</url>
+		<connection>scm:git:https://github.com/kokuwaio/helm-maven-plugin.git</connection>
+		<developerConnection>scm:git:https://github.com/kokuwaio/helm-maven-plugin.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 	<issueManagement>
