@@ -2,20 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.kiwigrid</groupId>
+	<groupId>io.kokuwa.maven</groupId>
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>5.12-SNAPSHOT</version>
+	<version>6.0.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
-	<name>${project.groupId}:${project.artifactId}</name>
 	<description>
 		A plugin for executing HELM (https://docs.helm.sh).
 		HELM itself will be downloaded during build or local binary can be provided.
 	</description>
-	<url>https://github.com/kiwigrid/helm-maven-plugin</url>
+	<url>https://github.com/kokuwaio/helm-maven-plugin</url>
+	<inceptionYear>2017</inceptionYear>
 	<organization>
-		<name>Kiwigrid GmbH</name>
-		<url>https://www.kiwigrid.com</url>
+		<name>Kokuwa.io</name>
+		<url>http://kokuwa.io</url>
 	</organization>
 	<licenses>
 		<license>
@@ -27,7 +27,7 @@
 	<developers>
 		<developer>
 			<name>Fabian Schlegel</name>
-			<email>fabian.schlegel@kiwigrid.com</email>
+			<email>fabian.schlegel@grayc.de</email>
 		</developer>
 		<developer>
 			<name>Axel Köhler</name>
@@ -40,91 +40,141 @@
 	</prerequisites>
 
 	<scm>
-		<connection>scm:git:git://github.com/kiwigrid/helm-maven-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:kiwigrid/helm-maven-plugin.git</developerConnection>
-		<url>https://github.com/kiwigrid/helm-maven-plugin/tree/master</url>
+		<connection>scm:git:git://github.com/kokuwaio/helm-maven-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:kokuwaio/helm-maven-plugin.git</developerConnection>
+		<url>https://github.com/kokuwaio/helm-maven-plugin/tree/master</url>
 		<tag>HEAD</tag>
 	</scm>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/kokuwaio/helm-maven-plugin/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>github</system>
+		<url>https://github.com/kokuwaio/helm-maven-plugin/actions</url>
+	</ciManagement>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>sonatype-nexus</id>
-			<name>Sonatype Nexus Snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
 			<id>sonatype-nexus</id>
-			<name>Nexus Release Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
 	</distributionManagement>
 
 	<properties>
+
+		<!-- ===================================================================== -->
+		<!-- ============================== Build ================================ -->
+		<!-- ===================================================================== -->
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+
+		<!-- ===================================================================== -->
+		<!-- ============================= Versions ============================== -->
+		<!-- ===================================================================== -->
+
+		<!-- dependencies -->
+
+		<version.org.apache.commons.compress>1.21</version.org.apache.commons.compress>
+		<version.org.apache.commons.io>2.7</version.org.apache.commons.io>
+		<version.org.apache.maven.plugin.annotations>3.6.0</version.org.apache.maven.plugin.annotations>
+		<version.org.apache.maven.plugin.api>3.6.1</version.org.apache.maven.plugin.api>
+		<version.org.apache.maven.settings>3.6.1</version.org.apache.maven.settings>
+		<version.org.junit.jupiter>5.4.2</version.org.junit.jupiter>
+		<version.org.mockito>2.28.2</version.org.mockito>
+		<version.org.projectlombok>1.18.12</version.org.projectlombok>
+		<version.org.sonatype.plexus.dispatcher>1.4</version.org.sonatype.plexus.dispatcher>
+
+		<!-- plugins -->
+
+		<version.org.apache.maven.plugins.clean>3.1.0</version.org.apache.maven.plugins.clean>
+		<version.org.apache.maven.plugins.compiler>3.8.1</version.org.apache.maven.plugins.compiler>
+		<version.org.apache.maven.plugins.deploy>3.0.0-M1</version.org.apache.maven.plugins.deploy>
+		<version.org.apache.maven.plugins.gpg>1.6</version.org.apache.maven.plugins.gpg>
+		<version.org.apache.maven.plugins.install>3.0.0-M1</version.org.apache.maven.plugins.install>
+		<version.org.apache.maven.plugins.javadoc>3.3.1</version.org.apache.maven.plugins.javadoc>
+		<version.org.apache.maven.plugins.jar>3.1.2</version.org.apache.maven.plugins.jar>
+		<version.org.apache.maven.plugins.plugin_>3.6.0</version.org.apache.maven.plugins.plugin_>
+		<version.org.apache.maven.plugins.release>2.5.3</version.org.apache.maven.plugins.release>
+		<version.org.apache.maven.plugins.resources>3.1.0</version.org.apache.maven.plugins.resources>
+		<version.org.apache.maven.plugins.source>3.2.1</version.org.apache.maven.plugins.source>
+		<version.org.apache.maven.plugins.surefire>3.0.0-M3</version.org.apache.maven.plugins.surefire>
+		<version.org.codehaus.mojo.tidy>1.1.0</version.org.codehaus.mojo.tidy>
+		<version.org.sonatype.plugins.nexus-staging>1.6.8</version.org.sonatype.plugins.nexus-staging>
+
 	</properties>
 
 	<dependencies>
 
+		<!-- maven -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>3.6.1</version>
+			<version>${version.org.apache.maven.plugin.api}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-settings</artifactId>
-			<version>3.6.1</version>
+			<version>${version.org.apache.maven.settings}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-annotations</artifactId>
-			<version>3.6.0</version>
+			<version>${version.org.apache.maven.plugin.annotations}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.sonatype.plexus</groupId>
 			<artifactId>plexus-sec-dispatcher</artifactId>
-			<version>1.4</version>
+			<version>${version.org.sonatype.plexus.dispatcher}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>1.21</version>
+			<version>${version.org.apache.commons.compress}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.7</version>
+			<version>${version.org.apache.commons.io}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${version.org.projectlombok}</version>
+			<scope>provided</scope>
 		</dependency>
 
+		<!-- test -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.4.2</version>
+			<version>${version.org.junit.jupiter}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
-			<version>5.4.2</version>
+			<version>${version.org.junit.jupiter}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>2.28.2</version>
+			<version>${version.org.mockito}</version>
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -133,65 +183,93 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>${version.org.apache.maven.plugins.clean}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
+					<version>${version.org.apache.maven.plugins.compiler}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
-					<version>3.0.0-M1</version>
+					<version>${version.org.apache.maven.plugins.deploy}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>${version.org.apache.maven.plugins.gpg}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
-					<version>3.0.0-M1</version>
+					<version>${version.org.apache.maven.plugins.install}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${version.org.apache.maven.plugins.javadoc}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.2</version>
+					<version>${version.org.apache.maven.plugins.jar}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
-					<version>3.6.0</version>
+					<version>${version.org.apache.maven.plugins.plugin_}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.3</version>
+					<version>${version.org.apache.maven.plugins.release}</version>
+					<configuration>
+						<tagNameFormat>@{project.version}</tagNameFormat>
+						<releaseProfiles>release</releaseProfiles>
+						<localCheckout>true</localCheckout>
+						<signTag>true</signTag>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>${version.org.apache.maven.plugins.resources}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>3.7.1</version>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>${version.org.apache.maven.plugins.source}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M3</version>
+					<version>${version.org.apache.maven.plugins.surefire}</version>
+					<configuration>
+						<redirectTestOutputToFile>true</redirectTestOutputToFile>
+						<failIfNoTests>true</failIfNoTests>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>tidy-maven-plugin</artifactId>
+					<version>${version.org.codehaus.mojo.tidy}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>${version.org.sonatype.plugins.nexus-staging}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
 
-			<!-- fail if pom is dirty -->
+			<!-- fail if any pom is dirty -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tidy-maven-plugin</artifactId>
-				<version>1.1.0</version>
 				<executions>
 					<execution>
-						<phase>verify</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
@@ -205,25 +283,15 @@
 	<profiles>
 		<profile>
 			<id>release</id>
-			<!--
-				! This profile is automatically activated by using maven-release-plugin:perfom.
-				! So this mean signing of artifacts is only done in case of running a release.
-				! -->
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
 			<build>
 				<plugins>
+
+					<!-- add source/javadoc for downstream projects -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>3.1.0</version>
 						<executions>
 							<execution>
-								<id>attach-sources</id>
 								<goals>
 									<goal>jar</goal>
 								</goals>
@@ -233,30 +301,40 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.1.0</version>
 						<executions>
 							<execution>
-								<id>attach-javadocs</id>
 								<goals>
 									<goal>jar</goal>
 								</goals>
 							</execution>
 						</executions>
 					</plugin>
+
+					<!-- sign documents before upload -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
 						<executions>
 							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
 								<goals>
 									<goal>sign</goal>
 								</goals>
 							</execution>
 						</executions>
 					</plugin>
+
+					<!-- autoclose sonatype nexus repo -->
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>sonatype-nexus</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+
 				</plugins>
 			</build>
 		</profile>
