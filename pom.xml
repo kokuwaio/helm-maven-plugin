@@ -40,6 +40,9 @@
 	<distributionManagement>
 		<relocation>
 			<groupId>io.kokuwa.maven</groupId>
+			<artifactId>helm-maven-plugin</artifactId>
+			<version>6.0.0</version>
+			<message>https://github.com/kokuwaio is the new maintainer</message>
 		</relocation>
 		<repository>
 			<id>sonatype-nexus</id>
