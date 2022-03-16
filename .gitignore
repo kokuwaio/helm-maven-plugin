@@ -1,0 +1,6 @@
+# Maven build output
+target/
+
+# IntelliJ IDEA local configuration
+.idea/
+*.iml
