@@ -28,9 +28,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
-import org.sonatype.plexus.components.cipher.PlexusCipherException;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 
@@ -108,8 +106,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
             
             // plexus SecDispatcher
 
-            SecDispatcher secDispatcher = spy(DefaultSecDispatcher.class);
-            FieldSetter.setField(secDispatcher, DefaultSecDispatcher.class.getDeclaredField("_cipher"), new DefaultPlexusCipher());
+            SecDispatcher secDispatcher = spy(new DefaultSecDispatcher(new DefaultPlexusCipher()));
             getField(mojoType, "securityDispatcher").set(mojo, secDispatcher);
 
             // validate that every parameter is set
@@ -123,7 +120,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
             }
 
             return mojo;
-        } catch (ReflectiveOperationException | PlexusCipherException e) {
+        } catch ( ReflectiveOperationException e) {
             throw new ParameterResolutionException("Failed to setup mockito.", e);
         }
     }

@@ -91,10 +91,10 @@
 		<version.org.apache.maven.plugin.annotations>3.6.0</version.org.apache.maven.plugin.annotations>
 		<version.org.apache.maven.plugin.api>3.6.1</version.org.apache.maven.plugin.api>
 		<version.org.apache.maven.settings>3.6.1</version.org.apache.maven.settings>
+		<version.org.codehaus.plexus.dispatcher>2.0</version.org.codehaus.plexus.dispatcher>
 		<version.org.junit.jupiter>5.4.2</version.org.junit.jupiter>
 		<version.org.mockito>2.28.2</version.org.mockito>
 		<version.org.projectlombok>1.18.12</version.org.projectlombok>
-		<version.org.sonatype.plexus.dispatcher>1.4</version.org.sonatype.plexus.dispatcher>
 
 		<!-- plugins -->
 
@@ -136,9 +136,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.sonatype.plexus</groupId>
+			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-sec-dispatcher</artifactId>
-			<version>${version.org.sonatype.plexus.dispatcher}</version>
+			<version>${version.org.codehaus.plexus.dispatcher}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
