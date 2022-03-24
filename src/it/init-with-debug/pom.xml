@@ -16,19 +16,26 @@
 			<plugin>
 				<groupId>io.kokuwa.maven</groupId>
 				<artifactId>helm-maven-plugin</artifactId>
-				<configuration>
-					<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
-					<chartVersion>${project.version}</chartVersion>
-					<addDefaultRepo>false</addDefaultRepo>
-					<helmExtraRepos>
-						<helmExtraRepo>
-							<name>kokuwaiuo</name>
-							<url>https://kokuwaio.github.io/helm-charts</url>
-							<username>test</username>
-							<password>ChangeMe</password>
-						</helmExtraRepo>
-					</helmExtraRepos>
-				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>init</goal>
+						</goals>
+						<configuration>
+							<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
+							<chartVersion>${project.version}</chartVersion>
+							<addDefaultRepo>false</addDefaultRepo>
+							<helmExtraRepos>
+								<helmExtraRepo>
+									<name>kokuwaiuo</name>
+									<url>https://kokuwaio.github.io/helm-charts</url>
+									<username>test</username>
+									<password>ChangeMe</password>
+								</helmExtraRepo>
+							</helmExtraRepos>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

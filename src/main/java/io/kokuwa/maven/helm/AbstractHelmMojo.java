@@ -235,7 +235,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			p.waitFor();
 			exitValue = p.exitValue();
 		} catch (Exception e) {
-			throw new MojoExecutionException("Error processing command [" + command + "]", e);
+			getLog().error("Error processing command [" + command + "]", e);
+			throw new MojoExecutionException("Error processing command", e);
 		}
 
 		if (exitValue != 0) {
@@ -560,8 +561,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setK8SCluster(K8SCluster k8sCluster) {
 		this.k8sCluster = k8sCluster;
-  }
-  
+	}
+
 	public String getProjectGroupId() {
 		return projectGroupId;
 	}
