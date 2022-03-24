@@ -37,7 +37,7 @@
 	</developers>
 
 	<prerequisites>
-		<maven>3.0.5</maven>
+		<maven>3.6.1</maven>
 	</prerequisites>
 
 	<scm>
@@ -88,9 +88,8 @@
 
 		<version.org.apache.commons.compress>1.21</version.org.apache.commons.compress>
 		<version.org.apache.commons.io>2.7</version.org.apache.commons.io>
-		<version.org.apache.maven.plugin.annotations>3.6.0</version.org.apache.maven.plugin.annotations>
-		<version.org.apache.maven.plugin.api>3.6.1</version.org.apache.maven.plugin.api>
-		<version.org.apache.maven.settings>3.6.1</version.org.apache.maven.settings>
+		<version.org.apache.commons.lang3>3.12.0</version.org.apache.commons.lang3>
+		<version.org.apache.maven.plugin.tools>3.6.4</version.org.apache.maven.plugin.tools>
 		<version.org.codehaus.plexus.dispatcher>2.0</version.org.codehaus.plexus.dispatcher>
 		<version.org.junit.jupiter>5.4.2</version.org.junit.jupiter>
 		<version.org.mockito>2.28.2</version.org.mockito>
@@ -106,7 +105,6 @@
 		<version.org.apache.maven.plugins.invoker>3.2.2</version.org.apache.maven.plugins.invoker>
 		<version.org.apache.maven.plugins.javadoc>3.3.1</version.org.apache.maven.plugins.javadoc>
 		<version.org.apache.maven.plugins.jar>3.2.1</version.org.apache.maven.plugins.jar>
-		<version.org.apache.maven.plugins.plugin_>3.6.0</version.org.apache.maven.plugins.plugin_>
 		<version.org.apache.maven.plugins.release>3.0.0-M5</version.org.apache.maven.plugins.release>
 		<version.org.apache.maven.plugins.resources>3.2.0</version.org.apache.maven.plugins.resources>
 		<version.org.apache.maven.plugins.source>3.2.1</version.org.apache.maven.plugins.source>
@@ -122,17 +120,19 @@
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>${version.org.apache.maven.plugin.api}</version>
+			<version>${project.prerequisites.maven}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-settings</artifactId>
-			<version>${version.org.apache.maven.settings}</version>
+			<version>${project.prerequisites.maven}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-annotations</artifactId>
-			<version>${version.org.apache.maven.plugin.annotations}</version>
+			<version>${version.org.apache.maven.plugin.tools}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -144,6 +144,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 			<version>${version.org.apache.commons.compress}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${version.org.apache.commons.lang3}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -225,7 +230,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
-					<version>${version.org.apache.maven.plugins.plugin_}</version>
+					<version>${version.org.apache.maven.plugin.tools}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
