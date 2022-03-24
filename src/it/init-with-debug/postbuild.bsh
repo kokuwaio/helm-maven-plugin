@@ -1,0 +1,5 @@
+// verify that the password is stripped
+
+return org.codehaus.plexus.util.FileUtils
+	.fileRead(basedir + "/build.log")
+	.contains("helm repo add kokuwaiuo https://kokuwaio.github.io/helm-charts --username=test --password=*****")
