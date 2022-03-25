@@ -124,10 +124,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	String projectVersion;
 
 	private Clock clock = Clock.systemDefaultZone();
+	private StripSensitiveDataLog log;
 
 	@Override
 	public Log getLog() {
-		return new StripSensitiveDataLog(super.getLog());
+		if (log == null) {
+			log = new StripSensitiveDataLog(super.getLog());
+		}
+		return log;
+	}
+
+	@Override
+	public void setLog(Log log) {
+		super.setLog(log);
+		this.log = new StripSensitiveDataLog(log);
 	}
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
