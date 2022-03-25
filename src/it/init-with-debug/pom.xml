@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>@project.groupId@</groupId>
+		<artifactId>@project.artifactId@-it</artifactId>
+		<version>LOCAL-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>@project.artifactId@-it-init-with-debug</artifactId>
+	<packaging>pom</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.kokuwa.maven</groupId>
+				<artifactId>helm-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>init</goal>
+						</goals>
+						<configuration>
+							<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
+							<chartVersion>${project.version}</chartVersion>
+							<addDefaultRepo>false</addDefaultRepo>
+							<helmExtraRepos>
+								<helmExtraRepo>
+									<name>kokuwaiuo</name>
+									<url>https://kokuwaio.github.io/helm-charts</url>
+									<username>test</username>
+									<password>ChangeMe</password>
+								</helmExtraRepo>
+							</helmExtraRepos>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

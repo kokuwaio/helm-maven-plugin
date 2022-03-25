@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
@@ -110,8 +111,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.k8s")
 	private K8SCluster k8sCluster;
 
-	private String k8sToken = "";
-
 	/**
 	 * The current user system settings for use in Maven.
 	 */
@@ -125,6 +124,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	String projectVersion;
 
 	private Clock clock = Clock.systemDefaultZone();
+
+	@Override
+	public Log getLog() {
+		return new StripSensitiveDataLog(super.getLog());
+	}
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
 		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
@@ -194,7 +198,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		command += getK8SArgs();
 
-		getLog().debug(replaceK8sToken(command));
+		getLog().debug(command);
 
 		try {
 			final Process p = Runtime.getRuntime().exec(command);
@@ -211,7 +215,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 				String inputLine;
 				try {
 					while ((inputLine = input.readLine()) != null) {
-						getLog().info(replaceK8sToken(inputLine));
+						getLog().info(inputLine);
 					}
 				} catch (IOException e) {
 					getLog().error(e);
@@ -231,7 +235,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			p.waitFor();
 			exitValue = p.exitValue();
 		} catch (Exception e) {
-			throw new MojoExecutionException("Error processing command [" + replaceK8sToken(command) + "]", e);
+			getLog().error("Error processing command [" + command + "]", e);
+			throw new MojoExecutionException("Error processing command", e);
 		}
 
 		if (exitValue != 0) {
@@ -256,7 +261,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			}
 			if(StringUtils.isNotEmpty(k8sCluster.getToken())) {
 				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
-				k8sToken = k8sCluster.getToken();
 			}
 		}
 		return k8sConfigArgs.toString();
@@ -402,10 +406,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			return String.format(format, value);
 		}
 		return "";
-	}
-
-	protected String replaceK8sToken(String string) {
-		return StringUtils.isBlank(k8sToken) ? string : string.replace(k8sToken, "*****");
 	}
 
 	public String getOutputDirectory() {
@@ -561,8 +561,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setK8SCluster(K8SCluster k8sCluster) {
 		this.k8sCluster = k8sCluster;
-  }
-  
+	}
+
 	public String getProjectGroupId() {
 		return projectGroupId;
 	}
