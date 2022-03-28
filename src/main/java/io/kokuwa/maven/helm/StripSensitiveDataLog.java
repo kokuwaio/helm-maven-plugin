@@ -43,7 +43,7 @@ public class StripSensitiveDataLog implements Log {
 
 	@Override
 	public void debug(CharSequence content, Throwable error) {
-		delegate.debug(content, error);
+		delegate.debug(strip(content), error);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class StripSensitiveDataLog implements Log {
 
 	@Override
 	public void info(CharSequence content, Throwable error) {
-		delegate.info(content, error);
+		delegate.info(strip(content), error);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class StripSensitiveDataLog implements Log {
 
 	@Override
 	public void warn(CharSequence content, Throwable error) {
-		delegate.warn(content, error);
+		delegate.warn(strip(content), error);
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class StripSensitiveDataLog implements Log {
 
 	@Override
 	public void error(CharSequence content, Throwable error) {
-		delegate.error(content, error);
+		delegate.error(strip(content), error);
 	}
 
 	@Override
