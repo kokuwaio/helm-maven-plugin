@@ -127,17 +127,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private StripSensitiveDataLog log;
 
 	@Override
-	public Log getLog() {
-		if (log == null) {
-			log = new StripSensitiveDataLog(super.getLog());
-		}
-		return log;
-	}
-
-	@Override
 	public void setLog(Log log) {
-		super.setLog(log);
-		this.log = new StripSensitiveDataLog(log);
+		super.setLog(new StripSensitiveDataLog(log));
 	}
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
