@@ -24,7 +24,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY)
 public class PushMojo extends AbstractHelmMojo {
 
-    private static final String LOGIN_COMMAND_TEMPLATE = " registry login -u %s -p %s %s ";
+    private static final String LOGIN_COMMAND_TEMPLATE = " registry login -u %s %s --password-stdin ";
     private static final String CHART_PUSH_TEMPLATE = " push %s oci://%s ";
 
     @Parameter(property = "helm.push.skip", defaultValue = "false")
@@ -48,9 +48,8 @@ public class PushMojo extends AbstractHelmMojo {
                         format(
                                 LOGIN_COMMAND_TEMPLATE,
                                 registry.getUsername(),
-                                registry.getPassword(),
                                 registry.getUrl()),
-                        EMPTY, true);
+                        "can't login to registry", true, registry.getPassword());
 
         getLog().info("Uploading to " + registry.getUrl());
         getChartTgzs(getOutputDirectory())
