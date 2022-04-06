@@ -47,7 +47,7 @@ public class PushMojo extends AbstractHelmMojo {
         ComparableVersion helmVersion = new ComparableVersion(getHelmVersion());
         ComparableVersion minimumHelmVersion = new ComparableVersion("3.8.0");
         if(helmVersion.compareTo(minimumHelmVersion) < 0) {
-            getLog().error("your helm version is " + helmVersion.toString() + ", it's require to be >=3.8.0");
+            getLog().error("your helm version is " + helmVersion.toString() + ", it's required to be >=3.8.0");
             throw new IllegalStateException();
         }
         else {
