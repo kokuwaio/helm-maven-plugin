@@ -4,6 +4,7 @@ import io.kokuwa.maven.helm.pojo.HelmRepository;
 import lombok.Data;
 import lombok.SneakyThrows;
 import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -41,6 +42,16 @@ public class PushMojo extends AbstractHelmMojo {
         if (Objects.isNull(registry)) {
             getLog().info("there is no helm repo. skipping the upload.");
             return;
+        }
+
+        ComparableVersion helmVersion = new ComparableVersion(getHelmVersion());
+        ComparableVersion minimumHelmVersion = new ComparableVersion("3.8.0");
+        if(helmVersion.compareTo(minimumHelmVersion) < 0) {
+            getLog().error("your helm version is " + helmVersion.toString() + ", it's require to be >=3.8.0");
+            throw new IllegalStateException();
+        }
+        else {
+            getLog().debug("helm version minimum satisfied. the version is: "+ helmVersion.toString());
         }
 
         callCli(
