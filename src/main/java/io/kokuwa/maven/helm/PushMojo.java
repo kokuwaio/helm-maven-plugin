@@ -54,13 +54,15 @@ public class PushMojo extends AbstractHelmMojo {
             getLog().debug("helm version minimum satisfied. the version is: "+ helmVersion.toString());
         }
 
-        callCli(
-                getHelmExecuteablePath() +
-                        format(
-                                LOGIN_COMMAND_TEMPLATE,
-                                registry.getUsername(),
-                                registry.getUrl()),
-                        "can't login to registry", true, registry.getPassword());
+        if (registry.getUsername() != null && registry.getPassword() == null) {
+            callCli(
+                    getHelmExecuteablePath() +
+                            format(
+                                    LOGIN_COMMAND_TEMPLATE,
+                                    registry.getUsername(),
+                                    registry.getUrl()),
+                    "can't login to registry", true, registry.getPassword());
+        }
 
         getLog().info("Uploading to " + registry.getUrl());
         getChartTgzs(getOutputDirectory())
