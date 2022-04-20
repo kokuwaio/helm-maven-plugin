@@ -293,7 +293,7 @@ Parameter | Type | User Property | Required | Description
 
 ## Packaging with the Helm Lifecycle
 
-To keep your pom files small you can use 'helm' packaging. This binds `helm:init` to the initialize phase, `helm:lint` to the test phase, `helm:dependency-build` to the prepare-package phase, `helm:package` to the package phase and `helm:upload` to the deploy phase.
+To keep your pom files small you can use 'helm' packaging. This binds `helm:init` to the initialize phase, `helm:dependency-build` to the process-resources phase,  `helm:lint` to the test phase,`helm:package` to the package phase and `helm:upload` to the deploy phase.
 
 ```xml
 <pom>
