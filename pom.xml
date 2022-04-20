@@ -288,6 +288,8 @@
 						</goals>
 						<configuration>
 							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+							<parallelThreads>1C</parallelThreads>
+							<streamLogs>false</streamLogs>
 							<streamLogsOnFailures>true</streamLogsOnFailures>
 							<writeJunitReport>true</writeJunitReport>
 						</configuration>

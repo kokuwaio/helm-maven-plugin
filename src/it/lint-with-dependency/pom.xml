@@ -19,7 +19,6 @@
 				<executions>
 					<execution>
 						<goals>
-							<!-- use standard binding -->
 							<goal>init</goal>
 							<goal>dependency-build</goal>
 							<goal>lint</goal>

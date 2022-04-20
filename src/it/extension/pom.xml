@@ -19,7 +19,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
-					<chartVersion>${project.version}</chartVersion>
+					<chartVersion>1.0.0</chartVersion>
 					<addDefaultRepo>false</addDefaultRepo>
 					<helmExtraRepos>
 						<helmExtraRepo>
