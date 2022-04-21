@@ -69,7 +69,6 @@ public class InitMojoTest {
 		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
 		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
 		mojo.setHelmDownloadUrl(null);
-		mojo.setHelmVersion("3.2.0");
 
 		// run init
 		mojo.execute();

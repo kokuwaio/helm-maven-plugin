@@ -1,5 +1,6 @@
 package io.kokuwa.maven.helm;
 
+import io.kokuwa.maven.helm.github.Github;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.K8SCluster;
 import org.apache.commons.lang3.StringUtils;
@@ -87,8 +88,16 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.downloadUrl")
 	private String helmDownloadUrl;
 
-	@Parameter(property = "helm.version", defaultValue = "3.2.0")
+	@Parameter(property = "helm.version")
 	private String helmVersion;
+
+	/** UserAgent to use for accessing Github api. */
+	@Parameter(property = "helm.githubUserAgent", defaultValue = "kokuwaio/helm-maven-plugin")
+	private String githubUserAgent;
+
+	/** Directory where to store Github cache. */
+	@Parameter(property = "helm.tmpDir", defaultValue = "${java.io.tmpdir}/helm-maven-plugin")
+	private String tmpDir;
 
 	@Parameter(property = "helm.registryConfig")
 	private String registryConfig;
@@ -433,7 +442,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		this.helmDownloadUrl = helmDownloadUrl;
 	}
 
-	public String getHelmVersion() {
+	public String getHelmVersion() throws MojoExecutionException {
+		if (helmVersion == null) {
+			helmVersion = new Github(getLog(), Paths.get(tmpDir), githubUserAgent).getHelmVersion();
+		}
 		return helmVersion;
 	}
 
@@ -594,5 +606,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public void setTimestampFormat(String timestampFormat) {
 		this.timestampFormat = timestampFormat;
+	}
+
+	public void setGithubUserAgent(String githubUserAgent) {
+		this.githubUserAgent = githubUserAgent;
+	}
+
+	public void setTmpDir(String tmpDir) {
+		this.tmpDir = tmpDir;
 	}
 }

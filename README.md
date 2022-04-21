@@ -53,12 +53,13 @@ The default setting is to construct the Helm download URL based upon the detecte
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
-        <helmVersion>3.2.0</helmVersion>
       </configuration>
     </plugin>
   </plugins>
 </build>
 ```
+
+If you leave `helmVersion` and `helmDownloadUrl` empty the plugin will determine the latest version based on [https://api.github.com/repos/helm/helm/releases/latest].
 
 ### Usage with Downloaded Binary
 
@@ -74,7 +75,7 @@ The default setting is to construct the Helm download URL based upon the detecte
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
         <!-- This is the related section when using binary download -->
-        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.8.1-linux-amd64.tar.gz</helmDownloadUrl>
       </configuration>
     </plugin>
   ...
@@ -155,7 +156,7 @@ and disables the auto-detection feature:
             <url>https://my.chart.museum:8080/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
-        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.8.1-linux-amd64.tar.gz</helmDownloadUrl>
       </configuration>
     </plugin>
   ...
@@ -179,8 +180,6 @@ and disables the auto-detection feature:
         <uploadRepoStable>
             <name>stable-repo</name>
             <url>https://repo.example.com/artifactory/helm-stable</url>
-            <!-- Artifactory requires basic authentication --> 
-            <!-- which is supported from HELM version >= 2.9 -->
             <type>ARTIFACTORY</type>
             <username>foo</username>
             <password>bar</password>
@@ -190,7 +189,7 @@ and disables the auto-detection feature:
             <url>https://my.chart.museum/api/charts</url>
             <type>CHARTMUSEUM</type>
         </uploadRepoSnapshot>
-        <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.8.1-linux-amd64.tar.gz</helmDownloadUrl>
         <registryConfig>~/.config/helm/registry.json</registryConfig>
         <repositoryCache>~/.cache/helm/repository</repositoryCache>
         <repositoryConfig>~/.config/helm/repositories.yaml</repositoryConfig>
@@ -262,7 +261,9 @@ Parameter | Type | User Property | Required | Description
 `<chartVersion>` | string | helm.chartVersion | true | Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
 `<appVersion>` | string | helm.appVersion | false | The version of the app. This needn't be SemVer.
 `<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm. Leave empty to autodetect URL based upon OS and architecture.
-`<helmVersion>` | string | helm.version | false | Version of helm to download. Defaults to 3.2.0
+`<helmVersion>` | string | helm.version | false | Version of helm to download.
+`<githubUserAgent>` | string | helm.githubUserAgent | false | To determine latest helm version this plugin uses the Github API. Therefore a [user agent](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#user-agent-required) is needed. Defaults to `kokuwaio/helm-maven-plugin`
+`<tmpDir>` | string | helm.tmpDir | false | Directory where to store cached Github responses. Defaults to `${java.io.tmpdir}/helm-maven-plugin`
 `<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
 `<useLocalHelmBinary>` | boolean | helm.useLocalHelmBinary | false | Controls whether a local binary should be used instead of downloading it. If set to `true` path has to be set with property `executableDirectory`
 `<autoDetectLocalHelmBinary>` | boolean | helm.autoDetectLocalHelmBinary | true | Controls whether the local binary should be auto-detected from `PATH` environment variable. If set to `false` the binary in `<helmExecutableDirectory>` is used. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.

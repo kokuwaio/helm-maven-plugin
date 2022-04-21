@@ -94,6 +94,7 @@
 		<version.org.junit.jupiter>5.4.2</version.org.junit.jupiter>
 		<version.org.mockito>2.28.2</version.org.mockito>
 		<version.org.projectlombok>1.18.12</version.org.projectlombok>
+		<version.com.fasterxml.jackson>2.13.2.2</version.com.fasterxml.jackson>
 
 		<!-- plugins -->
 
@@ -160,6 +161,11 @@
 			<artifactId>lombok</artifactId>
 			<version>${version.org.projectlombok}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${version.com.fasterxml.jackson}</version>
 		</dependency>
 
 		<!-- test -->
