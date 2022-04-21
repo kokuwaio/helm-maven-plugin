@@ -250,30 +250,26 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {
-		// Stream must support mark to allow for auto detection of archiver
-		if (!is.markSupported()) {
-			is = new BufferedInputStream(is);
-		}
+
+		// Stream must support mark to allow for auto detection of compressor
+		InputStream inputStream = is.markSupported() ? is : new BufferedInputStream(is);
 
 		try {
-			ArchiveStreamFactory archiveStreamFactory = new ArchiveStreamFactory();
-			return archiveStreamFactory.createArchiveInputStream(is);
-
+			return new ArchiveStreamFactory().createArchiveInputStream(inputStream);
 		} catch (ArchiveException e) {
 			throw new MojoExecutionException("Unsupported archive type downloaded", e);
 		}
 	}
 
 	private InputStream createCompressorInputStream(InputStream is) throws MojoExecutionException {
+
 		// Stream must support mark to allow for auto detection of compressor
-		if (!is.markSupported()) {
-			is = new BufferedInputStream(is);
-		}
+		InputStream inputStream = is.markSupported() ? is : new BufferedInputStream(is);
 
 		// Detect if stream is compressed
 		String compressorType = null;
 		try {
-			compressorType = CompressorStreamFactory.detect(is);
+			compressorType = CompressorStreamFactory.detect(inputStream);
 		} catch (CompressorException e) {
 			getLog().debug("Unknown type of compressed stream", e);
 		}
@@ -281,14 +277,13 @@ public class InitMojo extends AbstractHelmMojo {
 		// If compressed then wrap with compressor stream
 		if (compressorType != null) {
 			try {
-				CompressorStreamFactory compressorFactory = new CompressorStreamFactory();
-				return compressorFactory.createCompressorInputStream(compressorType, is);
+				return new CompressorStreamFactory().createCompressorInputStream(compressorType, inputStream);
 			} catch (CompressorException e) {
 				throw new MojoExecutionException("Unsupported compressor type: " + compressorType);
 			}
 		}
 
-		return is;
+		return inputStream;
 	}
 
 	private String getArchitecture() {
