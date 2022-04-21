@@ -53,8 +53,8 @@ public class UploadMojo extends AbstractHelmMojo {
 	}
 
 	protected void uploadSingle(String file) throws IOException, BadUploadException, MojoExecutionException {
-		final File fileToUpload = new File(file);
-		final HelmRepository uploadRepo = getHelmUploadRepo();
+		File fileToUpload = new File(file);
+		HelmRepository uploadRepo = getHelmUploadRepo();
 
 		HttpURLConnection connection;
 
@@ -100,7 +100,7 @@ public class UploadMojo extends AbstractHelmMojo {
 	}
 
 	protected HttpURLConnection getConnectionForUploadToChartmuseum() throws IOException, MojoExecutionException {
-		final HttpURLConnection connection = (HttpURLConnection) new URL(getHelmUploadUrl()).openConnection();
+		HttpURLConnection connection = (HttpURLConnection) new URL(getHelmUploadUrl()).openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
 		connection.setRequestProperty("Content-Type", "application/gzip");
@@ -130,7 +130,7 @@ public class UploadMojo extends AbstractHelmMojo {
 
 		uploadUrl = uploadUrl + file.getName();
 
-		final HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
+		HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("PUT");
 		connection.setRequestProperty("Content-Type", "application/gzip");
@@ -148,7 +148,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 		uploadUrl = uploadUrl + file.getName();
 
-		final HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
+		HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("PUT");
 		connection.setRequestProperty("Content-Type", "application/gzip");

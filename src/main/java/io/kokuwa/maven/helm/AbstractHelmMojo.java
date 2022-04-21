@@ -160,9 +160,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @param executable the name of the executable to search for
 	 * @return the absolute path to the executable if found, otherwise an empty optional.
 	 */
-	private Optional<Path> findInPath(final String executable) {
+	private Optional<Path> findInPath(String executable) {
 
-		final String[] paths = getPathsFromEnvironmentVariables();
+		String[] paths = getPathsFromEnvironmentVariables();
 		return Stream.of(paths)
 				.map(Paths::get)
 				.map(path -> path.resolve(executable))
@@ -203,7 +203,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @param stdin STDIN which is passed to the helm process
 	 * @throws MojoExecutionException on error
 	 */
-	void callCli(String command, String errorMessage, final boolean verbose, String stdin) throws MojoExecutionException {
+	void callCli(String command, String errorMessage, boolean verbose, String stdin) throws MojoExecutionException {
 		int exitValue;
 
 		command += getK8SArgs();
@@ -211,7 +211,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		getLog().debug(command);
 
 		try {
-			final Process p = Runtime.getRuntime().exec(command);
+			Process p = Runtime.getRuntime().exec(command);
 			new Thread(() -> {
 				if (StringUtils.isNotEmpty(stdin)) {
 					try (OutputStream outputStream = p.getOutputStream()) {
@@ -306,7 +306,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private Predicate<String> shouldIncludeDirectory(MatchPatterns exclusionPatterns) {
 		return inputDirectory -> {
 
-			final boolean isCaseSensitive = Boolean.FALSE;
+			boolean isCaseSensitive = Boolean.FALSE;
 			boolean matches = exclusionPatterns.matches(inputDirectory, isCaseSensitive);
 
 			if (matches) {
@@ -564,7 +564,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return autoDetectLocalHelmBinary;
 	}
 
-	public void setAutoDetectLocalHelmBinary(final boolean autoDetectLocalHelmBinary) {
+	public void setAutoDetectLocalHelmBinary(boolean autoDetectLocalHelmBinary) {
 		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary;
 	}
 

@@ -77,14 +77,14 @@ class AbstractHelmMojoTest {
 
 		@Test
 		void k8sClusterArg_NotConfigured(){
-			final K8SCluster k8SCluster = new K8SCluster();
+			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			assertEquals("", subjectSpy.getK8SArgs());
 		}
 
 		@Test
 		void k8sClusterArg_ApiUrl(){
-			final K8SCluster k8SCluster = new K8SCluster();
+			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setApiUrl("custom-api-url");
 			assertEquals(" --kube-apiserver custom-api-url", subjectSpy.getK8SArgs());
@@ -92,7 +92,7 @@ class AbstractHelmMojoTest {
 
 		@Test
 		void k8sClusterArg_AsUser(){
-			final K8SCluster k8SCluster = new K8SCluster();
+			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setAsUser("custom-user");
 			assertEquals(" --kube-as-user custom-user", subjectSpy.getK8SArgs());
@@ -100,7 +100,7 @@ class AbstractHelmMojoTest {
 
 		@Test
 		void k8sClusterArg_AsGroup(){
-			final K8SCluster k8SCluster = new K8SCluster();
+			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setAsGroup("custom-group");
 			assertEquals(" --kube-as-group custom-group", subjectSpy.getK8SArgs());
@@ -108,7 +108,7 @@ class AbstractHelmMojoTest {
 
 		@Test
 		void k8sClusterArg_Namespace(){
-			final K8SCluster k8SCluster = new K8SCluster();
+			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setNamespace("custom-ns");
 			assertEquals(" --namespace custom-ns", subjectSpy.getK8SArgs());
@@ -116,14 +116,14 @@ class AbstractHelmMojoTest {
 
 		@Test
 		void k8sClusterArg_Token(){
-			final K8SCluster k8SCluster = new K8SCluster();
+			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setToken("custom-token");
 			assertEquals(" --kube-token custom-token", subjectSpy.getK8SArgs());
 		}
 		@Test
 		void k8sClusterArg_All(){
-			final K8SCluster k8SCluster = new K8SCluster();
+			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setApiUrl("custom-api-url");
 			k8SCluster.setAsUser("custom-user");
@@ -157,11 +157,11 @@ class AbstractHelmMojoTest {
 
 		@Test
 		void timestampAsVersion() {
-			final String timeStamp = "2000-01-01 00:00:00";
+			String timeStamp = "2000-01-01 00:00:00";
 			doReturn("yyyy-MM-dd HH:mm:ss").when(subjectSpy).getTimestampFormat();
 			doReturn(timeStamp).when(subjectSpy).getCurrentTimestamp();
 			doReturn(true).when(subjectSpy).isTimestampOnSnapshot();
-			final String chartVersion = "0.0.0-SNAPSHOT";
+			String chartVersion = "0.0.0-SNAPSHOT";
 			subjectSpy.setChartVersion(chartVersion);
 			assertEquals(chartVersion.replace("SNAPSHOT",timeStamp), subjectSpy.getChartVersionWithProcessing());
 
@@ -174,7 +174,7 @@ class AbstractHelmMojoTest {
 			doReturn("yyyy-MM-dd HH:mm:ss").when(subjectSpy).getTimestampFormat();
 			doReturn("2000-01-01 00:00:00").when(subjectSpy).getCurrentTimestamp();
 			doReturn(true).when(subjectSpy).isTimestampOnSnapshot();
-			final String chartVersion = "0.0.0-SNAPSHOT";
+			String chartVersion = "0.0.0-SNAPSHOT";
 			subjectSpy.setChartVersion(chartVersion);
 
 			doReturn(false).when(subjectSpy).isTimestampOnSnapshot();
@@ -186,7 +186,7 @@ class AbstractHelmMojoTest {
 			doReturn("yyyy-MM-dd HH:mm:ss").when(subjectSpy).getTimestampFormat();
 			doReturn("2000-01-01 00:00:00").when(subjectSpy).getCurrentTimestamp();
 			doReturn(true).when(subjectSpy).isTimestampOnSnapshot();
-			final String chartVersion = "0.0.0";
+			String chartVersion = "0.0.0";
 			subjectSpy.setChartVersion(chartVersion);
 
 			doReturn(false).when(subjectSpy).isTimestampOnSnapshot();
@@ -250,23 +250,23 @@ class AbstractHelmMojoTest {
 		@Test
 		void helmIsAutoDetectedFromPATH() throws MojoExecutionException, IOException {
 
-			final Path expectedPath = addHelmToTestPath();
+			Path expectedPath = addHelmToTestPath();
 			assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
 		}
 
 		@Test
 		void executionFailsWhenHelmIsNotFoundInPATH() {
 
-			final MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecuteablePath);
+			MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecuteablePath);
 			assertTrue(exception.getMessage().contains("not found"));
 		}
 
 		@Test
 		void helmIsAutoDetectedEvenWhenExecutableDirectoryIsConfigured() throws IOException, MojoExecutionException {
 
-			final String explicitExecutableDirectory = "/fish/in/da/sea";
+			String explicitExecutableDirectory = "/fish/in/da/sea";
 			subjectSpy.setHelmExecutableDirectory(explicitExecutableDirectory);
-			final Path expectedPath = addHelmToTestPath();
+			Path expectedPath = addHelmToTestPath();
 			assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
 			assertNotEquals(explicitExecutableDirectory, subjectSpy.getHelmExecuteablePath());
 		}
@@ -285,14 +285,14 @@ class AbstractHelmMojoTest {
 		@Test
 		void helmIsInTheExplicitlyConfiguredDirectory() throws MojoExecutionException, IOException {
 
-			final Path expectedPath = addHelmToTestPath();
+			Path expectedPath = addHelmToTestPath();
 			assertEquals(expectedPath, subjectSpy.getHelmExecuteablePath());
 		}
 
 		@Test
 		void executionFailsWhenHelmIsNotFoundInConfiguredDirectory() {
 
-			final MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecuteablePath);
+			MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecuteablePath);
 			assertTrue(exception.getMessage().contains("not found"));
 		}
 	}

@@ -38,7 +38,7 @@ public class PushMojo extends AbstractHelmMojo {
 			getLog().info("Skip push");
 			return;
 		}
-		final HelmRepository registry = getHelmUploadRepo();
+		HelmRepository registry = getHelmUploadRepo();
 		if (Objects.isNull(registry)) {
 			getLog().info("there is no helm repo. skipping the upload.");
 			return;

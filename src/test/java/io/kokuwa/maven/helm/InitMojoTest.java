@@ -105,7 +105,7 @@ public class InitMojoTest {
 	public void verifyAddingUploadSnapshotRepoNoDefaultRepo(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory-snapshot");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -132,7 +132,7 @@ public class InitMojoTest {
 	public void verifyAddingUploadStableRepoNoDefaultRepo(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory-stable");
 		helmRepo.setUrl("https://somwhere.com/repo/stable");
@@ -181,12 +181,12 @@ public class InitMojoTest {
 	public void verifyAddingUploadSnapshotStableRepoAndDefaultRepo(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmUploadStableRepo = new HelmRepository();
+		HelmRepository helmUploadStableRepo = new HelmRepository();
 		helmUploadStableRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadStableRepo.setName("my-artifactory-stable");
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo/stable");
 		mojo.setUploadRepoStable(helmUploadStableRepo);
-		final HelmRepository helmUploadSnapshotRepo = new HelmRepository();
+		HelmRepository helmUploadSnapshotRepo = new HelmRepository();
 		helmUploadSnapshotRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadSnapshotRepo.setName("my-artifactory-snapshot");
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
@@ -217,12 +217,12 @@ public class InitMojoTest {
 	public void verifyAddingUploadSnapshotStableRepoSameRepoName(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmUploadStableRepo = new HelmRepository();
+		HelmRepository helmUploadStableRepo = new HelmRepository();
 		helmUploadStableRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadStableRepo.setName("my-artifactory");
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoStable(helmUploadStableRepo);
-		final HelmRepository helmUploadSnapshotRepo = new HelmRepository();
+		HelmRepository helmUploadSnapshotRepo = new HelmRepository();
 		helmUploadSnapshotRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadSnapshotRepo.setName("my-artifactory");
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo");
@@ -252,7 +252,7 @@ public class InitMojoTest {
 	public void verifyAddingUploadSnapshotRepoStableNotPresent(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmUploadSnapshotRepo = new HelmRepository();
+		HelmRepository helmUploadSnapshotRepo = new HelmRepository();
 		helmUploadSnapshotRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadSnapshotRepo.setName("my-artifactory-snapshot");
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
@@ -281,7 +281,7 @@ public class InitMojoTest {
 	public void verifyAddingUploadStableRepoSnapshotNotPresent(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmUploadStableRepo = new HelmRepository();
+		HelmRepository helmUploadStableRepo = new HelmRepository();
 		helmUploadStableRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadStableRepo.setName("my-artifactory-stable");
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo/stable");
@@ -338,8 +338,8 @@ public class InitMojoTest {
 		// Because the download URL is hardcoded to linux, only proceed if the OS is indeed linux.
 		assumeTrue(isOSUnix());
 
-		final URL resource = this.getClass().getResource("helm.tar.gz");
-		final String helmExecutableDir = new File(resource.getFile()).getParent();
+		URL resource = this.getClass().getResource("helm.tar.gz");
+		String helmExecutableDir = new File(resource.getFile()).getParent();
 		mojo.callCli("tar -xf "
 				+ helmExecutableDir
 				+ File.separator
@@ -375,7 +375,7 @@ public class InitMojoTest {
 		return getOsSpecificDownloadURL(osForDownload);
 	}
 
-	private String getOsSpecificDownloadURL(final String os) {
+	private String getOsSpecificDownloadURL(String os) {
 		return "https://get.helm.sh/helm-v3.0.0-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
 	}
 }

@@ -113,7 +113,7 @@ public class InitMojo extends AbstractHelmMojo {
 	 *
 	 * @param repository - helm repository to be added
 	 */
-	private void addRepository(final HelmRepository repository) throws MojoExecutionException {
+	private void addRepository(HelmRepository repository) throws MojoExecutionException {
 		addRepository(repository, true);
 	}
 
@@ -123,7 +123,7 @@ public class InitMojo extends AbstractHelmMojo {
 	 * @param repository - helm repository to be added
 	 * @param authenticationRequired - defines whether the authentication is required
 	 */
-	private void addRepository(final HelmRepository repository, boolean authenticationRequired) throws MojoExecutionException {
+	private void addRepository(HelmRepository repository, boolean authenticationRequired) throws MojoExecutionException {
 		getLog().info("Adding repo [" + repository + "]");
 		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
 		callCli(getHelmExecuteablePath()
@@ -211,11 +211,11 @@ public class InitMojo extends AbstractHelmMojo {
 		this.addUploadRepos = addUploadRepos;
 	}
 
-	private void addExecPermission(final Path helm) throws IOException {
+	private void addExecPermission(Path helm) throws IOException {
 		Set<String> fileAttributeView = FileSystems.getDefault().supportedFileAttributeViews();
 
 		if (fileAttributeView.contains("posix")) {
-			final Set<PosixFilePermission> permissions;
+			Set<PosixFilePermission> permissions;
 			try {
 				permissions = Files.getPosixFilePermissions(helm);
 			} catch (UnsupportedOperationException e) {
