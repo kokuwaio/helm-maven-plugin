@@ -8,8 +8,7 @@ package io.kokuwa.maven.helm.exception;
  */
 public class BadUploadException extends Exception {
 
-	public BadUploadException() {
-	}
+	public BadUploadException() {}
 
 	public BadUploadException(String message) {
 		super(message);

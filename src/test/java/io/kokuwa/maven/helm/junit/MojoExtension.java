@@ -34,7 +34,6 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 
 import io.kokuwa.maven.helm.AbstractHelmMojo;
 
-@SuppressWarnings("unchecked")
 public class MojoExtension implements ParameterResolver, BeforeAllCallback, BeforeEachCallback {
 
 	private PluginDescriptor plugin;
@@ -120,7 +119,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 			}
 
 			return mojo;
-		} catch ( ReflectiveOperationException e) {
+		} catch (ReflectiveOperationException e) {
 			throw new ParameterResolutionException("Failed to setup mockito.", e);
 		}
 	}

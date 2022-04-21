@@ -7,7 +7,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
-
 /**
  * Mojo for simulate a template.
  *
@@ -26,14 +25,16 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "helm.template.skip", defaultValue = "true")
 	private boolean skipTemplate;
 
+	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+
 		if (skip || skipTemplate) {
 			getLog().info("Skip template");
 			return;
 		}
+
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info(String.format("\n\nPerform template for chart %s...", inputDirectory));
-
 			callCli(String.format("%s %s %s %s %s %s %s %s",
 					getHelmExecuteablePath(),
 					action,

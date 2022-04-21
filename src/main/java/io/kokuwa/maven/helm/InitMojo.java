@@ -47,6 +47,8 @@ import io.kokuwa.maven.helm.pojo.HelmRepository;
 @Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InitMojo extends AbstractHelmMojo {
 
+	public static final String STABLE_HELM_REPO = "https://charts.helm.sh/stable";
+
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
 
@@ -56,8 +58,7 @@ public class InitMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.init.add-upload-repos", defaultValue = "false")
 	private boolean addUploadRepos;
 
-	public static final String STABLE_HELM_REPO = "https://charts.helm.sh/stable";
-
+	@Override
 	public void execute() throws MojoExecutionException {
 
 		if (skip || skipInit) {
@@ -76,9 +77,9 @@ public class InitMojo extends AbstractHelmMojo {
 			}
 		}
 
-		if(isUseLocalHelmBinary()) {
+		if (isUseLocalHelmBinary()) {
 			verifyLocalHelmBinary();
-			getLog().info("Using local HELM binary ["+ getHelmExecuteablePath() +"]");
+			getLog().info("Using local HELM binary [" + getHelmExecuteablePath() + "]");
 		} else {
 			downloadAndUnpackHelm();
 		}
@@ -95,8 +96,8 @@ public class InitMojo extends AbstractHelmMojo {
 				addRepository(getUploadRepoStable());
 			}
 
-			//add the upload snapshot repo only if it's name differs to the upload repo stable name
-			if (getUploadRepoSnapshot() != null && (getUploadRepoStable()==null || !getUploadRepoStable().getName().equals(getUploadRepoSnapshot().getName()))) {
+			// add the upload snapshot repo only if it's name differs to the upload repo stable name
+			if (getUploadRepoSnapshot() != null && (getUploadRepoStable() == null || !getUploadRepoStable().getName().equals(getUploadRepoSnapshot().getName()))) {
 				addRepository(getUploadRepoSnapshot());
 			}
 		}
@@ -158,8 +159,8 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
 		try (InputStream dis = new URL(url).openStream();
-			 InputStream cis = createCompressorInputStream(dis);
-			 ArchiveInputStream is = createArchiverInputStream(cis)) {
+				InputStream cis = createCompressorInputStream(dis);
+				ArchiveInputStream is = createArchiverInputStream(cis)) {
 
 			// create directory if not present
 			Files.createDirectories(directory);
@@ -169,7 +170,7 @@ public class InitMojo extends AbstractHelmMojo {
 			while ((entry = is.getNextEntry()) != null) {
 
 				String name = entry.getName();
-				if (entry.isDirectory() || (!name.endsWith("helm.exe") && !name.endsWith("helm"))) {
+				if (entry.isDirectory() || !name.endsWith("helm.exe") && !name.endsWith("helm")) {
 					getLog().debug("Skip archive entry with name: " + name);
 					continue;
 				}
@@ -294,7 +295,7 @@ public class InitMojo extends AbstractHelmMojo {
 			return "arm64";
 		} else if (architecture.equals("aarch32") || architecture.startsWith("arm")) {
 			return "arm";
-		} else if (architecture.contains("ppc64le") || (architecture.contains("ppc64") && System.getProperty("sun.cpu.endian").equals("little"))) {
+		} else if (architecture.contains("ppc64le") || architecture.contains("ppc64") && System.getProperty("sun.cpu.endian").equals("little")) {
 			return "ppc64le";
 		}
 

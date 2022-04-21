@@ -33,6 +33,7 @@ public class PushMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.push.skip", defaultValue = "false")
 	private boolean skipPush;
 
+	@Override
 	@SneakyThrows
 	public void execute() {
 
@@ -40,6 +41,7 @@ public class PushMojo extends AbstractHelmMojo {
 			getLog().info("Skip push");
 			return;
 		}
+
 		HelmRepository registry = getHelmUploadRepo();
 		if (Objects.isNull(registry)) {
 			getLog().info("there is no helm repo. skipping the upload.");
@@ -48,12 +50,11 @@ public class PushMojo extends AbstractHelmMojo {
 
 		ComparableVersion helmVersion = new ComparableVersion(getHelmVersion());
 		ComparableVersion minimumHelmVersion = new ComparableVersion("3.8.0");
-		if(helmVersion.compareTo(minimumHelmVersion) < 0) {
+		if (helmVersion.compareTo(minimumHelmVersion) < 0) {
 			getLog().error("your helm version is " + helmVersion.toString() + ", it's required to be >=3.8.0");
 			throw new IllegalStateException();
-		}
-		else {
-			getLog().debug("helm version minimum satisfied. the version is: "+ helmVersion.toString());
+		} else {
+			getLog().debug("helm version minimum satisfied. the version is: " + helmVersion.toString());
 		}
 
 		if (registry.getUsername() != null && registry.getPassword() == null) {
@@ -80,14 +81,13 @@ public class PushMojo extends AbstractHelmMojo {
 	}
 
 	private void uploadSingle(Path tgz, HelmRepository registry) throws MojoExecutionException {
-
 		callCli(
 				getHelmExecuteablePath() +
 						format(
 								CHART_PUSH_TEMPLATE,
 								tgz,
 								registry.getUrl()),
-						EMPTY, true);
+				EMPTY, true);
 	}
 
 	List<String> getChartTgzs(String path) throws MojoExecutionException {
@@ -102,4 +102,3 @@ public class PushMojo extends AbstractHelmMojo {
 		}
 	}
 }
-

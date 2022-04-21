@@ -34,6 +34,7 @@ import org.mockito.Spy;
 import io.kokuwa.maven.helm.pojo.K8SCluster;
 
 class AbstractHelmMojoTest {
+
 	@Spy
 	@InjectMocks
 	private NoopHelmMojo subjectSpy = new NoopHelmMojo();
@@ -60,7 +61,7 @@ class AbstractHelmMojoTest {
 
 		chartDir = getBaseChartsDirectory().toString();
 		excludeDir1 = chartDir + File.separator + "exclude1";
-		excludeDir2= chartDir + File.separator + "exclude2";
+		excludeDir2 = chartDir + File.separator + "exclude2";
 
 		testPath = Files.createTempDirectory("test").toAbsolutePath();
 		testHelmExecutablePath = testPath.resolve(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm");
@@ -76,23 +77,23 @@ class AbstractHelmMojoTest {
 	}
 
 	@Nested
-	class K8SClusterArgs{
+	class K8SClusterArgs {
 
 		@Test
-		void k8sClusterArg_WhenNull(){
+		void k8sClusterArg_WhenNull() {
 			assertNull(subjectSpy.getK8SCluster());
 			assertEquals("", subjectSpy.getK8SArgs());
 		}
 
 		@Test
-		void k8sClusterArg_NotConfigured(){
+		void k8sClusterArg_NotConfigured() {
 			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			assertEquals("", subjectSpy.getK8SArgs());
 		}
 
 		@Test
-		void k8sClusterArg_ApiUrl(){
+		void k8sClusterArg_ApiUrl() {
 			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setApiUrl("custom-api-url");
@@ -100,7 +101,7 @@ class AbstractHelmMojoTest {
 		}
 
 		@Test
-		void k8sClusterArg_AsUser(){
+		void k8sClusterArg_AsUser() {
 			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setAsUser("custom-user");
@@ -108,7 +109,7 @@ class AbstractHelmMojoTest {
 		}
 
 		@Test
-		void k8sClusterArg_AsGroup(){
+		void k8sClusterArg_AsGroup() {
 			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setAsGroup("custom-group");
@@ -116,7 +117,7 @@ class AbstractHelmMojoTest {
 		}
 
 		@Test
-		void k8sClusterArg_Namespace(){
+		void k8sClusterArg_Namespace() {
 			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setNamespace("custom-ns");
@@ -124,14 +125,15 @@ class AbstractHelmMojoTest {
 		}
 
 		@Test
-		void k8sClusterArg_Token(){
+		void k8sClusterArg_Token() {
 			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setToken("custom-token");
 			assertEquals(" --kube-token custom-token", subjectSpy.getK8SArgs());
 		}
+
 		@Test
-		void k8sClusterArg_All(){
+		void k8sClusterArg_All() {
 			K8SCluster k8SCluster = new K8SCluster();
 			subjectSpy.setK8SCluster(k8SCluster);
 			k8SCluster.setApiUrl("custom-api-url");
@@ -140,20 +142,17 @@ class AbstractHelmMojoTest {
 			k8SCluster.setToken("custom-token");
 			k8SCluster.setNamespace("custom-ns");
 			k8SCluster.setToken("custom-token");
-			assertEquals(
-					" --kube-apiserver custom-api-url"
-							+ " --namespace custom-ns"
-							+ " --kube-as-user custom-user"
-							+ " --kube-as-group custom-group"
-							+ " --kube-token custom-token"
-					, subjectSpy.getK8SArgs());
+			assertEquals(" --kube-apiserver custom-api-url"
+					+ " --namespace custom-ns"
+					+ " --kube-as-user custom-user"
+					+ " --kube-as-group custom-group"
+					+ " --kube-token custom-token",
+					subjectSpy.getK8SArgs());
 		}
-
 	}
 
 	@Nested
 	class TimeStampAsVersion {
-
 
 		@Test
 		void timestamp_Formats() {
@@ -172,7 +171,7 @@ class AbstractHelmMojoTest {
 			doReturn(true).when(subjectSpy).isTimestampOnSnapshot();
 			String chartVersion = "0.0.0-SNAPSHOT";
 			subjectSpy.setChartVersion(chartVersion);
-			assertEquals(chartVersion.replace("SNAPSHOT",timeStamp), subjectSpy.getChartVersionWithProcessing());
+			assertEquals(chartVersion.replace("SNAPSHOT", timeStamp), subjectSpy.getChartVersionWithProcessing());
 
 			doReturn(false).when(subjectSpy).isTimestampOnSnapshot();
 			assertEquals(chartVersion, subjectSpy.getChartVersionWithProcessing());
@@ -210,7 +209,7 @@ class AbstractHelmMojoTest {
 	void getChartDirectoriesReturnChartDirectoriesWithPlainExclusion() throws MojoExecutionException {
 		Path baseChartsDirectory = getBaseChartsDirectory();
 
-		subjectSpy.setExcludes(new String[]{excludeDir1});
+		subjectSpy.setExcludes(new String[] { excludeDir1 });
 
 		List<String> chartDirectories = subjectSpy.getChartDirectories(baseChartsDirectory.toString());
 
@@ -218,12 +217,11 @@ class AbstractHelmMojoTest {
 		assertTrue(chartDirectories.contains(excludeDir2), "Charts dirs [" + chartDirectories + "] should contain not excluded dirs [" + excludeDir2 + "]");
 	}
 
-
 	@Test
 	void getChartDirectoriesReturnChartDirectoriesWithAntPatternsExclusion() throws MojoExecutionException {
 		Path baseChartsDirectory = getBaseChartsDirectory();
 
-		subjectSpy.setExcludes(new String[]{"**" + File.separator + "exclude*"});
+		subjectSpy.setExcludes(new String[] { "**" + File.separator + "exclude*" });
 
 		List<String> chartDirectories = subjectSpy.getChartDirectories(baseChartsDirectory.toString());
 
@@ -253,7 +251,7 @@ class AbstractHelmMojoTest {
 
 			subjectSpy.setUseLocalHelmBinary(true);
 			subjectSpy.setAutoDetectLocalHelmBinary(true);
-			doReturn(new String[]{ testPath.toAbsolutePath().toString() }).when(subjectSpy).getPathsFromEnvironmentVariables();
+			doReturn(new String[] { testPath.toAbsolutePath().toString() }).when(subjectSpy).getPathsFromEnvironmentVariables();
 		}
 
 		@Test
@@ -306,14 +304,18 @@ class AbstractHelmMojoTest {
 		}
 	}
 
-	private Path addHelmToTestPath() throws IOException { return write(testHelmExecutablePath, new byte[]{}); }
+	private Path addHelmToTestPath() throws IOException {
+		return write(testHelmExecutablePath, new byte[] {});
+	}
 
 	private Path getBaseChartsDirectory() {
 		return new File(getClass().getResource("Chart.yaml").getFile()).toPath().getParent();
 	}
 
 	@AfterEach
-	void tearDown() { deleteQuietly(testPath.toFile()); }
+	void tearDown() {
+		deleteQuietly(testPath.toFile());
+	}
 
 	private static class NoopHelmMojo extends AbstractHelmMojo {
 

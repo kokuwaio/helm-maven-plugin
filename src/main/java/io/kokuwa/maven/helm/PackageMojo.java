@@ -27,16 +27,15 @@ public class PackageMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.package.passphrase")
 	private String passphrase;
 
-	public void execute()
-			throws MojoExecutionException
-	{
+	@Override
+	public void execute() throws MojoExecutionException {
+
 		if (skip || skipPackage) {
 			getLog().info("Skip package");
 			return;
 		}
 
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-
 			getLog().info("Packaging chart " + inputDirectory + "...");
 
 			String helmCommand = getHelmExecuteablePath()
@@ -75,5 +74,4 @@ public class PackageMojo extends AbstractHelmMojo {
 	private boolean isSignEnabled() {
 		return StringUtils.isNotEmpty(keyring) && StringUtils.isNotEmpty(key);
 	}
-
 }

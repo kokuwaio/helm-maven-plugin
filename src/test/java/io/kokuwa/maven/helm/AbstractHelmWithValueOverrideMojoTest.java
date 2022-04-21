@@ -83,7 +83,6 @@ class AbstractHelmWithValueOverrideMojoTest {
 		assertEquals(" --values path/to/values-1.yaml --values path/to/values-2.yaml", testMojo.getValuesOptions());
 	}
 
-
 	@Test
 	public void allOverrideUsedTogether() {
 		ValueOverride override = new ValueOverride();
@@ -103,12 +102,14 @@ class AbstractHelmWithValueOverrideMojoTest {
 		override.setYamlFiles(yamlFiles);
 		testMojo.setValues(override);
 
-		assertEquals(" --set key1=value1,key2=value2 --set-string skey1=svalue1,skey2=svalue2 --set-file " +
-						"fkey1=path/to/file1.txt,fkey2=D:/absolute/path/to/file2.txt --values path/to/values.yaml" +
-						" --values path/to/values-1.yaml --values path/to/values-2.yaml",
+		assertEquals(" --set key1=value1,key2=value2"
+				+ " --set-string skey1=svalue1,skey2=svalue2"
+				+ " --set-file fkey1=path/to/file1.txt,fkey2=D:/absolute/path/to/file2.txt"
+				+ " --values path/to/values.yaml"
+				+ " --values path/to/values-1.yaml"
+				+ " --values path/to/values-2.yaml",
 				testMojo.getValuesOptions());
 	}
-
 
 	private static class NoopHelmMojo extends AbstractHelmWithValueOverrideMojo {
 

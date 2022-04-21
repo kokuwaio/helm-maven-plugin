@@ -12,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo {
+
 	@Parameter(property = "helm.values")
 	private ValueOverride values;
 
@@ -34,7 +35,7 @@ public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo
 				setValuesOptions.append(" --values ").append(values.getYamlFile());
 			}
 			if (values.getYamlFiles() != null) {
-				for(String yamlFile : values.getYamlFiles()) {
+				for (String yamlFile : values.getYamlFiles()) {
 					if (StringUtils.isNotBlank(yamlFile)) {
 						setValuesOptions.append(" --values ").append(yamlFile);
 					}
@@ -59,6 +60,4 @@ public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo
 	private static <K, V> boolean isNotEmpty(Map<K, V> map) {
 		return map != null && !map.isEmpty();
 	}
-
-
 }

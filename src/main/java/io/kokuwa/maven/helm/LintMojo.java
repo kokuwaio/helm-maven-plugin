@@ -21,15 +21,15 @@ public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "helm.lint.strict", defaultValue = "false")
 	private boolean lintStrict;
 
-	public void execute()
-			throws MojoExecutionException
-	{
+	@Override
+	public void execute() throws MojoExecutionException {
+
 		if (skip || skipLint) {
 			getLog().info("Skip lint");
 			return;
 		}
-		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 
+		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("\n\nTesting chart " + inputDirectory + "...");
 			callCli(getHelmExecuteablePath()
 					+ " lint "

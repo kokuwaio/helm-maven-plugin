@@ -193,8 +193,8 @@ public class UploadMojoTest {
 				helmRepo.getUrl() + "/"
 						+ projectGroupId.replace(".", "/") + "/"
 						+ projectVersion + "/"
-						+ chartFileName
-				, connection.getURL().toString());
+						+ chartFileName,
+				connection.getURL().toString());
 	}
 
 	@Test
@@ -221,9 +221,7 @@ public class UploadMojoTest {
 		doReturn(projectVersion).when(mojo).getProjectVersion();
 
 		HttpURLConnection connection = mojo.getConnectionForUploadToArtifactory(fileToUpload, helmRepo.isUseGroupId());
-		assertEquals(
-				helmRepo.getUrl() + "/" + chartFileName
-				, connection.getURL().toString());
+		assertEquals(helmRepo.getUrl() + "/" + chartFileName, connection.getURL().toString());
 	}
 
 	@Test
@@ -296,8 +294,7 @@ public class UploadMojoTest {
 
 	@Test
 	public void verfifyNullErrorStreamOnFailedUpload(UploadMojo uploadMojo)
-			throws IOException, MojoExecutionException
-	{
+			throws IOException, MojoExecutionException {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.CHARTMUSEUM);
 		helmRepo.setName("my-chartmuseum");
@@ -451,8 +448,6 @@ public class UploadMojoTest {
 	/** Writes to nowhere */
 	public class NullOutputStream extends OutputStream {
 		@Override
-		public void write(int b) throws IOException {
-		}
+		public void write(int b) throws IOException {}
 	}
 }
-

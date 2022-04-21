@@ -42,7 +42,6 @@ import io.kokuwa.maven.helm.github.Github;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.K8SCluster;
 
-
 /**
  * Base class for mojos
  *
@@ -131,14 +130,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
-	@Parameter(defaultValue="${project.groupId}", readonly=true)
+	@Parameter(defaultValue = "${project.groupId}", readonly = true)
 	String projectGroupId;
 
-	@Parameter(defaultValue="${project.version}", readonly=true)
+	@Parameter(defaultValue = "${project.version}", readonly = true)
 	String projectVersion;
 
 	private Clock clock = Clock.systemDefaultZone();
-	private StripSensitiveDataLog log;
 
 	@Override
 	public void setLog(Log log) {
@@ -181,7 +179,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return System.getenv("PATH").split(Pattern.quote(File.pathSeparator));
 	}
 
-	String getCurrentTimestamp(){
+	String getCurrentTimestamp() {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(getTimestampFormat());
 		LocalDateTime currentTime = LocalDateTime.now(clock);
 		return dateTimeFormatter.format(currentTime);
@@ -220,7 +218,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			new Thread(() -> {
 				if (StringUtils.isNotEmpty(stdin)) {
 					try (OutputStream outputStream = p.getOutputStream()) {
-						outputStream.write( stdin.getBytes(StandardCharsets.UTF_8) );
+						outputStream.write(stdin.getBytes(StandardCharsets.UTF_8));
 					} catch (IOException ex) {
 						getLog().error("failed to write to stdin of helm", ex);
 					}
@@ -261,20 +259,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	String getK8SArgs() {
 		StringBuilder k8sConfigArgs = new StringBuilder();
-		if (k8sCluster != null){
-			if(StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
+		if (k8sCluster != null) {
+			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
 				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
 			}
-			if(StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
+			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
 				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
 			}
-			if(StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
+			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
 				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());
 			}
-			if(StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
+			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
 				k8sConfigArgs.append(" --kube-as-group ").append(k8sCluster.getAsGroup());
 			}
-			if(StringUtils.isNotEmpty(k8sCluster.getToken())) {
+			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
 				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
 			}
 		}
@@ -311,15 +309,15 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private Predicate<String> shouldIncludeDirectory(MatchPatterns exclusionPatterns) {
 		return inputDirectory -> {
 
-			boolean isCaseSensitive = Boolean.FALSE;
+			boolean isCaseSensitive = false;
 			boolean matches = exclusionPatterns.matches(inputDirectory, isCaseSensitive);
 
 			if (matches) {
 				getLog().debug("Skip excluded directory " + inputDirectory);
-				return Boolean.FALSE;
+				return false;
 			}
 
-			return Boolean.TRUE;
+			return true;
 		};
 	}
 
@@ -348,8 +346,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		String uploadUrl = uploadRepoStable.getUrl();
 		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
-				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl()))
-		{
+				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
 			uploadUrl = uploadRepoSnapshot.getUrl();
 		}
 
@@ -359,8 +356,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	HelmRepository getHelmUploadRepo() {
 		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
-				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl()))
-		{
+				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
 			return uploadRepoSnapshot;
 		}
 		return uploadRepoStable;
@@ -376,8 +372,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @throws MojoExecutionException Unable to get password from settings.xml
 	 */
 	PasswordAuthentication getAuthentication(HelmRepository repository)
-			throws IllegalArgumentException, MojoExecutionException
-	{
+			throws IllegalArgumentException, MojoExecutionException {
 		String id = repository.getName();
 
 		if (repository.getUsername() != null) {

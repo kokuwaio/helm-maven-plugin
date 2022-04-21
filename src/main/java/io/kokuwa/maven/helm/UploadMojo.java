@@ -32,13 +32,14 @@ public class UploadMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.upload.skip", defaultValue = "false")
 	private boolean skipUpload;
 
-	public void execute()
-			throws MojoExecutionException
-	{
+	@Override
+	public void execute() throws MojoExecutionException {
+
 		if (skip || skipUpload) {
 			getLog().info("Skip upload");
 			return;
 		}
+
 		getLog().info("Uploading to " + getHelmUploadUrl() + "\n");
 		for (String chartPackageFile : getChartFiles(getOutputDirectory())) {
 			getLog().info("Uploading " + chartPackageFile + "...");
@@ -58,22 +59,22 @@ public class UploadMojo extends AbstractHelmMojo {
 
 		HttpURLConnection connection;
 
-		if(uploadRepo.getType() == null){
+		if (uploadRepo.getType() == null) {
 			throw new IllegalArgumentException("Repository type missing. Check your plugin configuration.");
 		}
 
 		switch (uploadRepo.getType()) {
-		case ARTIFACTORY:
-			connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo.isUseGroupId());
-			break;
-		case CHARTMUSEUM:
-			connection = getConnectionForUploadToChartmuseum();
-			break;
-		case NEXUS:
-			connection = getConnectionForUploadToNexus(fileToUpload);
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported repository type for upload.");
+			case ARTIFACTORY:
+				connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo.isUseGroupId());
+				break;
+			case CHARTMUSEUM:
+				connection = getConnectionForUploadToChartmuseum();
+				break;
+			case NEXUS:
+				connection = getConnectionForUploadToNexus(fileToUpload);
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported repository type for upload.");
 		}
 
 		try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
@@ -113,7 +114,7 @@ public class UploadMojo extends AbstractHelmMojo {
 	private void setBasicAuthHeader(HttpURLConnection connection) throws MojoExecutionException {
 		PasswordAuthentication authentication = getAuthentication(getHelmUploadRepo());
 		if (authentication != null) {
-			String encoded = Base64.getEncoder().encodeToString((authentication.getUserName() + ":" + new String(authentication.getPassword())).getBytes(StandardCharsets.UTF_8));	//Java 8
+			String encoded = Base64.getEncoder().encodeToString((authentication.getUserName() + ":" + new String(authentication.getPassword())).getBytes(StandardCharsets.UTF_8));
 			connection.setRequestProperty("Authorization", "Basic " + encoded);
 		}
 	}
@@ -124,7 +125,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		if (!uploadUrl.endsWith("/")) {
 			uploadUrl += "/";
 		}
-		if(useGroupId){
+		if (useGroupId) {
 			uploadUrl += getProjectGroupId().replace(".", "/") + "/" + getProjectVersion() + "/";
 		}
 
@@ -177,7 +178,5 @@ public class UploadMojo extends AbstractHelmMojo {
 		} else if (requireCredentials) {
 			throw new IllegalArgumentException("Credentials has to be configured for uploading to Artifactory.");
 		}
-
 	}
-
 }

@@ -18,13 +18,14 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.dependency-build.skip", defaultValue = "false")
 	private boolean skipDependencyBuild;
 
-	public void execute()
-			throws MojoExecutionException
-	{
+	@Override
+	public void execute() throws MojoExecutionException {
+
 		if (skip || skipDependencyBuild) {
 			getLog().info("Skip dependency build");
 			return;
 		}
+
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("Build chart dependencies for " + inputDirectory + "...");
 			callCli(getHelmExecuteablePath()
