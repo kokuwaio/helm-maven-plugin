@@ -10,8 +10,8 @@
 						<id>default</id>
 						<phases>
 							<initialize>io.kokuwa.maven:helm-maven-plugin:init</initialize>
+							<process-resources>io.kokuwa.maven:helm-maven-plugin:dependency-build</process-resources>
 							<test>io.kokuwa.maven:helm-maven-plugin:lint</test>
-							<prepare-package>io.kokuwa.maven:helm-maven-plugin:dependency-build</prepare-package>
 							<package>io.kokuwa.maven:helm-maven-plugin:package</package>
 							<deploy>io.kokuwa.maven:helm-maven-plugin:upload</deploy>
 						</phases>

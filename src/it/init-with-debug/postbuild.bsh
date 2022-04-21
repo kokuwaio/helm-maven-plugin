@@ -2,4 +2,4 @@
 
 return org.codehaus.plexus.util.FileUtils
 	.fileRead(basedir + "/build.log")
-	.contains("helm repo add kokuwaiuo https://kokuwaio.github.io/helm-charts --username=test --password=*****")
+	.contains("helm repo add kokuwaio https://kokuwaio.github.io/helm-charts --username=test --password=*****")

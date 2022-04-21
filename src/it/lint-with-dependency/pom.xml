@@ -8,7 +8,7 @@
 		<version>LOCAL-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>@project.artifactId@-it-init-with-debug</artifactId>
+	<artifactId>@project.artifactId@-lint-with-dependency</artifactId>
 	<packaging>pom</packaging>
 
 	<build>
@@ -20,22 +20,22 @@
 					<execution>
 						<goals>
 							<goal>init</goal>
+							<goal>dependency-build</goal>
+							<goal>lint</goal>
 						</goals>
-						<configuration>
-							<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
-							<chartVersion>${project.version}</chartVersion>
-							<addDefaultRepo>false</addDefaultRepo>
-							<helmExtraRepos>
-								<helmExtraRepo>
-									<name>kokuwaio</name>
-									<url>https://kokuwaio.github.io/helm-charts</url>
-									<username>test</username>
-									<password>ChangeMe</password>
-								</helmExtraRepo>
-							</helmExtraRepos>
-						</configuration>
 					</execution>
 				</executions>
+				<configuration>
+					<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
+					<chartVersion>${project.version}</chartVersion>
+					<addDefaultRepo>false</addDefaultRepo>
+					<helmExtraRepos>
+						<helmExtraRepo>
+							<name>kokuwaio</name>
+							<url>https://kokuwaio.github.io/helm-charts</url>
+						</helmExtraRepo>
+					</helmExtraRepos>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

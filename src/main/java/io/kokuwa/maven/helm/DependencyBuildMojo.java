@@ -14,7 +14,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @author Axel Köhler
  * @since 1.1
  */
-@Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PREPARE_PACKAGE)
+@Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
 public class DependencyBuildMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "helm.dependency-build.skip", defaultValue = "false")
