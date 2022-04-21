@@ -32,8 +32,10 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 					+ " dependency build "
 					+ inputDirectory
 					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : ""),
+					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache()
+							: "")
+					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
+							: ""),
 					"Failed to resolve dependencies", true);
 		}
 	}

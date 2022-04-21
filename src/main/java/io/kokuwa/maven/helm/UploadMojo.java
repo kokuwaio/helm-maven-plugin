@@ -114,12 +114,15 @@ public class UploadMojo extends AbstractHelmMojo {
 	private void setBasicAuthHeader(HttpURLConnection connection) throws MojoExecutionException {
 		PasswordAuthentication authentication = getAuthentication(getHelmUploadRepo());
 		if (authentication != null) {
-			String encoded = Base64.getEncoder().encodeToString((authentication.getUserName() + ":" + new String(authentication.getPassword())).getBytes(StandardCharsets.UTF_8));
+			String encoded = Base64.getEncoder()
+					.encodeToString((authentication.getUserName() + ":" + new String(authentication.getPassword()))
+							.getBytes(StandardCharsets.UTF_8));
 			connection.setRequestProperty("Authorization", "Basic " + encoded);
 		}
 	}
 
-	protected HttpURLConnection getConnectionForUploadToArtifactory(File file, boolean useGroupId) throws IOException, MojoExecutionException {
+	protected HttpURLConnection getConnectionForUploadToArtifactory(File file, boolean useGroupId)
+			throws IOException, MojoExecutionException {
 		String uploadUrl = getHelmUploadUrl();
 		// Append slash if not already in place
 		if (!uploadUrl.endsWith("/")) {

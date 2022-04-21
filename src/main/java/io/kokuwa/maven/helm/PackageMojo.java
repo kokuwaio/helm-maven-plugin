@@ -44,8 +44,10 @@ public class PackageMojo extends AbstractHelmMojo {
 					+ " -d "
 					+ getOutputDirectory()
 					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "");
+					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache()
+							: "")
+					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
+							: "");
 
 			if (getChartVersion() != null) {
 				getLog().info(String.format("Setting chart version to %s", getChartVersionWithProcessing()));

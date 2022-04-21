@@ -73,7 +73,8 @@ class AbstractHelmMojoTest {
 		List<String> chartDirectories = subjectSpy.getChartDirectories(chartDir);
 		List<String> expected = asList(chartDir, excludeDir1, excludeDir2);
 
-		assertTrue(chartDirectories.containsAll(expected), "Charts dirs: " + chartDirectories + ", should contain all expected dirs: " + expected);
+		assertTrue(chartDirectories.containsAll(expected),
+				"Charts dirs: " + chartDirectories + ", should contain all expected dirs: " + expected);
 	}
 
 	@Nested
@@ -213,8 +214,10 @@ class AbstractHelmMojoTest {
 
 		List<String> chartDirectories = subjectSpy.getChartDirectories(baseChartsDirectory.toString());
 
-		assertFalse(chartDirectories.contains(excludeDir1), "Charts dirs [" + chartDirectories + "] should not contain excluded dirs [" + excludeDir1 + "]");
-		assertTrue(chartDirectories.contains(excludeDir2), "Charts dirs [" + chartDirectories + "] should contain not excluded dirs [" + excludeDir2 + "]");
+		assertFalse(chartDirectories.contains(excludeDir1),
+				"Charts dirs [" + chartDirectories + "] should not contain excluded dirs [" + excludeDir1 + "]");
+		assertTrue(chartDirectories.contains(excludeDir2),
+				"Charts dirs [" + chartDirectories + "] should contain not excluded dirs [" + excludeDir2 + "]");
 	}
 
 	@Test
@@ -225,8 +228,10 @@ class AbstractHelmMojoTest {
 
 		List<String> chartDirectories = subjectSpy.getChartDirectories(baseChartsDirectory.toString());
 
-		assertFalse(chartDirectories.contains(excludeDir1), "Charts dirs [" + chartDirectories + "] should not contain excluded dirs [" + excludeDir1 + "]");
-		assertFalse(chartDirectories.contains(excludeDir2), "Charts dirs [" + chartDirectories + "] should not contain excluded dirs [" + excludeDir2 + "]");
+		assertFalse(chartDirectories.contains(excludeDir1),
+				"Charts dirs [" + chartDirectories + "] should not contain excluded dirs [" + excludeDir1 + "]");
+		assertFalse(chartDirectories.contains(excludeDir2),
+				"Charts dirs [" + chartDirectories + "] should not contain excluded dirs [" + excludeDir2 + "]");
 	}
 
 	@Test
@@ -251,7 +256,8 @@ class AbstractHelmMojoTest {
 
 			subjectSpy.setUseLocalHelmBinary(true);
 			subjectSpy.setAutoDetectLocalHelmBinary(true);
-			doReturn(new String[] { testPath.toAbsolutePath().toString() }).when(subjectSpy).getPathsFromEnvironmentVariables();
+			doReturn(new String[] { testPath.toAbsolutePath().toString() }).when(subjectSpy)
+					.getPathsFromEnvironmentVariables();
 		}
 
 		@Test
@@ -264,7 +270,8 @@ class AbstractHelmMojoTest {
 		@Test
 		void executionFailsWhenHelmIsNotFoundInPATH() {
 
-			MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecuteablePath);
+			MojoExecutionException exception = assertThrows(MojoExecutionException.class,
+					subjectSpy::getHelmExecuteablePath);
 			assertTrue(exception.getMessage().contains("not found"));
 		}
 
@@ -299,7 +306,8 @@ class AbstractHelmMojoTest {
 		@Test
 		void executionFailsWhenHelmIsNotFoundInConfiguredDirectory() {
 
-			MojoExecutionException exception = assertThrows(MojoExecutionException.class, subjectSpy::getHelmExecuteablePath);
+			MojoExecutionException exception = assertThrows(MojoExecutionException.class,
+					subjectSpy::getHelmExecuteablePath);
 			assertTrue(exception.getMessage().contains("not found"));
 		}
 	}

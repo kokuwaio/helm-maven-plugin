@@ -59,7 +59,8 @@ class AbstractHelmWithValueOverrideMojoTest {
 		override.getFileOverrides().put("key2", "D:/absolute/path/to/file2.txt");
 		testMojo.setValues(override);
 
-		assertEquals(" --set-file key1=path/to/file1.txt,key2=D:/absolute/path/to/file2.txt", testMojo.getValuesOptions());
+		assertEquals(" --set-file key1=path/to/file1.txt,key2=D:/absolute/path/to/file2.txt",
+				testMojo.getValuesOptions());
 	}
 
 	@Test

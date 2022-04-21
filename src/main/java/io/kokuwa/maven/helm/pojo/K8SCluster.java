@@ -38,7 +38,8 @@ public class K8SCluster {
 				+ (StringUtils.isNotEmpty(namespace) ? " [Override] Namespace: " + namespace : "")
 				+ (StringUtils.isNotEmpty(asUser) ? " [Override] As User: " + asUser : "")
 				+ (StringUtils.isNotEmpty(asGroup) ? " [Override] As Group: " + asGroup : "")
-				+ (StringUtils.isNotEmpty(token) ? " [Override] Token: " + asGroup.replaceAll(".", "*").substring(0, 8) : "")
+				+ (StringUtils.isNotEmpty(token) ? " [Override] Token: " + asGroup.replaceAll(".", "*").substring(0, 8)
+						: "")
 				+ "]".trim();
 	}
 }

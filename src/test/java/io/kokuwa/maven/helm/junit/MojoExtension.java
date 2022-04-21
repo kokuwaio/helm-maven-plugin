@@ -48,13 +48,15 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 
 		InputStream inputStream = AbstractHelmMojo.class.getResourceAsStream("/META-INF/maven/plugin.xml");
 		assertNotNull(inputStream, "Plugin descriptor not found.");
-		plugin = new PluginDescriptorBuilder().build(new InterpolationFilterReader(new BufferedReader(new XmlStreamReader(inputStream)), new HashMap<>()));
+		plugin = new PluginDescriptorBuilder().build(
+				new InterpolationFilterReader(new BufferedReader(new XmlStreamReader(inputStream)), new HashMap<>()));
 
 		// get mojos
 
 		mojoDescriptors = new HashMap<>();
 		for (MojoDescriptor mojoDescriptor : plugin.getMojos()) {
-			mojoDescriptors.put((Class<? extends AbstractHelmMojo>) Class.forName(mojoDescriptor.getImplementation()), mojoDescriptor);
+			mojoDescriptors.put((Class<? extends AbstractHelmMojo>) Class.forName(mojoDescriptor.getImplementation()),
+					mojoDescriptor);
 		}
 	}
 
@@ -66,25 +68,30 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 	// parameter
 
 	@Override
-	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
+	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext context)
+			throws ParameterResolutionException {
 		return AbstractHelmMojo.class.isAssignableFrom(parameterContext.getParameter().getType());
 	}
 
 	@Override
-	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
+	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext context)
+			throws ParameterResolutionException {
 		try {
 
 			// get descriptor
 
-			Class<? extends AbstractHelmMojo> mojoType = (Class<AbstractHelmMojo>) parameterContext.getParameter().getType();
+			Class<? extends AbstractHelmMojo> mojoType = (Class<AbstractHelmMojo>) parameterContext.getParameter()
+					.getType();
 			MojoDescriptor descriptor = mojoDescriptors.get(mojoType);
-			assertNotNull(descriptor, "Plugin descriptor for " + mojoType.getSimpleName() + " not found, run 'maven-plugin-plugin:descriptor'.");
+			assertNotNull(descriptor, "Plugin descriptor for " + mojoType.getSimpleName()
+					+ " not found, run 'maven-plugin-plugin:descriptor'.");
 
 			// create mojo with default values
 
 			AbstractHelmMojo mojo = spy(mojoType);
 			for (Parameter parameter : descriptor.getParameters()) {
-				if (parameter.getDefaultValue() == null || !parameter.isEditable() || parameter.getType().equals("boolean")) {
+				if (parameter.getDefaultValue() == null || !parameter.isEditable()
+						|| parameter.getType().equals("boolean")) {
 					continue;
 				}
 				getField(mojoType, parameter.getName()).set(mojo, resolve(context, parameter.getDefaultValue()));
@@ -114,7 +121,8 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 				if (paramter.isRequired()) {
 					assertNotNull(
 							getField(mojoType, paramter.getName()).get(mojo),
-							"Parameter '" + paramter.getName() + "' not set for mojo '" + mojoType.getSimpleName() + "'.");
+							"Parameter '" + paramter.getName() + "' not set for mojo '" + mojoType.getSimpleName()
+									+ "'.");
 				}
 			}
 
@@ -147,6 +155,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 			int end = start + uniqueId.substring(start).indexOf("]");
 			suffix = "." + uniqueId.substring(start, end);
 		}
-		return Paths.get("target", "surefire", context.getRequiredTestClass().getSimpleName() + "." + context.getRequiredTestMethod().getName() + suffix);
+		return Paths.get("target", "surefire", context.getRequiredTestClass().getSimpleName() + "."
+				+ context.getRequiredTestMethod().getName() + suffix);
 	}
 }

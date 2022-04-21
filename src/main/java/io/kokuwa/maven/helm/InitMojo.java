@@ -97,7 +97,8 @@ public class InitMojo extends AbstractHelmMojo {
 			}
 
 			// add the upload snapshot repo only if it's name differs to the upload repo stable name
-			if (getUploadRepoSnapshot() != null && (getUploadRepoStable() == null || !getUploadRepoStable().getName().equals(getUploadRepoSnapshot().getName()))) {
+			if (getUploadRepoSnapshot() != null && (getUploadRepoStable() == null
+					|| !getUploadRepoStable().getName().equals(getUploadRepoSnapshot().getName()))) {
 				addRepository(getUploadRepoSnapshot());
 			}
 		}
@@ -121,23 +122,26 @@ public class InitMojo extends AbstractHelmMojo {
 	/**
 	 * Adds the helm repository to the helm
 	 *
-	 * @param repository - helm repository to be added
+	 * @param repository             - helm repository to be added
 	 * @param authenticationRequired - defines whether the authentication is required
 	 */
-	private void addRepository(HelmRepository repository, boolean authenticationRequired) throws MojoExecutionException {
+	private void addRepository(HelmRepository repository, boolean authenticationRequired)
+			throws MojoExecutionException {
 		getLog().info("Adding repo [" + repository + "]");
 		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
 		callCli(getHelmExecuteablePath()
-						+ " repo add "
-						+ repository.getName()
-						+ " "
-						+ repository.getUrl()
-						+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-						+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
-						+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "")
-						+ (auth != null ? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword()) : ""),
-						"Unable add repo",
-						false);
+				+ " repo add "
+				+ repository.getName()
+				+ " "
+				+ repository.getUrl()
+				+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
+				+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
+				+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "")
+				+ (auth != null
+						? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword())
+						: ""),
+				"Unable add repo",
+				false);
 	}
 
 	protected void downloadAndUnpackHelm() throws MojoExecutionException {
@@ -228,10 +232,13 @@ public class InitMojo extends AbstractHelmMojo {
 
 		} else if (fileAttributeView.contains("acl")) {
 			String username = System.getProperty("user.name");
-			UserPrincipal userPrincipal = FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName(username);
-			AclEntry aclEntry = AclEntry.newBuilder().setPermissions(AclEntryPermission.EXECUTE).setType(AclEntryType.ALLOW).setPrincipal(userPrincipal).build();
+			UserPrincipal userPrincipal = FileSystems.getDefault().getUserPrincipalLookupService()
+					.lookupPrincipalByName(username);
+			AclEntry aclEntry = AclEntry.newBuilder().setPermissions(AclEntryPermission.EXECUTE)
+					.setType(AclEntryType.ALLOW).setPrincipal(userPrincipal).build();
 
-			AclFileAttributeView acl = Files.getFileAttributeView(helm, AclFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
+			AclFileAttributeView acl = Files.getFileAttributeView(helm, AclFileAttributeView.class,
+					LinkOption.NOFOLLOW_LINKS);
 			List<AclEntry> aclEntries = acl.getAcl();
 			aclEntries.add(aclEntry);
 			acl.setAcl(aclEntries);
@@ -295,7 +302,8 @@ public class InitMojo extends AbstractHelmMojo {
 			return "arm64";
 		} else if (architecture.equals("aarch32") || architecture.startsWith("arm")) {
 			return "arm";
-		} else if (architecture.contains("ppc64le") || architecture.contains("ppc64") && System.getProperty("sun.cpu.endian").equals("little")) {
+		} else if (architecture.contains("ppc64le")
+				|| architecture.contains("ppc64") && System.getProperty("sun.cpu.endian").equals("little")) {
 			return "ppc64le";
 		}
 
