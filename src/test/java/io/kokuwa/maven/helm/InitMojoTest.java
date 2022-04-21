@@ -1,5 +1,15 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
@@ -10,27 +20,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import io.kokuwa.maven.helm.junit.MojoExtension;
-import io.kokuwa.maven.helm.junit.MojoProperty;
-import io.kokuwa.maven.helm.junit.SystemPropertyExtension;
-import io.kokuwa.maven.helm.pojo.HelmRepository;
-import io.kokuwa.maven.helm.pojo.RepoType;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.Os;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
+import io.kokuwa.maven.helm.junit.MojoExtension;
+import io.kokuwa.maven.helm.junit.MojoProperty;
+import io.kokuwa.maven.helm.junit.SystemPropertyExtension;
+import io.kokuwa.maven.helm.pojo.HelmRepository;
+import io.kokuwa.maven.helm.pojo.RepoType;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
 @MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz")

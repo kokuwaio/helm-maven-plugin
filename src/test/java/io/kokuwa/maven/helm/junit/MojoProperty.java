@@ -1,10 +1,15 @@
 package io.kokuwa.maven.helm.junit;
 
-import java.lang.annotation.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import io.kokuwa.maven.helm.junit.MojoProperty.MojoProperties;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(MojoProperties.class)

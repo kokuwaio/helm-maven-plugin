@@ -1,7 +1,5 @@
 package io.kokuwa.maven.helm;
 
-import java.util.Arrays;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;

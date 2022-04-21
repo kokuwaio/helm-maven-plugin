@@ -1,10 +1,10 @@
 package io.kokuwa.maven.helm.pojo;
 
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.StringUtils;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * POJO for K8S cluster configuration
