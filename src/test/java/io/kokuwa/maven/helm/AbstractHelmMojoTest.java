@@ -256,8 +256,7 @@ class AbstractHelmMojoTest {
 
 			subjectSpy.setUseLocalHelmBinary(true);
 			subjectSpy.setAutoDetectLocalHelmBinary(true);
-			doReturn(new String[] { testPath.toAbsolutePath().toString() }).when(subjectSpy)
-					.getPathsFromEnvironmentVariables();
+			doReturn(new String[] { testPath.toAbsolutePath().toString() }).when(subjectSpy).getPathsFromEnvironmentVariables();
 		}
 
 		@Test

@@ -91,11 +91,11 @@ public class UploadMojo extends AbstractHelmMojo {
 			}
 			throw new BadUploadException(response);
 		} else {
-			String message = Integer.toString(connection.getResponseCode());
+			StringBuilder message = new StringBuilder().append(Integer.toString(connection.getResponseCode()));
 			if (connection.getInputStream() != null) {
-				message += " - " + IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+				message.append(" - ").append(IOUtils.toString(connection.getInputStream(), Charset.defaultCharset()));
 			}
-			getLog().info(message);
+			getLog().info(message.toString());
 		}
 		connection.disconnect();
 	}
@@ -164,8 +164,8 @@ public class UploadMojo extends AbstractHelmMojo {
 
 	/**
 	 *
-	 * @param requireCredentials The need for credentials depends on how the repository is configured.
-	 *							 For instance on nexus it is possible to configure a repository without authentication
+	 * @param requireCredentials The need for credentials depends on how the repository is configured. For instance on
+	 *                           nexus it is possible to configure a repository without authentication
 	 * @throws MojoExecutionException
 	 */
 	private void verifyAndSetAuthentication(boolean requireCredentials) throws MojoExecutionException {

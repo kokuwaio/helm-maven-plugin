@@ -101,8 +101,7 @@ public class InitMojoTest {
 				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
-		assertTrue(helmDefaultCommand.contains("repo add stable " + InitMojo.STABLE_HELM_REPO),
-				"Adding stable repo by default expected");
+		assertTrue(helmDefaultCommand.contains("repo add stable " + InitMojo.STABLE_HELM_REPO), "Adding stable repo by default expected");
 	}
 
 	@Test
@@ -214,12 +213,9 @@ public class InitMojoTest {
 				.collect(Collectors.toSet());
 
 		assertEquals(3, helmCommands.size(), "Expected 3 helm commands");
-		assertTrue(helmCommands.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"),
-				"Adding upload stable repo expected");
-		assertTrue(helmCommands.contains("repo add my-artifactory-snapshot https://somwhere.com/repo/snapshot"),
-				"Adding upload snapshot repo expected");
-		assertTrue(helmCommands.contains("repo add stable " + InitMojo.STABLE_HELM_REPO),
-				"Adding helm stable repo expected");
+		assertTrue(helmCommands.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"), "Adding upload stable repo expected");
+		assertTrue(helmCommands.contains("repo add my-artifactory-snapshot https://somwhere.com/repo/snapshot"), "Adding upload snapshot repo expected");
+		assertTrue(helmCommands.contains("repo add stable " + InitMojo.STABLE_HELM_REPO), "Adding helm stable repo expected");
 	}
 
 	@Test
@@ -253,10 +249,8 @@ public class InitMojoTest {
 				.collect(Collectors.toSet());
 
 		assertEquals(2, helmCommands.size(), "Expected 2 helm commands");
-		assertTrue(helmCommands.contains("repo add my-artifactory https://somwhere.com/repo"),
-				"Adding upload stable repo expected");
-		assertTrue(helmCommands.contains("repo add stable " + InitMojo.STABLE_HELM_REPO),
-				"Adding helm stable repo expected");
+		assertTrue(helmCommands.contains("repo add my-artifactory https://somwhere.com/repo"), "Adding upload stable repo expected");
+		assertTrue(helmCommands.contains("repo add stable " + InitMojo.STABLE_HELM_REPO), "Adding helm stable repo expected");
 	}
 
 	@Test
