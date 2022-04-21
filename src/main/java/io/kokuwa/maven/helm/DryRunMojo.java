@@ -6,6 +6,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
+import lombok.Setter;
+
 /**
  * Mojo for simulate a dry run.
  *
@@ -13,6 +15,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 14.11.17
  */
 @Mojo(name = "dry-run", defaultPhase = LifecyclePhase.TEST)
+@Setter
 public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 
 	@Parameter(property = "action", defaultValue = "install")
@@ -43,13 +46,5 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 					+ getValuesOptions(),
 					"There are test failures", true);
 		}
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
 	}
 }

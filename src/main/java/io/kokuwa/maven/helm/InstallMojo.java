@@ -8,6 +8,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import lombok.Setter;
+
 /**
  * Mojo for simulate a template.
  *
@@ -15,6 +17,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * @since 07.02.2021
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.DEPLOY)
+@Setter
 public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 
 	@Parameter(property = "action", defaultValue = "install")
@@ -45,13 +48,5 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 					getValuesOptions()),
 					"Failed to deploy helm chart", true);
 		}
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
 	}
 }

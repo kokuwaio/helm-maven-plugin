@@ -6,10 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import io.kokuwa.maven.helm.pojo.ValueOverride;
-import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
 public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo {
 

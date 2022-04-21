@@ -6,6 +6,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
+import lombok.Setter;
+
 /**
  * Mojo for packaging charts
  *
@@ -13,6 +15,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 06.11.17
  */
 @Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE)
+@Setter
 public class PackageMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "helm.package.skip", defaultValue = "false")

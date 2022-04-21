@@ -6,6 +6,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
+import lombok.Setter;
+
 /**
  * Mojo for testing charts
  *
@@ -13,6 +15,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 06.11.17
  */
 @Mojo(name = "lint", defaultPhase = LifecyclePhase.TEST)
+@Setter
 public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 
 	@Parameter(property = "helm.lint.skip", defaultValue = "false")

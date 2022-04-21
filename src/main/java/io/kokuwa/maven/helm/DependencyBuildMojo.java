@@ -6,6 +6,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
+import lombok.Setter;
+
 /**
  * Mojo for building chart dependencies
  *
@@ -13,6 +15,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 1.1
  */
 @Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
+@Setter
 public class DependencyBuildMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "helm.dependency-build.skip", defaultValue = "false")

@@ -5,9 +5,7 @@ import java.util.Map;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 /**
  * POJO for extra value override configuration (typically passed with --set or -f options)
@@ -15,9 +13,7 @@ import lombok.ToString;
  * @author Emile de Weerd
  * @since October 12th 2020
  */
-@Getter
-@Setter
-@ToString
+@Data
 public class ValueOverride {
 	/**
 	 * Values that will be passed with the option --set of helm command line.
