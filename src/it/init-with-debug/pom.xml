@@ -27,7 +27,7 @@
 							<addDefaultRepo>false</addDefaultRepo>
 							<helmExtraRepos>
 								<helmExtraRepo>
-									<name>kokuwaio</name>
+									<name>kokuwaio-with-credentials</name>
 									<url>https://kokuwaio.github.io/helm-charts</url>
 									<username>test</username>
 									<password>ChangeMe</password>
