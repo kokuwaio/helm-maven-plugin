@@ -444,7 +444,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public String getHelmVersion() throws MojoExecutionException {
 		if (helmVersion == null) {
-			helmVersion = new Github(getLog(), Path.of(tmpDir), githubUserAgent).getHelmVersion();
+			helmVersion = new Github(getLog(), Paths.get(tmpDir), githubUserAgent).getHelmVersion();
 		}
 		return helmVersion;
 	}
