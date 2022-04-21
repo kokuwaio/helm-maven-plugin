@@ -9,18 +9,18 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface SystemProperty {
 
-    String name();
+	String name();
 
-    String value() default "";
+	String value() default "";
 
-    boolean unset() default false;
+	boolean unset() default false;
 
-    @Target({ ElementType.METHOD, ElementType.TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    @interface SystemProperties {
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Retention(RUNTIME)
+	@Documented
+	@interface SystemProperties {
 
-        SystemProperty[] value();
+		SystemProperty[] value();
 
-    }
+	}
 }

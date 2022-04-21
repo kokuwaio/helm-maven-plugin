@@ -113,7 +113,7 @@ public class UploadMojo extends AbstractHelmMojo {
 	private void setBasicAuthHeader(HttpURLConnection connection) throws MojoExecutionException {
 		PasswordAuthentication authentication = getAuthentication(getHelmUploadRepo());
 		if (authentication != null) {
-			String encoded = Base64.getEncoder().encodeToString((authentication.getUserName() + ":" + new String(authentication.getPassword())).getBytes(StandardCharsets.UTF_8));  //Java 8
+			String encoded = Base64.getEncoder().encodeToString((authentication.getUserName() + ":" + new String(authentication.getPassword())).getBytes(StandardCharsets.UTF_8));	//Java 8
 			connection.setRequestProperty("Authorization", "Basic " + encoded);
 		}
 	}
@@ -161,7 +161,7 @@ public class UploadMojo extends AbstractHelmMojo {
 	/**
 	 *
 	 * @param requireCredentials The need for credentials depends on how the repository is configured.
-	 *                           For instance on nexus it is possible to configure a repository without authentication
+	 *							 For instance on nexus it is possible to configure a repository without authentication
 	 * @throws MojoExecutionException
 	 */
 	private void verifyAndSetAuthentication(boolean requireCredentials) throws MojoExecutionException {

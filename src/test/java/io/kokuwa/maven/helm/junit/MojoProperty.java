@@ -12,16 +12,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface MojoProperty {
 
-    String name();
+	String name();
 
-    String value();
+	String value();
 
-    @Target({ ElementType.METHOD, ElementType.TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    @interface MojoProperties {
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Retention(RUNTIME)
+	@Documented
+	@interface MojoProperties {
 
-        MojoProperty[] value();
+		MojoProperty[] value();
 
-    }
+	}
 }

@@ -19,9 +19,9 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 
 	@Parameter(property = "action", defaultValue = "template")
 	private String action;
-  
-  @Parameter(property = "helm.additional.arguments")
-  private String additionalArguments;
+	
+	@Parameter(property = "helm.additional.arguments")
+	private String additionalArguments;
 
 	@Parameter(property = "helm.template.skip", defaultValue = "true")
 	private boolean skipTemplate;
@@ -38,7 +38,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 					getHelmExecuteablePath(),
 					action,
 					inputDirectory,
-          StringUtils.isNotEmpty(additionalArguments) ? additionalArguments : "",
+					StringUtils.isNotEmpty(additionalArguments) ? additionalArguments : "",
 					formatIfValueIsNotEmpty("--registry-config=%s", getRegistryConfig()),
 					formatIfValueIsNotEmpty("--repository-cache=%s", getRepositoryCache()),
 					formatIfValueIsNotEmpty("--repository-config=%s", getRepositoryConfig()),

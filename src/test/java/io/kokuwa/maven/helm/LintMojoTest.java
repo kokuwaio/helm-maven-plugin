@@ -23,19 +23,19 @@ import io.kokuwa.maven.helm.pojo.ValueOverride;
 @MojoProperty(name = "chartDirectory", value = "junit-chart")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
 public class LintMojoTest {
-    @Test
-    public void valuesFile(LintMojo mojo) throws Exception {
-        ValueOverride override = new ValueOverride();
-        override.setYamlFile("overrideValues.yaml");
-        mojo.setValues(override);
-        mojo.setChartDirectory(Paths.get(getClass().getResource("Chart.yaml").toURI()).getParent().toString());
+	@Test
+	public void valuesFile(LintMojo mojo) throws Exception {
+		ValueOverride override = new ValueOverride();
+		override.setYamlFile("overrideValues.yaml");
+		mojo.setValues(override);
+		mojo.setChartDirectory(Paths.get(getClass().getResource("Chart.yaml").toURI()).getParent().toString());
 
-        ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-        doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
-        doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo).getHelmExecuteablePath();
+		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo).getHelmExecuteablePath();
 
-        mojo.execute();
+		mojo.execute();
 
-        assertTrue(helmCommandCaptor.getValue().contains("--values overrideValues.yaml"));
-    }
+		assertTrue(helmCommandCaptor.getValue().contains("--values overrideValues.yaml"));
+	}
 }
