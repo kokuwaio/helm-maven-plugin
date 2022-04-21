@@ -103,7 +103,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 			// settings
 
 			getField(mojoType, "settings").set(mojo, new Settings());
-			
+
 			// plexus SecDispatcher
 
 			SecDispatcher secDispatcher = spy(new DefaultSecDispatcher(new DefaultPlexusCipher()));

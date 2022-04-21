@@ -188,7 +188,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to download and extract helm executable.", e);
-		} 
+		}
 
 		if (!found) {
 			throw new MojoExecutionException("Unable to find helm executable in tar file.");

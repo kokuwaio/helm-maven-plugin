@@ -19,7 +19,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 
 	@Parameter(property = "action", defaultValue = "template")
 	private String action;
-	
+
 	@Parameter(property = "helm.additional.arguments")
 	private String additionalArguments;
 
