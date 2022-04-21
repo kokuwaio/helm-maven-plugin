@@ -135,10 +135,9 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
     }
 
     private String resolve(ExtensionContext context, String property) {
-        String resolved = property;
-        // use test specific build directory
-        resolved = property.replace("${project.build.directory}", getProjectBuildDirectory(context).toString());
-        return resolved;
+		return property
+				.replace("${project.build.directory}", getProjectBuildDirectory(context).toString())
+				.replace("${java.io.tmpdir}", System.getProperty("java.io.tmpdir"));
     }
 
     private Path getProjectBuildDirectory(ExtensionContext context) {
