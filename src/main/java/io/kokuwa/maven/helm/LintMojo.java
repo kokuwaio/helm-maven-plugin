@@ -21,23 +21,25 @@ public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "helm.lint.strict", defaultValue = "false")
 	private boolean lintStrict;
 
-	public void execute()
-			throws MojoExecutionException
-	{
+	@Override
+	public void execute() throws MojoExecutionException {
+
 		if (skip || skipLint) {
 			getLog().info("Skip lint");
 			return;
 		}
-		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 
+		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("\n\nTesting chart " + inputDirectory + "...");
 			callCli(getHelmExecuteablePath()
 					+ " lint "
 					+ inputDirectory
 					+ (lintStrict ? " --strict" : "")
 					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "")
+					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache()
+							: "")
+					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
+							: "")
 					+ getValuesOptions(),
 					"There are test failures", true);
 		}

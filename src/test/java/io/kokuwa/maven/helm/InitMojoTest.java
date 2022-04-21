@@ -1,5 +1,15 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
@@ -10,27 +20,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import io.kokuwa.maven.helm.junit.MojoExtension;
-import io.kokuwa.maven.helm.junit.MojoProperty;
-import io.kokuwa.maven.helm.junit.SystemPropertyExtension;
-import io.kokuwa.maven.helm.pojo.HelmRepository;
-import io.kokuwa.maven.helm.pojo.RepoType;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.Os;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
+import io.kokuwa.maven.helm.junit.MojoExtension;
+import io.kokuwa.maven.helm.junit.MojoProperty;
+import io.kokuwa.maven.helm.junit.SystemPropertyExtension;
+import io.kokuwa.maven.helm.pojo.HelmRepository;
+import io.kokuwa.maven.helm.pojo.RepoType;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
 @MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz")
@@ -98,14 +101,14 @@ public class InitMojoTest {
 				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
-		assertTrue(helmDefaultCommand.contains("repo add stable "+ InitMojo.STABLE_HELM_REPO), "Adding stable repo by default expected");
+		assertTrue(helmDefaultCommand.contains("repo add stable " + InitMojo.STABLE_HELM_REPO), "Adding stable repo by default expected");
 	}
 
 	@Test
 	public void verifyAddingUploadSnapshotRepoNoDefaultRepo(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory-snapshot");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -125,14 +128,15 @@ public class InitMojoTest {
 				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
-		assertTrue(helmCommand.contains("repo add my-artifactory-snapshot https://somwhere.com/repo"), "Adding upload snapshot repo expected");
+		assertTrue(helmCommand.contains("repo add my-artifactory-snapshot https://somwhere.com/repo"),
+				"Adding upload snapshot repo expected");
 	}
 
 	@Test
 	public void verifyAddingUploadStableRepoNoDefaultRepo(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory-stable");
 		helmRepo.setUrl("https://somwhere.com/repo/stable");
@@ -152,7 +156,8 @@ public class InitMojoTest {
 				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
-		assertTrue(helmCommand.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"), "Adding upload stable repo expected");
+		assertTrue(helmCommand.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"),
+				"Adding upload stable repo expected");
 	}
 
 	@Test
@@ -181,12 +186,12 @@ public class InitMojoTest {
 	public void verifyAddingUploadSnapshotStableRepoAndDefaultRepo(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmUploadStableRepo = new HelmRepository();
+		HelmRepository helmUploadStableRepo = new HelmRepository();
 		helmUploadStableRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadStableRepo.setName("my-artifactory-stable");
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo/stable");
 		mojo.setUploadRepoStable(helmUploadStableRepo);
-		final HelmRepository helmUploadSnapshotRepo = new HelmRepository();
+		HelmRepository helmUploadSnapshotRepo = new HelmRepository();
 		helmUploadSnapshotRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadSnapshotRepo.setName("my-artifactory-snapshot");
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
@@ -210,19 +215,19 @@ public class InitMojoTest {
 		assertEquals(3, helmCommands.size(), "Expected 3 helm commands");
 		assertTrue(helmCommands.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"), "Adding upload stable repo expected");
 		assertTrue(helmCommands.contains("repo add my-artifactory-snapshot https://somwhere.com/repo/snapshot"), "Adding upload snapshot repo expected");
-		assertTrue(helmCommands.contains("repo add stable "+ InitMojo.STABLE_HELM_REPO), "Adding helm stable repo expected");
+		assertTrue(helmCommands.contains("repo add stable " + InitMojo.STABLE_HELM_REPO), "Adding helm stable repo expected");
 	}
 
 	@Test
 	public void verifyAddingUploadSnapshotStableRepoSameRepoName(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmUploadStableRepo = new HelmRepository();
+		HelmRepository helmUploadStableRepo = new HelmRepository();
 		helmUploadStableRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadStableRepo.setName("my-artifactory");
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoStable(helmUploadStableRepo);
-		final HelmRepository helmUploadSnapshotRepo = new HelmRepository();
+		HelmRepository helmUploadSnapshotRepo = new HelmRepository();
 		helmUploadSnapshotRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadSnapshotRepo.setName("my-artifactory");
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo");
@@ -245,14 +250,14 @@ public class InitMojoTest {
 
 		assertEquals(2, helmCommands.size(), "Expected 2 helm commands");
 		assertTrue(helmCommands.contains("repo add my-artifactory https://somwhere.com/repo"), "Adding upload stable repo expected");
-		assertTrue(helmCommands.contains("repo add stable "+ InitMojo.STABLE_HELM_REPO), "Adding helm stable repo expected");
+		assertTrue(helmCommands.contains("repo add stable " + InitMojo.STABLE_HELM_REPO), "Adding helm stable repo expected");
 	}
 
 	@Test
 	public void verifyAddingUploadSnapshotRepoStableNotPresent(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmUploadSnapshotRepo = new HelmRepository();
+		HelmRepository helmUploadSnapshotRepo = new HelmRepository();
 		helmUploadSnapshotRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadSnapshotRepo.setName("my-artifactory-snapshot");
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
@@ -274,14 +279,15 @@ public class InitMojoTest {
 				.collect(Collectors.toSet());
 
 		assertEquals(1, helmCommands.size(), "Expected 1 helm command");
-		assertTrue(helmCommands.contains("repo add my-artifactory-snapshot https://somwhere.com/repo/snapshot"), "Adding upload snapshot repo expected");
+		assertTrue(helmCommands.contains("repo add my-artifactory-snapshot https://somwhere.com/repo/snapshot"),
+				"Adding upload snapshot repo expected");
 	}
 
 	@Test
 	public void verifyAddingUploadStableRepoSnapshotNotPresent(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		final HelmRepository helmUploadStableRepo = new HelmRepository();
+		HelmRepository helmUploadStableRepo = new HelmRepository();
 		helmUploadStableRepo.setType(RepoType.ARTIFACTORY);
 		helmUploadStableRepo.setName("my-artifactory-stable");
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo/stable");
@@ -303,7 +309,8 @@ public class InitMojoTest {
 				.collect(Collectors.toSet());
 
 		assertEquals(1, helmCommands.size(), "Expected 1 helm command");
-		assertTrue(helmCommands.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"), "Adding upload stable repo expected");
+		assertTrue(helmCommands.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"),
+				"Adding upload stable repo expected");
 	}
 
 	@Test
@@ -328,9 +335,12 @@ public class InitMojoTest {
 				.collect(Collectors.toList());
 		assertEquals(1, helmCommands.size(), "Only helm init command expected");
 		String helmDefaultCommand = helmCommands.get(0);
-		assertTrue(helmDefaultCommand.contains("--registry-config=/path/to/my/registry.json"), "Option 'registry-config' not set");
-		assertTrue(helmDefaultCommand.contains("--repository-cache=/path/to/my/repository/cache"), "Option 'repository-cache' not set");
-		assertTrue(helmDefaultCommand.contains("--repository-config=/path/to/my/repositories.yaml"), "Option 'repository-config' not set");
+		assertTrue(helmDefaultCommand.contains("--registry-config=/path/to/my/registry.json"),
+				"Option 'registry-config' not set");
+		assertTrue(helmDefaultCommand.contains("--repository-cache=/path/to/my/repository/cache"),
+				"Option 'repository-cache' not set");
+		assertTrue(helmDefaultCommand.contains("--repository-config=/path/to/my/repositories.yaml"),
+				"Option 'repository-config' not set");
 	}
 
 	@Test
@@ -338,8 +348,8 @@ public class InitMojoTest {
 		// Because the download URL is hardcoded to linux, only proceed if the OS is indeed linux.
 		assumeTrue(isOSUnix());
 
-		final URL resource = this.getClass().getResource("helm.tar.gz");
-		final String helmExecutableDir = new File(resource.getFile()).getParent();
+		URL resource = this.getClass().getResource("helm.tar.gz");
+		String helmExecutableDir = new File(resource.getFile()).getParent();
 		mojo.callCli("tar -xf "
 				+ helmExecutableDir
 				+ File.separator
@@ -362,20 +372,20 @@ public class InitMojoTest {
 	private String getOsSpecificDownloadURL() {
 		String osForDownload;
 		switch (Os.OS_FAMILY) {
-		case Os.FAMILY_UNIX:
-			osForDownload = "linux";
-			break;
-		case Os.FAMILY_MAC:
-			osForDownload = "darwin";
-			break;
-		default:
-			osForDownload = Os.OS_FAMILY;
+			case Os.FAMILY_UNIX:
+				osForDownload = "linux";
+				break;
+			case Os.FAMILY_MAC:
+				osForDownload = "darwin";
+				break;
+			default:
+				osForDownload = Os.OS_FAMILY;
 		}
 
 		return getOsSpecificDownloadURL(osForDownload);
 	}
 
-	private String getOsSpecificDownloadURL(final String os) {
+	private String getOsSpecificDownloadURL(String os) {
 		return "https://get.helm.sh/helm-v3.0.0-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
 	}
 }

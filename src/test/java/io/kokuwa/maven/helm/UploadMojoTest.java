@@ -1,13 +1,32 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.*;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.settings.Server;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
 import io.kokuwa.maven.helm.exception.BadUploadException;
 import io.kokuwa.maven.helm.junit.MojoExtension;
@@ -15,15 +34,6 @@ import io.kokuwa.maven.helm.junit.MojoProperty;
 import io.kokuwa.maven.helm.junit.SystemPropertyExtension;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.settings.Server;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
 @MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz")
@@ -33,14 +43,14 @@ public class UploadMojoTest {
 
 	@Test
 	public void uploadToArtifactoryRequiresCredentials(UploadMojo mojo) throws MojoExecutionException {
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoStable(helmRepo);
 
 		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final List<String> tgzs = new ArrayList<>();
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
@@ -51,7 +61,7 @@ public class UploadMojoTest {
 
 	@Test
 	public void uploadToArtifactoryWithRepositoryCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -59,9 +69,9 @@ public class UploadMojoTest {
 		helmRepo.setPassword("bar");
 		mojo.setUploadRepoStable(helmRepo);
 
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
@@ -72,23 +82,23 @@ public class UploadMojoTest {
 
 	@Test
 	public void uploadToArtifactoryWithPlainCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final Server server = new Server();
+		Server server = new Server();
 		server.setId("my-artifactory");
 		server.setUsername("foo");
 		server.setPassword("bar");
-		final List<Server> servers = new ArrayList<>();
+		List<Server> servers = new ArrayList<>();
 		servers.add(server);
 		mojo.getSettings().setServers(servers);
 
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoStable(helmRepo);
 
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
@@ -99,23 +109,23 @@ public class UploadMojoTest {
 
 	@Test
 	public void uploadToArtifactoryWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final Server server = new Server();
+		Server server = new Server();
 		server.setId("my-artifactory");
 		server.setUsername("foo");
 		server.setPassword("{GGhJc6qP+v0Hg2l+dei1MQFZt/55PzyFXY0MUMxcQdQ=}");
-		final List<Server> servers = new ArrayList<>();
+		List<Server> servers = new ArrayList<>();
 		servers.add(server);
 		mojo.getSettings().setServers(servers);
 
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoStable(helmRepo);
 
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(this.getClass().getResource("settings-security.xml").getFile()).when(mojo).getHelmSecurity();
@@ -124,17 +134,17 @@ public class UploadMojoTest {
 
 		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
 
-		final PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
+		PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
 		assertEquals("foo", pwd.getUserName());
 		assertEquals("bar", String.valueOf(pwd.getPassword()));
 	}
 
 	@Test
 	public void verifyHttpConnectionForArtifactoryUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
 
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -157,7 +167,7 @@ public class UploadMojoTest {
 
 	@Test
 	public void uploadToArtifactoryByGroupId(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -165,12 +175,12 @@ public class UploadMojoTest {
 		helmRepo.setPassword("bar");
 		helmRepo.setUseGroupId(true);
 		mojo.setUploadRepoStable(helmRepo);
-		final String projectGroupId = "example.foo.bar";
-		final String projectVersion = "0.1.0";
-		final String chartFileName = "app-0.1.0.tgz";
-		final URL resource = this.getClass().getResource(chartFileName);
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		String projectGroupId = "example.foo.bar";
+		String projectVersion = "0.1.0";
+		String chartFileName = "app-0.1.0.tgz";
+		URL resource = this.getClass().getResource(chartFileName);
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
@@ -183,13 +193,13 @@ public class UploadMojoTest {
 				helmRepo.getUrl() + "/"
 						+ projectGroupId.replace(".", "/") + "/"
 						+ projectVersion + "/"
-						+ chartFileName
-				, connection.getURL().toString());
+						+ chartFileName,
+				connection.getURL().toString());
 	}
 
 	@Test
 	public void uploadToArtifactoryWithoutByGroupId(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -197,12 +207,12 @@ public class UploadMojoTest {
 		helmRepo.setPassword("bar");
 		helmRepo.setUseGroupId(false);
 		mojo.setUploadRepoStable(helmRepo);
-		final String projectGroupId = "example.foo.bar";
-		final String projectVersion = "0.1.0";
-		final String chartFileName = "app-0.1.0.tgz";
-		final URL resource = this.getClass().getResource(chartFileName);
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		String projectGroupId = "example.foo.bar";
+		String projectVersion = "0.1.0";
+		String chartFileName = "app-0.1.0.tgz";
+		URL resource = this.getClass().getResource(chartFileName);
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
@@ -211,14 +221,12 @@ public class UploadMojoTest {
 		doReturn(projectVersion).when(mojo).getProjectVersion();
 
 		HttpURLConnection connection = mojo.getConnectionForUploadToArtifactory(fileToUpload, helmRepo.isUseGroupId());
-		assertEquals(
-				helmRepo.getUrl() + "/" + chartFileName
-				, connection.getURL().toString());
+		assertEquals(helmRepo.getUrl() + "/" + chartFileName, connection.getURL().toString());
 	}
 
 	@Test
 	public void verifyHttpConnectionForChartmuseumUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.CHARTMUSEUM);
 		helmRepo.setName("my-chartmuseum");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -238,12 +246,12 @@ public class UploadMojoTest {
 
 	@Test
 	public void verifyUploadToArtifactory(UploadMojo uploadMojo) throws MojoExecutionException, IOException {
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -269,13 +277,13 @@ public class UploadMojoTest {
 
 	@Test
 	public void repositoryTypeRequired(UploadMojo uploadMojo) throws MojoExecutionException {
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setName("unknown-repo");
 		helmRepo.setUrl("https://somwhere.com/repo");
 		uploadMojo.setUploadRepoStable(helmRepo);
 
 		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final List<String> tgzs = new ArrayList<>();
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(uploadMojo).getHelmUploadRepo();
@@ -286,9 +294,8 @@ public class UploadMojoTest {
 
 	@Test
 	public void verfifyNullErrorStreamOnFailedUpload(UploadMojo uploadMojo)
-			throws IOException, MojoExecutionException
-	{
-		final HelmRepository helmRepo = new HelmRepository();
+			throws IOException, MojoExecutionException {
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.CHARTMUSEUM);
 		helmRepo.setName("my-chartmuseum");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -296,7 +303,7 @@ public class UploadMojoTest {
 
 		URL testChart = this.getClass().getResource("app-0.1.0.tgz");
 
-		final HttpURLConnection urlConnectionMock = Mockito.mock(HttpURLConnection.class);
+		HttpURLConnection urlConnectionMock = Mockito.mock(HttpURLConnection.class);
 		doReturn(new NullOutputStream()).when(urlConnectionMock).getOutputStream();
 		doReturn(301).when(urlConnectionMock).getResponseCode();
 		doReturn(null).when(urlConnectionMock).getErrorStream();
@@ -315,7 +322,7 @@ public class UploadMojoTest {
 
 	@Test
 	public void uploadToNexusWithRepositoryCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.NEXUS);
 		helmRepo.setName("my-nexus");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -323,9 +330,9 @@ public class UploadMojoTest {
 		helmRepo.setPassword("bar");
 		mojo.setUploadRepoStable(helmRepo);
 
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
@@ -336,23 +343,23 @@ public class UploadMojoTest {
 
 	@Test
 	public void uploadToNexusWithPlainCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final Server server = new Server();
+		Server server = new Server();
 		server.setId("my-nexus");
 		server.setUsername("foo");
 		server.setPassword("bar");
-		final List<Server> servers = new ArrayList<>();
+		List<Server> servers = new ArrayList<>();
 		servers.add(server);
 		mojo.getSettings().setServers(servers);
 
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.NEXUS);
 		helmRepo.setName("my-nexus");
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoStable(helmRepo);
 
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
@@ -363,23 +370,23 @@ public class UploadMojoTest {
 
 	@Test
 	public void uploadToNexusWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final Server server = new Server();
+		Server server = new Server();
 		server.setId("my-nexus");
 		server.setUsername("foo");
 		server.setPassword("{GGhJc6qP+v0Hg2l+dei1MQFZt/55PzyFXY0MUMxcQdQ=}");
-		final List<Server> servers = new ArrayList<>();
+		List<Server> servers = new ArrayList<>();
 		servers.add(server);
 		mojo.getSettings().setServers(servers);
 
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.NEXUS);
 		helmRepo.setName("my-nexus");
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoStable(helmRepo);
 
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(this.getClass().getResource("settings-security.xml").getFile()).when(mojo).getHelmSecurity();
@@ -388,22 +395,22 @@ public class UploadMojoTest {
 
 		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
 
-		final PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
+		PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
 		assertEquals("foo", pwd.getUserName());
 		assertEquals("bar", String.valueOf(pwd.getPassword()));
 	}
 
 	@Test
 	public void uploadToNexusWithoutCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.NEXUS);
 		helmRepo.setName("my-nexus");
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoStable(helmRepo);
 
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
-		final List<String> tgzs = new ArrayList<>();
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
+		List<String> tgzs = new ArrayList<>();
 		tgzs.add(resource.getFile());
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
@@ -414,10 +421,10 @@ public class UploadMojoTest {
 
 	@Test
 	public void verifyHttpConnectionForNexusUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
-		final URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		final File fileToUpload = new File(resource.getFile());
+		URL resource = this.getClass().getResource("app-0.1.0.tgz");
+		File fileToUpload = new File(resource.getFile());
 
-		final HelmRepository helmRepo = new HelmRepository();
+		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.NEXUS);
 		helmRepo.setName("my-nexus");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -441,8 +448,6 @@ public class UploadMojoTest {
 	/** Writes to nowhere */
 	public class NullOutputStream extends OutputStream {
 		@Override
-		public void write(int b) throws IOException {
-		}
+		public void write(int b) throws IOException {}
 	}
 }
-

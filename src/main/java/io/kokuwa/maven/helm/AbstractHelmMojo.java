@@ -1,24 +1,10 @@
 package io.kokuwa.maven.helm;
 
-import io.kokuwa.maven.helm.github.Github;
-import io.kokuwa.maven.helm.pojo.HelmRepository;
-import io.kokuwa.maven.helm.pojo.K8SCluster;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.settings.Server;
-import org.apache.maven.settings.Settings;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.MatchPatterns;
-import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
-import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
-import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.PasswordAuthentication;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
@@ -37,6 +23,24 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Server;
+import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.MatchPatterns;
+import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
+
+import io.kokuwa.maven.helm.github.Github;
+import io.kokuwa.maven.helm.pojo.HelmRepository;
+import io.kokuwa.maven.helm.pojo.K8SCluster;
 
 /**
  * Base class for mojos
@@ -126,14 +130,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
-	@Parameter(defaultValue="${project.groupId}", readonly=true)
+	@Parameter(defaultValue = "${project.groupId}", readonly = true)
 	String projectGroupId;
 
-	@Parameter(defaultValue="${project.version}", readonly=true)
+	@Parameter(defaultValue = "${project.version}", readonly = true)
 	String projectVersion;
 
 	private Clock clock = Clock.systemDefaultZone();
-	private StripSensitiveDataLog log;
 
 	@Override
 	public void setLog(Log log) {
@@ -160,9 +163,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @param executable the name of the executable to search for
 	 * @return the absolute path to the executable if found, otherwise an empty optional.
 	 */
-	private Optional<Path> findInPath(final String executable) {
+	private Optional<Path> findInPath(String executable) {
 
-		final String[] paths = getPathsFromEnvironmentVariables();
+		String[] paths = getPathsFromEnvironmentVariables();
 		return Stream.of(paths)
 				.map(Paths::get)
 				.map(path -> path.resolve(executable))
@@ -176,7 +179,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return System.getenv("PATH").split(Pattern.quote(File.pathSeparator));
 	}
 
-	String getCurrentTimestamp(){
+	String getCurrentTimestamp() {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(getTimestampFormat());
 		LocalDateTime currentTime = LocalDateTime.now(clock);
 		return dateTimeFormatter.format(currentTime);
@@ -203,7 +206,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @param stdin STDIN which is passed to the helm process
 	 * @throws MojoExecutionException on error
 	 */
-	void callCli(String command, String errorMessage, final boolean verbose, String stdin) throws MojoExecutionException {
+	void callCli(String command, String errorMessage, boolean verbose, String stdin) throws MojoExecutionException {
 		int exitValue;
 
 		command += getK8SArgs();
@@ -211,11 +214,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		getLog().debug(command);
 
 		try {
-			final Process p = Runtime.getRuntime().exec(command);
+			Process p = Runtime.getRuntime().exec(command);
 			new Thread(() -> {
 				if (StringUtils.isNotEmpty(stdin)) {
 					try (OutputStream outputStream = p.getOutputStream()) {
-						outputStream.write( stdin.getBytes(StandardCharsets.UTF_8) );
+						outputStream.write(stdin.getBytes(StandardCharsets.UTF_8));
 					} catch (IOException ex) {
 						getLog().error("failed to write to stdin of helm", ex);
 					}
@@ -256,20 +259,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	String getK8SArgs() {
 		StringBuilder k8sConfigArgs = new StringBuilder();
-		if (k8sCluster != null){
-			if(StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
+		if (k8sCluster != null) {
+			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
 				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
 			}
-			if(StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
+			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
 				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
 			}
-			if(StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
+			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
 				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());
 			}
-			if(StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
+			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
 				k8sConfigArgs.append(" --kube-as-group ").append(k8sCluster.getAsGroup());
 			}
-			if(StringUtils.isNotEmpty(k8sCluster.getToken())) {
+			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
 				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
 			}
 		}
@@ -306,15 +309,15 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private Predicate<String> shouldIncludeDirectory(MatchPatterns exclusionPatterns) {
 		return inputDirectory -> {
 
-			final boolean isCaseSensitive = Boolean.FALSE;
+			boolean isCaseSensitive = false;
 			boolean matches = exclusionPatterns.matches(inputDirectory, isCaseSensitive);
 
 			if (matches) {
 				getLog().debug("Skip excluded directory " + inputDirectory);
-				return Boolean.FALSE;
+				return false;
 			}
 
-			return Boolean.TRUE;
+			return true;
 		};
 	}
 
@@ -343,8 +346,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		String uploadUrl = uploadRepoStable.getUrl();
 		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
-				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl()))
-		{
+				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
 			uploadUrl = uploadRepoSnapshot.getUrl();
 		}
 
@@ -354,8 +356,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	HelmRepository getHelmUploadRepo() {
 		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
-				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl()))
-		{
+				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
 			return uploadRepoSnapshot;
 		}
 		return uploadRepoStable;
@@ -371,8 +372,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @throws MojoExecutionException Unable to get password from settings.xml
 	 */
 	PasswordAuthentication getAuthentication(HelmRepository repository)
-			throws IllegalArgumentException, MojoExecutionException
-	{
+			throws IllegalArgumentException, MojoExecutionException {
 		String id = repository.getName();
 
 		if (repository.getUsername() != null) {
@@ -564,7 +564,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return autoDetectLocalHelmBinary;
 	}
 
-	public void setAutoDetectLocalHelmBinary(final boolean autoDetectLocalHelmBinary) {
+	public void setAutoDetectLocalHelmBinary(boolean autoDetectLocalHelmBinary) {
 		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary;
 	}
 

@@ -47,6 +47,8 @@ import io.kokuwa.maven.helm.pojo.HelmRepository;
 @Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InitMojo extends AbstractHelmMojo {
 
+	public static final String STABLE_HELM_REPO = "https://charts.helm.sh/stable";
+
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
 
@@ -56,8 +58,7 @@ public class InitMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.init.add-upload-repos", defaultValue = "false")
 	private boolean addUploadRepos;
 
-	public static final String STABLE_HELM_REPO = "https://charts.helm.sh/stable";
-
+	@Override
 	public void execute() throws MojoExecutionException {
 
 		if (skip || skipInit) {
@@ -76,9 +77,9 @@ public class InitMojo extends AbstractHelmMojo {
 			}
 		}
 
-		if(isUseLocalHelmBinary()) {
+		if (isUseLocalHelmBinary()) {
 			verifyLocalHelmBinary();
-			getLog().info("Using local HELM binary ["+ getHelmExecuteablePath() +"]");
+			getLog().info("Using local HELM binary [" + getHelmExecuteablePath() + "]");
 		} else {
 			downloadAndUnpackHelm();
 		}
@@ -95,8 +96,9 @@ public class InitMojo extends AbstractHelmMojo {
 				addRepository(getUploadRepoStable());
 			}
 
-			//add the upload snapshot repo only if it's name differs to the upload repo stable name
-			if (getUploadRepoSnapshot() != null && (getUploadRepoStable()==null || !getUploadRepoStable().getName().equals(getUploadRepoSnapshot().getName()))) {
+			// add the upload snapshot repo only if it's name differs to the upload repo stable name
+			if (getUploadRepoSnapshot() != null && (getUploadRepoStable() == null
+					|| !getUploadRepoStable().getName().equals(getUploadRepoSnapshot().getName()))) {
 				addRepository(getUploadRepoSnapshot());
 			}
 		}
@@ -113,30 +115,33 @@ public class InitMojo extends AbstractHelmMojo {
 	 *
 	 * @param repository - helm repository to be added
 	 */
-	private void addRepository(final HelmRepository repository) throws MojoExecutionException {
+	private void addRepository(HelmRepository repository) throws MojoExecutionException {
 		addRepository(repository, true);
 	}
 
 	/**
 	 * Adds the helm repository to the helm
 	 *
-	 * @param repository - helm repository to be added
+	 * @param repository             - helm repository to be added
 	 * @param authenticationRequired - defines whether the authentication is required
 	 */
-	private void addRepository(final HelmRepository repository, boolean authenticationRequired) throws MojoExecutionException {
+	private void addRepository(HelmRepository repository, boolean authenticationRequired)
+			throws MojoExecutionException {
 		getLog().info("Adding repo [" + repository + "]");
 		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
 		callCli(getHelmExecuteablePath()
-						+ " repo add "
-						+ repository.getName()
-						+ " "
-						+ repository.getUrl()
-						+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-						+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
-						+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "")
-						+ (auth != null ? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword()) : ""),
-						"Unable add repo",
-						false);
+				+ " repo add "
+				+ repository.getName()
+				+ " "
+				+ repository.getUrl()
+				+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
+				+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
+				+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "")
+				+ (auth != null
+						? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword())
+						: ""),
+				"Unable add repo",
+				false);
 	}
 
 	protected void downloadAndUnpackHelm() throws MojoExecutionException {
@@ -158,8 +163,8 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
 		try (InputStream dis = new URL(url).openStream();
-			 InputStream cis = createCompressorInputStream(dis);
-			 ArchiveInputStream is = createArchiverInputStream(cis)) {
+				InputStream cis = createCompressorInputStream(dis);
+				ArchiveInputStream is = createArchiverInputStream(cis)) {
 
 			// create directory if not present
 			Files.createDirectories(directory);
@@ -169,7 +174,7 @@ public class InitMojo extends AbstractHelmMojo {
 			while ((entry = is.getNextEntry()) != null) {
 
 				String name = entry.getName();
-				if (entry.isDirectory() || (!name.endsWith("helm.exe") && !name.endsWith("helm"))) {
+				if (entry.isDirectory() || !name.endsWith("helm.exe") && !name.endsWith("helm")) {
 					getLog().debug("Skip archive entry with name: " + name);
 					continue;
 				}
@@ -188,7 +193,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to download and extract helm executable.", e);
-		} 
+		}
 
 		if (!found) {
 			throw new MojoExecutionException("Unable to find helm executable in tar file.");
@@ -211,11 +216,11 @@ public class InitMojo extends AbstractHelmMojo {
 		this.addUploadRepos = addUploadRepos;
 	}
 
-	private void addExecPermission(final Path helm) throws IOException {
+	private void addExecPermission(Path helm) throws IOException {
 		Set<String> fileAttributeView = FileSystems.getDefault().supportedFileAttributeViews();
 
 		if (fileAttributeView.contains("posix")) {
-			final Set<PosixFilePermission> permissions;
+			Set<PosixFilePermission> permissions;
 			try {
 				permissions = Files.getPosixFilePermissions(helm);
 			} catch (UnsupportedOperationException e) {
@@ -227,10 +232,13 @@ public class InitMojo extends AbstractHelmMojo {
 
 		} else if (fileAttributeView.contains("acl")) {
 			String username = System.getProperty("user.name");
-			UserPrincipal userPrincipal = FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName(username);
-			AclEntry aclEntry = AclEntry.newBuilder().setPermissions(AclEntryPermission.EXECUTE).setType(AclEntryType.ALLOW).setPrincipal(userPrincipal).build();
+			UserPrincipal userPrincipal = FileSystems.getDefault().getUserPrincipalLookupService()
+					.lookupPrincipalByName(username);
+			AclEntry aclEntry = AclEntry.newBuilder().setPermissions(AclEntryPermission.EXECUTE)
+					.setType(AclEntryType.ALLOW).setPrincipal(userPrincipal).build();
 
-			AclFileAttributeView acl = Files.getFileAttributeView(helm, AclFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
+			AclFileAttributeView acl = Files.getFileAttributeView(helm, AclFileAttributeView.class,
+					LinkOption.NOFOLLOW_LINKS);
 			List<AclEntry> aclEntries = acl.getAcl();
 			aclEntries.add(aclEntry);
 			acl.setAcl(aclEntries);
@@ -294,7 +302,8 @@ public class InitMojo extends AbstractHelmMojo {
 			return "arm64";
 		} else if (architecture.equals("aarch32") || architecture.startsWith("arm")) {
 			return "arm";
-		} else if (architecture.contains("ppc64le") || (architecture.contains("ppc64") && System.getProperty("sun.cpu.endian").equals("little"))) {
+		} else if (architecture.contains("ppc64le")
+				|| architecture.contains("ppc64") && System.getProperty("sun.cpu.endian").equals("little")) {
 			return "ppc64le";
 		}
 

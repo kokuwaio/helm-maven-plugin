@@ -34,120 +34,128 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 
 import io.kokuwa.maven.helm.AbstractHelmMojo;
 
-@SuppressWarnings("unchecked")
 public class MojoExtension implements ParameterResolver, BeforeAllCallback, BeforeEachCallback {
 
-    private PluginDescriptor plugin;
-    private Map<Class<? extends AbstractHelmMojo>, MojoDescriptor> mojoDescriptors;
+	private PluginDescriptor plugin;
+	private Map<Class<? extends AbstractHelmMojo>, MojoDescriptor> mojoDescriptors;
 
-    // lifecycle
+	// lifecycle
 
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
+	@Override
+	public void beforeAll(ExtensionContext context) throws Exception {
 
-        // get plugin descriptor
+		// get plugin descriptor
 
-        InputStream inputStream = AbstractHelmMojo.class.getResourceAsStream("/META-INF/maven/plugin.xml");
-        assertNotNull(inputStream, "Plugin descriptor not found.");
-        plugin = new PluginDescriptorBuilder().build(new InterpolationFilterReader(new BufferedReader(new XmlStreamReader(inputStream)), new HashMap<>()));
+		InputStream inputStream = AbstractHelmMojo.class.getResourceAsStream("/META-INF/maven/plugin.xml");
+		assertNotNull(inputStream, "Plugin descriptor not found.");
+		plugin = new PluginDescriptorBuilder().build(
+				new InterpolationFilterReader(new BufferedReader(new XmlStreamReader(inputStream)), new HashMap<>()));
 
-        // get mojos
+		// get mojos
 
-        mojoDescriptors = new HashMap<>();
-        for (MojoDescriptor mojoDescriptor : plugin.getMojos()) {
-            mojoDescriptors.put((Class<? extends AbstractHelmMojo>) Class.forName(mojoDescriptor.getImplementation()), mojoDescriptor);
-        }
-    }
+		mojoDescriptors = new HashMap<>();
+		for (MojoDescriptor mojoDescriptor : plugin.getMojos()) {
+			mojoDescriptors.put((Class<? extends AbstractHelmMojo>) Class.forName(mojoDescriptor.getImplementation()),
+					mojoDescriptor);
+		}
+	}
 
-    @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
-        FileUtils.forceDelete(getProjectBuildDirectory(context).toFile());
-    }
+	@Override
+	public void beforeEach(ExtensionContext context) throws Exception {
+		FileUtils.forceDelete(getProjectBuildDirectory(context).toFile());
+	}
 
-    // parameter
+	// parameter
 
-    @Override
-    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
-        return AbstractHelmMojo.class.isAssignableFrom(parameterContext.getParameter().getType());
-    }
+	@Override
+	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext context)
+			throws ParameterResolutionException {
+		return AbstractHelmMojo.class.isAssignableFrom(parameterContext.getParameter().getType());
+	}
 
-    @Override
-    public Object resolveParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
-        try {
+	@Override
+	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext context)
+			throws ParameterResolutionException {
+		try {
 
-            // get descriptor
+			// get descriptor
 
-            Class<? extends AbstractHelmMojo> mojoType = (Class<AbstractHelmMojo>) parameterContext.getParameter().getType();
-            MojoDescriptor descriptor = mojoDescriptors.get(mojoType);
-            assertNotNull(descriptor, "Plugin descriptor for " + mojoType.getSimpleName() + " not found, run 'maven-plugin-plugin:descriptor'.");
+			Class<? extends AbstractHelmMojo> mojoType = (Class<AbstractHelmMojo>) parameterContext.getParameter()
+					.getType();
+			MojoDescriptor descriptor = mojoDescriptors.get(mojoType);
+			assertNotNull(descriptor, "Plugin descriptor for " + mojoType.getSimpleName()
+					+ " not found, run 'maven-plugin-plugin:descriptor'.");
 
-            // create mojo with default values
+			// create mojo with default values
 
-            AbstractHelmMojo mojo = spy(mojoType);
-            for (Parameter parameter : descriptor.getParameters()) {
-                if (parameter.getDefaultValue() == null || !parameter.isEditable() || parameter.getType().equals("boolean")) {
-                    continue;
-                }
-                getField(mojoType, parameter.getName()).set(mojo, resolve(context, parameter.getDefaultValue()));
-            }
+			AbstractHelmMojo mojo = spy(mojoType);
+			for (Parameter parameter : descriptor.getParameters()) {
+				if (parameter.getDefaultValue() == null || !parameter.isEditable()
+						|| parameter.getType().equals("boolean")) {
+					continue;
+				}
+				getField(mojoType, parameter.getName()).set(mojo, resolve(context, parameter.getDefaultValue()));
+			}
 
-            // read mojo values from annotations
+			// read mojo values from annotations
 
-            MojoProperty[] mojoProperties = ArrayUtils.addAll(
-                    context.getRequiredTestClass().getAnnotationsByType(MojoProperty.class),
-                    context.getRequiredTestMethod().getAnnotationsByType(MojoProperty.class));
-            for (MojoProperty mojoProperty : mojoProperties) {
-                getField(mojoType, mojoProperty.name()).set(mojo, resolve(context, mojoProperty.value()));
-            }
+			MojoProperty[] mojoProperties = ArrayUtils.addAll(
+					context.getRequiredTestClass().getAnnotationsByType(MojoProperty.class),
+					context.getRequiredTestMethod().getAnnotationsByType(MojoProperty.class));
+			for (MojoProperty mojoProperty : mojoProperties) {
+				getField(mojoType, mojoProperty.name()).set(mojo, resolve(context, mojoProperty.value()));
+			}
 
-            // settings
+			// settings
 
-            getField(mojoType, "settings").set(mojo, new Settings());
-            
-            // plexus SecDispatcher
+			getField(mojoType, "settings").set(mojo, new Settings());
 
-            SecDispatcher secDispatcher = spy(new DefaultSecDispatcher(new DefaultPlexusCipher()));
-            getField(mojoType, "securityDispatcher").set(mojo, secDispatcher);
+			// plexus SecDispatcher
 
-            // validate that every parameter is set
+			SecDispatcher secDispatcher = spy(new DefaultSecDispatcher(new DefaultPlexusCipher()));
+			getField(mojoType, "securityDispatcher").set(mojo, secDispatcher);
 
-            for (Parameter paramter : descriptor.getParameters()) {
-                if (paramter.isRequired()) {
-                    assertNotNull(
-                            getField(mojoType, paramter.getName()).get(mojo),
-                            "Parameter '" + paramter.getName() + "' not set for mojo '" + mojoType.getSimpleName() + "'.");
-                }
-            }
+			// validate that every parameter is set
 
-            return mojo;
-        } catch ( ReflectiveOperationException e) {
-            throw new ParameterResolutionException("Failed to setup mockito.", e);
-        }
-    }
+			for (Parameter paramter : descriptor.getParameters()) {
+				if (paramter.isRequired()) {
+					assertNotNull(
+							getField(mojoType, paramter.getName()).get(mojo),
+							"Parameter '" + paramter.getName() + "' not set for mojo '" + mojoType.getSimpleName()
+									+ "'.");
+				}
+			}
 
-    // internal
+			return mojo;
+		} catch (ReflectiveOperationException e) {
+			throw new ParameterResolutionException("Failed to setup mockito.", e);
+		}
+	}
 
-    private Field getField(Class<? extends AbstractHelmMojo> type, String name) {
-        Field field = ReflectionUtils.getFieldByNameIncludingSuperclasses(name, type);
-        assertNotNull(field, "Field with name '" + name + "' not found at type '" + type.getSimpleName() + "'.");
-        field.setAccessible(true);
-        return field;
-    }
+	// internal
 
-    private String resolve(ExtensionContext context, String property) {
+	private Field getField(Class<? extends AbstractHelmMojo> type, String name) {
+		Field field = ReflectionUtils.getFieldByNameIncludingSuperclasses(name, type);
+		assertNotNull(field, "Field with name '" + name + "' not found at type '" + type.getSimpleName() + "'.");
+		field.setAccessible(true);
+		return field;
+	}
+
+	private String resolve(ExtensionContext context, String property) {
 		return property
 				.replace("${project.build.directory}", getProjectBuildDirectory(context).toString())
 				.replace("${java.io.tmpdir}", System.getProperty("java.io.tmpdir"));
-    }
+	}
 
-    private Path getProjectBuildDirectory(ExtensionContext context) {
-        String suffix = "";
-        if (context.getRequiredTestMethod().isAnnotationPresent(ParameterizedTest.class)) {
-            String uniqueId = context.getUniqueId();
-            int start = 26 + uniqueId.indexOf("test-template-invocation:#");
-            int end = start + uniqueId.substring(start).indexOf("]");
-            suffix = "." + uniqueId.substring(start, end);
-        }
-        return Paths.get("target", "surefire", context.getRequiredTestClass().getSimpleName() + "." + context.getRequiredTestMethod().getName() + suffix);
-    }
+	private Path getProjectBuildDirectory(ExtensionContext context) {
+		String suffix = "";
+		if (context.getRequiredTestMethod().isAnnotationPresent(ParameterizedTest.class)) {
+			String uniqueId = context.getUniqueId();
+			int start = 26 + uniqueId.indexOf("test-template-invocation:#");
+			int end = start + uniqueId.substring(start).indexOf("]");
+			suffix = "." + uniqueId.substring(start, end);
+		}
+		return Paths.get("target", "surefire", context.getRequiredTestClass().getSimpleName() + "."
+				+ context.getRequiredTestMethod().getName() + suffix);
+	}
 }

@@ -27,16 +27,15 @@ public class PackageMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.package.passphrase")
 	private String passphrase;
 
-	public void execute()
-			throws MojoExecutionException
-	{
+	@Override
+	public void execute() throws MojoExecutionException {
+
 		if (skip || skipPackage) {
 			getLog().info("Skip package");
 			return;
 		}
 
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-
 			getLog().info("Packaging chart " + inputDirectory + "...");
 
 			String helmCommand = getHelmExecuteablePath()
@@ -45,8 +44,10 @@ public class PackageMojo extends AbstractHelmMojo {
 					+ " -d "
 					+ getOutputDirectory()
 					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "");
+					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache()
+							: "")
+					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
+							: "");
 
 			if (getChartVersion() != null) {
 				getLog().info(String.format("Setting chart version to %s", getChartVersionWithProcessing()));
@@ -75,5 +76,4 @@ public class PackageMojo extends AbstractHelmMojo {
 	private boolean isSignEnabled() {
 		return StringUtils.isNotEmpty(keyring) && StringUtils.isNotEmpty(key);
 	}
-
 }
