@@ -31,7 +31,7 @@
 					<addDefaultRepo>false</addDefaultRepo>
 					<helmExtraRepos>
 						<helmExtraRepo>
-							<name>kokuwaiuo</name>
+							<name>kokuwaio</name>
 							<url>https://kokuwaio.github.io/helm-charts</url>
 						</helmExtraRepo>
 					</helmExtraRepos>
