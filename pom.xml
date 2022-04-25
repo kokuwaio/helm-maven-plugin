@@ -80,6 +80,10 @@
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
+		<checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
+		<checkstyle.suppressions.location>checkstyle-suppression.xml</checkstyle.suppressions.location>
+		<checkstyle.includeTestSourceDirectory>true</checkstyle.includeTestSourceDirectory>
+
 		<!-- ===================================================================== -->
 		<!-- ============================= Versions ============================== -->
 		<!-- ===================================================================== -->
@@ -98,6 +102,7 @@
 
 		<!-- plugins -->
 
+		<version.org.apache.maven.plugins.checkstyle>3.1.2</version.org.apache.maven.plugins.checkstyle>
 		<version.org.apache.maven.plugins.clean>3.1.0</version.org.apache.maven.plugins.clean>
 		<version.org.apache.maven.plugins.compiler>3.8.1</version.org.apache.maven.plugins.compiler>
 		<version.org.apache.maven.plugins.deploy>3.0.0-M2</version.org.apache.maven.plugins.deploy>
@@ -112,6 +117,8 @@
 		<version.org.apache.maven.plugins.surefire>3.0.0-M5</version.org.apache.maven.plugins.surefire>
 		<version.org.codehaus.mojo.tidy>1.1.0</version.org.codehaus.mojo.tidy>
 		<version.org.sonatype.plugins.nexus-staging>1.6.8</version.org.sonatype.plugins.nexus-staging>
+		<version.com.puppycrawl.tools.checkstyle>9.3</version.com.puppycrawl.tools.checkstyle>
+		<version.io.kokuwa.checkstyle>0.5.6</version.io.kokuwa.checkstyle>
 
 	</properties>
 
@@ -193,6 +200,25 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>${version.org.apache.maven.plugins.checkstyle}</version>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>${version.com.puppycrawl.tools.checkstyle}</version>
+						</dependency>
+						<dependency>
+							<groupId>io.kokuwa</groupId>
+							<artifactId>maven-parent</artifactId>
+							<version>${version.io.kokuwa.checkstyle}</version>
+							<type>zip</type>
+							<classifier>checkstyle</classifier>
+						</dependency>
+					</dependencies>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
@@ -307,6 +333,19 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tidy-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- fail if checkstyle reports problems -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
 				<executions>
 					<execution>
 						<goals>

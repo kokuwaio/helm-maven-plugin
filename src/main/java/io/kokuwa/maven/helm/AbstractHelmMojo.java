@@ -209,12 +209,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	void callCli(String command, String errorMessage, boolean verbose, String stdin) throws MojoExecutionException {
 		int exitValue;
 
-		command += getK8SArgs();
-
-		getLog().debug(command);
+		String commandWithK8sArgs = command + getK8SArgs();
+		getLog().debug(commandWithK8sArgs);
 
 		try {
-			Process p = Runtime.getRuntime().exec(command);
+			Process p = Runtime.getRuntime().exec(commandWithK8sArgs);
 			new Thread(() -> {
 				if (StringUtils.isNotEmpty(stdin)) {
 					try (OutputStream outputStream = p.getOutputStream()) {
@@ -248,7 +247,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			p.waitFor();
 			exitValue = p.exitValue();
 		} catch (Exception e) {
-			getLog().error("Error processing command [" + command + "]", e);
+			getLog().error("Error processing command [" + commandWithK8sArgs + "]", e);
 			throw new MojoExecutionException("Error processing command", e);
 		}
 
