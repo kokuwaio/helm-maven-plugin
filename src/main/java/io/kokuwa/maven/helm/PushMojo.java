@@ -57,7 +57,7 @@ public class PushMojo extends AbstractHelmMojo {
 			getLog().debug("helm version minimum satisfied. the version is: " + helmVersion.toString());
 		}
 
-		if (registry.getUsername() != null && registry.getPassword() == null) {
+		if (registry.getUsername() != null && registry.getPassword() != null) {
 			callCli(
 					getHelmExecuteablePath() +
 							format(
