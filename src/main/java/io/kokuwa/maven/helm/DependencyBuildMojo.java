@@ -39,7 +39,7 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 							: "")
 					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
 							: ""),
-					"Failed to resolve dependencies", true);
+					"Failed to resolve dependencies");
 		}
 	}
 }

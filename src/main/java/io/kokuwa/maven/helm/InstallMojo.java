@@ -46,7 +46,7 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 					formatIfValueIsNotEmpty("--repository-cache=%s", getRepositoryCache()),
 					formatIfValueIsNotEmpty("--repository-config=%s", getRepositoryConfig()),
 					getValuesOptions()),
-					"Failed to deploy helm chart", true);
+					"Failed to deploy helm chart");
 		}
 	}
 }

@@ -142,8 +142,7 @@ public class InitMojo extends AbstractHelmMojo {
 				+ (auth != null
 						? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword())
 						: ""),
-				"Unable add repo",
-				false);
+				"Unable add repo");
 	}
 
 	protected void downloadAndUnpackHelm() throws MojoExecutionException {
@@ -232,7 +231,7 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		callCli(getHelmExecuteablePath() + " version", "Unable to verify local HELM binary", false);
+		callCli(getHelmExecuteablePath() + " version", "Unable to verify local HELM binary");
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {
