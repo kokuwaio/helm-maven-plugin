@@ -37,6 +37,7 @@ import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 
 import io.kokuwa.maven.helm.pojo.HelmRepository;
+import lombok.Setter;
 
 /**
  * Mojo for initializing helm
@@ -45,6 +46,7 @@ import io.kokuwa.maven.helm.pojo.HelmRepository;
  * @since 06.11.17
  */
 @Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE)
+@Setter
 public class InitMojo extends AbstractHelmMojo {
 
 	public static final String STABLE_HELM_REPO = "https://charts.helm.sh/stable";
@@ -198,22 +200,6 @@ public class InitMojo extends AbstractHelmMojo {
 		if (!found) {
 			throw new MojoExecutionException("Unable to find helm executable in tar file.");
 		}
-	}
-
-	public boolean isAddDefaultRepo() {
-		return addDefaultRepo;
-	}
-
-	public void setAddDefaultRepo(boolean addDefaultRepo) {
-		this.addDefaultRepo = addDefaultRepo;
-	}
-
-	public boolean isAddUploadRepos() {
-		return addUploadRepos;
-	}
-
-	public void setAddUploadRepos(boolean addUploadRepos) {
-		this.addUploadRepos = addUploadRepos;
 	}
 
 	private void addExecPermission(Path helm) throws IOException {

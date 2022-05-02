@@ -20,11 +20,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import io.kokuwa.maven.helm.pojo.HelmRepository;
-import lombok.Data;
-import lombok.SneakyThrows;
+import lombok.Setter;
 
-@Data
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY)
+@Setter
 public class PushMojo extends AbstractHelmMojo {
 
 	private static final String LOGIN_COMMAND_TEMPLATE = " registry login -u %s %s --password-stdin ";
@@ -34,8 +33,7 @@ public class PushMojo extends AbstractHelmMojo {
 	private boolean skipPush;
 
 	@Override
-	@SneakyThrows
-	public void execute() {
+	public void execute() throws MojoExecutionException {
 
 		if (skip || skipPush) {
 			getLog().info("Skip push");

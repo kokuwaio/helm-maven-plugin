@@ -19,6 +19,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import io.kokuwa.maven.helm.exception.BadUploadException;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
+import lombok.Setter;
 
 /**
  * Mojo for uploading to helm repo (e.g. chartmuseum)
@@ -27,6 +28,7 @@ import io.kokuwa.maven.helm.pojo.HelmRepository;
  * @since 02.01.18
  */
 @Mojo(name = "upload", defaultPhase = LifecyclePhase.DEPLOY)
+@Setter
 public class UploadMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "helm.upload.skip", defaultValue = "false")

@@ -41,6 +41,8 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 import io.kokuwa.maven.helm.github.Github;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.K8SCluster;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Base class for mojos
@@ -48,6 +50,8 @@ import io.kokuwa.maven.helm.pojo.K8SCluster;
  * @author Fabian Schlegel
  * @since 06.11.17
  */
+@Getter
+@Setter
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
@@ -124,17 +128,15 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.k8s")
 	private K8SCluster k8sCluster;
 
-	/**
-	 * The current user system settings for use in Maven.
-	 */
+	/** The current user system settings for use in Maven. */
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
 	@Parameter(defaultValue = "${project.groupId}", readonly = true)
-	String projectGroupId;
+	private String projectGroupId;
 
 	@Parameter(defaultValue = "${project.version}", readonly = true)
-	String projectVersion;
+	private String projectVersion;
 
 	private Clock clock = Clock.systemDefaultZone();
 
@@ -417,30 +419,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return "";
 	}
 
-	public String getOutputDirectory() {
-		return outputDirectory;
-	}
-
-	public void setOutputDirectory(String outputDirectory) {
-		this.outputDirectory = outputDirectory;
-	}
-
-	public String getHelmExecutableDirectory() {
-		return helmExecutableDirectory;
-	}
-
-	public void setHelmExecutableDirectory(String helmExecuteableDirectory) {
-		this.helmExecutableDirectory = helmExecuteableDirectory;
-	}
-
-	public String getHelmDownloadUrl() {
-		return helmDownloadUrl;
-	}
-
-	public void setHelmDownloadUrl(String helmDownloadUrl) {
-		this.helmDownloadUrl = helmDownloadUrl;
-	}
-
 	public String getHelmVersion() throws MojoExecutionException {
 		if (helmVersion == null) {
 			helmVersion = new Github(getLog(), Paths.get(tmpDir), githubUserAgent).getHelmVersion();
@@ -448,170 +426,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return helmVersion;
 	}
 
-	public void setHelmVersion(String helmVersion) {
-		this.helmVersion = helmVersion;
-	}
-
-	public String[] getExcludes() {
-		return excludes;
-	}
-
-	public void setExcludes(String[] excludes) {
-		this.excludes = excludes;
-	}
-
-	public String getChartDirectory() {
-		return chartDirectory;
-	}
-
-	public void setChartDirectory(String chartDirectory) {
-		this.chartDirectory = chartDirectory;
-	}
-
-	public String getRegistryConfig() {
-		return registryConfig;
-	}
-
-	public void setRegistryConfig(String registryConfig) {
-		this.registryConfig = registryConfig;
-	}
-
-	public String getRepositoryCache() {
-		return repositoryCache;
-	}
-
-	public void setRepositoryCache(String repositoryCache) {
-		this.repositoryCache = repositoryCache;
-	}
-
-	public String getRepositoryConfig() {
-		return repositoryConfig;
-	}
-
-	public void setRepositoryConfig(String repositoryConfig) {
-		this.repositoryConfig = repositoryConfig;
-	}
-
-	public String getChartVersion() {
-		return chartVersion;
-	}
-
-	public void setChartVersion(String chartVersion) {
-		this.chartVersion = chartVersion;
-	}
-
 	public String getChartVersionWithProcessing() {
 		if (isTimestampOnSnapshot() && chartVersion.endsWith("-SNAPSHOT")) {
 			return chartVersion.replace("SNAPSHOT", getCurrentTimestamp());
 		}
 		return chartVersion;
-	}
-
-	public String getAppVersion() {
-		return appVersion;
-	}
-
-	public void setAppVersion(String appVersion) {
-		this.appVersion = appVersion;
-	}
-
-	public HelmRepository[] getHelmExtraRepos() {
-		return helmExtraRepos;
-	}
-
-	public void setHelmExtraRepos(HelmRepository[] helmExtraRepos) {
-		this.helmExtraRepos = helmExtraRepos;
-	}
-
-	public HelmRepository getUploadRepoStable() {
-		return uploadRepoStable;
-	}
-
-	public void setUploadRepoStable(HelmRepository uploadRepoStable) {
-		this.uploadRepoStable = uploadRepoStable;
-	}
-
-	public HelmRepository getUploadRepoSnapshot() {
-		return uploadRepoSnapshot;
-	}
-
-	public void setUploadRepoSnapshot(HelmRepository uploadRepoSnapshot) {
-		this.uploadRepoSnapshot = uploadRepoSnapshot;
-	}
-
-	public String getHelmSecurity() {
-		return helmSecurity;
-	}
-
-	public void setHelmSecurity(String helmSecurity) {
-		this.helmSecurity = helmSecurity;
-	}
-
-	public Settings getSettings() {
-		return settings;
-	}
-
-	public boolean isUseLocalHelmBinary() {
-		return useLocalHelmBinary;
-	}
-
-	public void setUseLocalHelmBinary(boolean useLocalHelmBinary) {
-		this.useLocalHelmBinary = useLocalHelmBinary;
-	}
-
-	public boolean isAutoDetectLocalHelmBinary() {
-		return autoDetectLocalHelmBinary;
-	}
-
-	public void setAutoDetectLocalHelmBinary(boolean autoDetectLocalHelmBinary) {
-		this.autoDetectLocalHelmBinary = autoDetectLocalHelmBinary;
-	}
-
-	public K8SCluster getK8SCluster() {
-		return k8sCluster;
-	}
-
-	public void setK8SCluster(K8SCluster k8sCluster) {
-		this.k8sCluster = k8sCluster;
-	}
-
-	public String getProjectGroupId() {
-		return projectGroupId;
-	}
-
-	public void setProjectGroupId(String projectGroupId) {
-		this.projectGroupId = projectGroupId;
-	}
-
-	public String getProjectVersion() {
-		return projectVersion;
-	}
-
-	public void setProjectVersion(String projectVersion) {
-		this.projectVersion = projectVersion;
-	}
-
-	public boolean isTimestampOnSnapshot() {
-		return timestampOnSnapshot;
-	}
-
-	public void setTimestampOnSnapshot(boolean timestampOnSnapshot) {
-		this.timestampOnSnapshot = timestampOnSnapshot;
-	}
-
-	public String getTimestampFormat() {
-		return timestampFormat;
-	}
-
-	public void setTimestampFormat(String timestampFormat) {
-		this.timestampFormat = timestampFormat;
-	}
-
-	public void setGithubUserAgent(String githubUserAgent) {
-		this.githubUserAgent = githubUserAgent;
-	}
-
-	public void setTmpDir(String tmpDir) {
-		this.tmpDir = tmpDir;
 	}
 }

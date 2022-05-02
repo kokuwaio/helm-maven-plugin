@@ -7,6 +7,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
+import lombok.Setter;
+
 /**
  * Mojo for simulate a template.
  *
@@ -14,6 +16,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @since 07.02.2021
  */
 @Mojo(name = "template", defaultPhase = LifecyclePhase.TEST)
+@Setter
 public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 
 	@Parameter(property = "action", defaultValue = "template")
@@ -46,13 +49,5 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 					getValuesOptions()),
 					"There are test failures", true);
 		}
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
 	}
 }
