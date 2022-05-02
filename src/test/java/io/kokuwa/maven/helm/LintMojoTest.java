@@ -14,10 +14,9 @@ import org.mockito.ArgumentCaptor;
 
 import io.kokuwa.maven.helm.junit.MojoExtension;
 import io.kokuwa.maven.helm.junit.MojoProperty;
-import io.kokuwa.maven.helm.junit.SystemPropertyExtension;
 import io.kokuwa.maven.helm.pojo.ValueOverride;
 
-@ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
+@ExtendWith(MojoExtension.class)
 @MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-chart")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
