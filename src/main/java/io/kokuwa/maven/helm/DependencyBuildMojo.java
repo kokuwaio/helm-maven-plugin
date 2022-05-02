@@ -4,7 +4,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.StringUtils;
 
 import lombok.Setter;
 
@@ -31,15 +30,7 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("Build chart dependencies for " + inputDirectory + "...");
-			callCli(getHelmExecuteablePath()
-					+ " dependency build "
-					+ inputDirectory
-					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache()
-							: "")
-					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
-							: ""),
-					"Failed to resolve dependencies");
+			helm("dependency build " + inputDirectory, "Failed to resolve dependencies");
 		}
 	}
 }

@@ -1,8 +1,5 @@
 package io.kokuwa.maven.helm;
 
-import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,13 +53,8 @@ public class PushMojo extends AbstractHelmMojo {
 		}
 
 		if (registry.getUsername() != null && registry.getPassword() != null) {
-			callCli(
-					getHelmExecuteablePath() +
-							format(
-									LOGIN_COMMAND_TEMPLATE,
-									registry.getUsername(),
-									registry.getUrl()),
-					"can't login to registry", registry.getPassword());
+			String arguments = String.format(LOGIN_COMMAND_TEMPLATE, registry.getUsername(), registry.getUrl());
+			helm(arguments, "can't login to registry", registry.getPassword());
 		}
 
 		getLog().info("Uploading to " + registry.getUrl());
@@ -79,13 +71,7 @@ public class PushMojo extends AbstractHelmMojo {
 	}
 
 	private void uploadSingle(Path tgz, HelmRepository registry) throws MojoExecutionException {
-		callCli(
-				getHelmExecuteablePath() +
-						format(
-								CHART_PUSH_TEMPLATE,
-								tgz,
-								registry.getUrl()),
-				EMPTY);
+		helm(String.format(CHART_PUSH_TEMPLATE, tgz, registry.getUrl()), "Upload failed");
 	}
 
 	List<String> getChartTgzs(String path) throws MojoExecutionException {
