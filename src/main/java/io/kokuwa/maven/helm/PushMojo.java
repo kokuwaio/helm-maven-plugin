@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import java.io.IOException;
+import java.net.PasswordAuthentication;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,14 +56,16 @@ public class PushMojo extends AbstractHelmMojo {
 			getLog().debug("helm version minimum satisfied. the version is: " + helmVersion.toString());
 		}
 
-		if (registry.getUsername() != null && registry.getPassword() != null) {
+		PasswordAuthentication authentication = getAuthentication(registry);
+
+		if (authentication != null && authentication.getUserName() != null && authentication.getPassword() != null) {
 			callCli(
 					getHelmExecuteablePath() +
 							format(
 									LOGIN_COMMAND_TEMPLATE,
-									registry.getUsername(),
+									authentication.getUserName(),
 									registry.getUrl()),
-					"can't login to registry", registry.getPassword());
+					"can't login to registry", new String(authentication.getPassword()));
 		}
 
 		getLog().info("Uploading to " + registry.getUrl());
