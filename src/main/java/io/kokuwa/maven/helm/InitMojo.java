@@ -45,7 +45,7 @@ import lombok.Setter;
  * @author Fabian Schlegel
  * @since 06.11.17
  */
-@Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE)
+@Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true)
 @Setter
 public class InitMojo extends AbstractHelmMojo {
 

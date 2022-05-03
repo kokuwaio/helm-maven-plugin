@@ -19,7 +19,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import lombok.Setter;
 
-@Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY)
+@Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class PushMojo extends AbstractHelmMojo {
 

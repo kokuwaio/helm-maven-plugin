@@ -13,7 +13,7 @@ import lombok.Setter;
  * @author Fabian Schlegel
  * @since 06.11.17
  */
-@Mojo(name = "lint", defaultPhase = LifecyclePhase.TEST)
+@Mojo(name = "lint", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 @Setter
 public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 
