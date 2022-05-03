@@ -15,7 +15,7 @@ import lombok.Setter;
  * @author Tim IJntema, Kirill Nazarov
  * @since 07.02.2021
  */
-@Mojo(name = "template", defaultPhase = LifecyclePhase.TEST)
+@Mojo(name = "template", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 @Setter
 public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 

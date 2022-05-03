@@ -16,7 +16,7 @@ import lombok.Setter;
  * @author Tim IJntema
  * @since 07.02.2021
  */
-@Mojo(name = "install", defaultPhase = LifecyclePhase.DEPLOY)
+@Mojo(name = "install", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 

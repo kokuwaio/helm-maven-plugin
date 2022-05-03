@@ -14,7 +14,7 @@ import lombok.Setter;
  * @author Axel Koehler
  * @since 14.11.17
  */
-@Mojo(name = "dry-run", defaultPhase = LifecyclePhase.TEST)
+@Mojo(name = "dry-run", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 @Setter
 public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 
