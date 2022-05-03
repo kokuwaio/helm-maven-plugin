@@ -27,7 +27,7 @@ import lombok.Setter;
  * @author Fabian Schlegel
  * @since 02.01.18
  */
-@Mojo(name = "upload", defaultPhase = LifecyclePhase.DEPLOY)
+@Mojo(name = "upload", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class UploadMojo extends AbstractHelmMojo {
 

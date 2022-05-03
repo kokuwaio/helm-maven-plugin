@@ -14,7 +14,7 @@ import lombok.Setter;
  * @author Axel Köhler
  * @since 1.1
  */
-@Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
+@Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 @Setter
 public class DependencyBuildMojo extends AbstractHelmMojo {
 
