@@ -192,11 +192,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 *
 	 * @param command the command to be executed
 	 * @param errorMessage a readable error message that will be shown in case of exceptions
-	 * @param verbose logs STDOUT to Maven info log
 	 * @throws MojoExecutionException on error
 	 */
-	void callCli(String command, String errorMessage, boolean verbose) throws MojoExecutionException {
-		callCli(command, errorMessage, verbose, null);
+	void callCli(String command, String errorMessage) throws MojoExecutionException {
+		callCli(command, errorMessage, null);
 	}
 
 	/**
@@ -204,11 +203,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 *
 	 * @param command the command to be executed
 	 * @param errorMessage a readable error message that will be shown in case of exceptions
-	 * @param verbose logs STDOUT to Maven info log
 	 * @param stdin STDIN which is passed to the helm process
 	 * @throws MojoExecutionException on error
 	 */
-	void callCli(String command, String errorMessage, boolean verbose, String stdin) throws MojoExecutionException {
+	void callCli(String command, String errorMessage, String stdin) throws MojoExecutionException {
 		int exitValue;
 
 		String commandWithK8sArgs = command + getK8SArgs();

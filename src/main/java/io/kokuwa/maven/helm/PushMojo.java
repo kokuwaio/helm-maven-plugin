@@ -62,7 +62,7 @@ public class PushMojo extends AbstractHelmMojo {
 									LOGIN_COMMAND_TEMPLATE,
 									registry.getUsername(),
 									registry.getUrl()),
-					"can't login to registry", true, registry.getPassword());
+					"can't login to registry", registry.getPassword());
 		}
 
 		getLog().info("Uploading to " + registry.getUrl());
@@ -85,7 +85,7 @@ public class PushMojo extends AbstractHelmMojo {
 								CHART_PUSH_TEMPLATE,
 								tgz,
 								registry.getUrl()),
-				EMPTY, true);
+				EMPTY);
 	}
 
 	List<String> getChartTgzs(String path) throws MojoExecutionException {

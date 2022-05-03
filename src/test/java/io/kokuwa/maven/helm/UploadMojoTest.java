@@ -31,11 +31,10 @@ import org.mockito.Mockito;
 import io.kokuwa.maven.helm.exception.BadUploadException;
 import io.kokuwa.maven.helm.junit.MojoExtension;
 import io.kokuwa.maven.helm.junit.MojoProperty;
-import io.kokuwa.maven.helm.junit.SystemPropertyExtension;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 
-@ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
+@ExtendWith(MojoExtension.class)
 @MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")

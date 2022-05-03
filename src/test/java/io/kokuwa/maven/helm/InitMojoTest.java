@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doNothing;
@@ -31,11 +30,10 @@ import org.mockito.ArgumentCaptor;
 
 import io.kokuwa.maven.helm.junit.MojoExtension;
 import io.kokuwa.maven.helm.junit.MojoProperty;
-import io.kokuwa.maven.helm.junit.SystemPropertyExtension;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 
-@ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
+@ExtendWith(MojoExtension.class)
 @MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
@@ -47,7 +45,7 @@ public class InitMojoTest {
 	public void initMojoHappyPathWhenDownloadHelm(String os, InitMojo mojo) throws Exception {
 
 		// prepare execution
-		doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(contains("helm "), anyString());
 		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
 		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
 		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
@@ -67,7 +65,7 @@ public class InitMojoTest {
 	public void autoDownloadHelm(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		doNothing().when(mojo).callCli(contains("helm "), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(contains("helm "), anyString());
 		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
 		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
 		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
@@ -87,7 +85,7 @@ public class InitMojoTest {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(false);
@@ -114,7 +112,7 @@ public class InitMojoTest {
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoSnapshot(helmRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -142,7 +140,7 @@ public class InitMojoTest {
 		helmRepo.setUrl("https://somwhere.com/repo/stable");
 		mojo.setUploadRepoStable(helmRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -165,7 +163,7 @@ public class InitMojoTest {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -197,7 +195,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(true);
@@ -233,7 +231,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(true);
@@ -263,7 +261,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -293,7 +291,7 @@ public class InitMojoTest {
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo/stable");
 		mojo.setUploadRepoStable(helmUploadStableRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -318,7 +316,7 @@ public class InitMojoTest {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
+		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setRegistryConfig("/path/to/my/registry.json");
 		mojo.setRepositoryCache("/path/to/my/repository/cache");
@@ -355,7 +353,7 @@ public class InitMojoTest {
 				+ File.separator
 				// flatten directory structure using --strip to get helm executeable on basedir, see https://www.systutorials.com/docs/linux/man/1-tar/#lbAS
 				+ "helm.tar.gz --strip=1 --directory="
-				+ helmExecutableDir, "Unable to unpack helm to " + helmExecutableDir, false);
+				+ helmExecutableDir, "Unable to unpack helm to " + helmExecutableDir);
 
 		// configure mojo
 		mojo.setUseLocalHelmBinary(true);

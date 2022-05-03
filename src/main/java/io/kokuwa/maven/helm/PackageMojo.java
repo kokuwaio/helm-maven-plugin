@@ -72,7 +72,7 @@ public class PackageMojo extends AbstractHelmMojo {
 				}
 			}
 
-			callCli(helmCommand, "Unable to package chart at " + inputDirectory, true, stdin);
+			callCli(helmCommand, "Unable to package chart at " + inputDirectory, stdin);
 		}
 	}
 

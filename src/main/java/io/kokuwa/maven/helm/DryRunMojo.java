@@ -44,7 +44,7 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
 							: "")
 					+ getValuesOptions(),
-					"There are test failures", true);
+					"There are test failures");
 		}
 	}
 }

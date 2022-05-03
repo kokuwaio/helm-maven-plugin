@@ -47,7 +47,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 					formatIfValueIsNotEmpty("--repository-cache=%s", getRepositoryCache()),
 					formatIfValueIsNotEmpty("--repository-config=%s", getRepositoryConfig()),
 					getValuesOptions()),
-					"There are test failures", true);
+					"There are test failures");
 		}
 	}
 }
