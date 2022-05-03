@@ -57,7 +57,6 @@ public class PushMojo extends AbstractHelmMojo {
 		}
 
 		PasswordAuthentication authentication = getAuthentication(registry);
-
 		if (authentication != null && authentication.getUserName() != null && authentication.getPassword() != null) {
 			callCli(
 					getHelmExecuteablePath() +
