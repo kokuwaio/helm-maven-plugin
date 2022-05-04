@@ -1,6 +1,7 @@
 package io.kokuwa.maven.helm;
 
 import java.io.IOException;
+import java.net.PasswordAuthentication;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,9 +53,10 @@ public class PushMojo extends AbstractHelmMojo {
 			getLog().debug("helm version minimum satisfied. the version is: " + helmVersion.toString());
 		}
 
-		if (registry.getUsername() != null && registry.getPassword() != null) {
-			String arguments = String.format(LOGIN_COMMAND_TEMPLATE, registry.getUsername(), registry.getUrl());
-			helm(arguments, "can't login to registry", registry.getPassword());
+		PasswordAuthentication authentication = getAuthentication(registry);
+		if (authentication != null) {
+			String arguments = String.format(LOGIN_COMMAND_TEMPLATE, authentication.getUserName(), registry.getUrl());
+			helm(arguments, "can't login to registry", new String(authentication.getPassword()));
 		}
 
 		getLog().info("Uploading to " + registry.getUrl());
