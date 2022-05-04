@@ -38,14 +38,10 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info(String.format("\n\nPerform template for chart %s...", inputDirectory));
-			callCli(String.format("%s %s %s %s %s %s %s %s",
-					getHelmExecuteablePath(),
+			helm(String.format("%s %s %s %s",
 					action,
 					inputDirectory,
 					StringUtils.isNotEmpty(additionalArguments) ? additionalArguments : "",
-					formatIfValueIsNotEmpty("--registry-config=%s", getRegistryConfig()),
-					formatIfValueIsNotEmpty("--repository-cache=%s", getRepositoryCache()),
-					formatIfValueIsNotEmpty("--repository-config=%s", getRepositoryConfig()),
 					getValuesOptions()),
 					"There are test failures");
 		}

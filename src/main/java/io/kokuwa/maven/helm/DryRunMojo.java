@@ -4,7 +4,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.StringUtils;
 
 import lombok.Setter;
 
@@ -34,17 +33,8 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("\n\nPerform dry-run for chart " + inputDirectory + "...");
-			callCli(getHelmExecuteablePath()
-					+ " " + action
-					+ " " + inputDirectory
-					+ " --dry-run --generate-name"
-					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache()
-							: "")
-					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
-							: "")
-					+ getValuesOptions(),
-					"There are test failures");
+			String arguments = action + " " + inputDirectory + " --dry-run --generate-name" + getValuesOptions();
+			helm(arguments, "There are test failures");
 		}
 	}
 }

@@ -131,18 +131,11 @@ public class InitMojo extends AbstractHelmMojo {
 			throws MojoExecutionException {
 		getLog().info("Adding repo [" + repository + "]");
 		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
-		callCli(getHelmExecuteablePath()
-				+ " repo add "
-				+ repository.getName()
-				+ " "
-				+ repository.getUrl()
-				+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-				+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache() : "")
-				+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig() : "")
-				+ (auth != null
-						? " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword())
-						: ""),
-				"Unable add repo");
+		String arguments = "repo add " + repository.getName() + " " + repository.getUrl();
+		if (auth != null) {
+			arguments += " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword());
+		}
+		helm(arguments, "Unable add repo");
 	}
 
 	protected void downloadAndUnpackHelm() throws MojoExecutionException {
@@ -231,7 +224,7 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		callCli(getHelmExecuteablePath() + " version", "Unable to verify local HELM binary");
+		helm("version", "Unable to verify local HELM binary");
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {

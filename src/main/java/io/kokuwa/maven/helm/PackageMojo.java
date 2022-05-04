@@ -41,38 +41,29 @@ public class PackageMojo extends AbstractHelmMojo {
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("Packaging chart " + inputDirectory + "...");
 
-			String helmCommand = getHelmExecuteablePath()
-					+ " package "
-					+ inputDirectory
-					+ " -d "
-					+ getOutputDirectory()
-					+ (StringUtils.isNotEmpty(getRegistryConfig()) ? " --registry-config=" + getRegistryConfig() : "")
-					+ (StringUtils.isNotEmpty(getRepositoryCache()) ? " --repository-cache=" + getRepositoryCache()
-							: "")
-					+ (StringUtils.isNotEmpty(getRepositoryConfig()) ? " --repository-config=" + getRepositoryConfig()
-							: "");
+			String arguments = "package " + inputDirectory + " -d " + getOutputDirectory();
 
 			if (getChartVersion() != null) {
 				getLog().info(String.format("Setting chart version to %s", getChartVersionWithProcessing()));
-				helmCommand = helmCommand + " --version " + getChartVersionWithProcessing();
+				arguments += " --version " + getChartVersionWithProcessing();
 			}
 
 			if (getAppVersion() != null) {
 				getLog().info(String.format("Setting App version to %s", getAppVersion()));
-				helmCommand = helmCommand + " --app-version " + getAppVersion();
+				arguments += " --app-version " + getAppVersion();
 			}
 
 			String stdin = null;
 			if (isSignEnabled()) {
 				getLog().info("Enable signing");
-				helmCommand = helmCommand + " --sign --keyring " + keyring + " --key " + key;
+				arguments += " --sign --keyring " + keyring + " --key " + key;
 				if (StringUtils.isNotEmpty(passphrase)) {
-					helmCommand += " --passphrase-file -";
+					arguments += " --passphrase-file -";
 					stdin = passphrase;
 				}
 			}
 
-			callCli(helmCommand, "Unable to package chart at " + inputDirectory, stdin);
+			helm(arguments, "Unable to package chart at " + inputDirectory, stdin);
 		}
 	}
 

@@ -3,23 +3,18 @@ package io.kokuwa.maven.helm;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
-import java.io.File;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.Os;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +40,7 @@ public class InitMojoTest {
 	public void initMojoHappyPathWhenDownloadHelm(String os, InitMojo mojo) throws Exception {
 
 		// prepare execution
-		doNothing().when(mojo).callCli(contains("helm "), anyString());
+		doNothing().when(mojo).helm(contains("helm "), anyString());
 		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
 		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
 		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
@@ -65,7 +60,7 @@ public class InitMojoTest {
 	public void autoDownloadHelm(InitMojo mojo) throws Exception {
 
 		// prepare execution
-		doNothing().when(mojo).callCli(contains("helm "), anyString());
+		doNothing().when(mojo).helm(contains("helm "), anyString());
 		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
 		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
 		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
@@ -85,7 +80,7 @@ public class InitMojoTest {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(false);
@@ -96,7 +91,7 @@ public class InitMojoTest {
 		// check captured argument
 		String helmDefaultCommand = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
+				.filter(cmd -> cmd.contains("repo"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
 		assertTrue(helmDefaultCommand.contains("repo add stable " + InitMojo.STABLE_HELM_REPO), "Adding stable repo by default expected");
@@ -112,7 +107,7 @@ public class InitMojoTest {
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoSnapshot(helmRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -123,7 +118,7 @@ public class InitMojoTest {
 		// check captured argument
 		String helmCommand = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
+				.filter(cmd -> cmd.contains("repo"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
 		assertTrue(helmCommand.contains("repo add my-artifactory-snapshot https://somwhere.com/repo"),
@@ -140,7 +135,7 @@ public class InitMojoTest {
 		helmRepo.setUrl("https://somwhere.com/repo/stable");
 		mojo.setUploadRepoStable(helmRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -151,7 +146,7 @@ public class InitMojoTest {
 		// check captured argument
 		String helmCommand = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
+				.filter(cmd -> cmd.contains("repo"))
 				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"));
 
 		assertTrue(helmCommand.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"),
@@ -163,7 +158,7 @@ public class InitMojoTest {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -174,7 +169,7 @@ public class InitMojoTest {
 		// check captured argument
 		Optional<String> helmCommand = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
+				.filter(cmd -> cmd.contains("repo"))
 				.findFirst();
 
 		assertFalse(helmCommand.isPresent(), "Adding repos not expected");
@@ -195,7 +190,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(true);
@@ -206,8 +201,7 @@ public class InitMojoTest {
 		// check captured commands
 		Set<String> helmCommands = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
-				.map(cmd -> cmd.substring(cmd.indexOf("repo add"))) //remove everything before repo add for easier verification
+				.filter(cmd -> cmd.contains("repo"))
 				.collect(Collectors.toSet());
 
 		assertEquals(3, helmCommands.size(), "Expected 3 helm commands");
@@ -231,7 +225,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(true);
@@ -242,8 +236,7 @@ public class InitMojoTest {
 		// check captured commands
 		Set<String> helmCommands = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
-				.map(cmd -> cmd.substring(cmd.indexOf("repo add"))) //remove everything before repo add for easier verification
+				.filter(cmd -> cmd.contains("repo"))
 				.collect(Collectors.toSet());
 
 		assertEquals(2, helmCommands.size(), "Expected 2 helm commands");
@@ -261,7 +254,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -272,8 +265,7 @@ public class InitMojoTest {
 		// check captured commands
 		Set<String> helmCommands = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
-				.map(cmd -> cmd.substring(cmd.indexOf("repo add"))) //remove everything before repo add for easier verification
+				.filter(cmd -> cmd.contains("repo"))
 				.collect(Collectors.toSet());
 
 		assertEquals(1, helmCommands.size(), "Expected 1 helm command");
@@ -291,7 +283,7 @@ public class InitMojoTest {
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo/stable");
 		mojo.setUploadRepoStable(helmUploadStableRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -302,69 +294,12 @@ public class InitMojoTest {
 		// check captured commands
 		Set<String> helmCommands = helmCommandCaptor.getAllValues()
 				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe repo" : "helm repo"))
-				.map(cmd -> cmd.substring(cmd.indexOf("repo add"))) //remove everything before repo add for easier verification
+				.filter(cmd -> cmd.contains("repo"))
 				.collect(Collectors.toSet());
 
 		assertEquals(1, helmCommands.size(), "Expected 1 helm command");
 		assertTrue(helmCommands.contains("repo add my-artifactory-stable https://somwhere.com/repo/stable"),
 				"Adding upload stable repo expected");
-	}
-
-	@Test
-	public void verifyCustomConfigOptions(InitMojo mojo) throws Exception {
-
-		// prepare execution
-		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString());
-		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
-		mojo.setRegistryConfig("/path/to/my/registry.json");
-		mojo.setRepositoryCache("/path/to/my/repository/cache");
-		mojo.setRepositoryConfig("/path/to/my/repositories.yaml");
-		mojo.setAddDefaultRepo(true);
-
-		// run init
-		mojo.execute();
-
-		// check captured argument
-		List<String> helmCommands = helmCommandCaptor.getAllValues()
-				.stream()
-				.filter(cmd -> cmd.contains(Os.OS_FAMILY == Os.FAMILY_WINDOWS ? "helm.exe " : "helm "))
-				.collect(Collectors.toList());
-		assertEquals(1, helmCommands.size(), "Only helm init command expected");
-		String helmDefaultCommand = helmCommands.get(0);
-		assertTrue(helmDefaultCommand.contains("--registry-config=/path/to/my/registry.json"),
-				"Option 'registry-config' not set");
-		assertTrue(helmDefaultCommand.contains("--repository-cache=/path/to/my/repository/cache"),
-				"Option 'repository-cache' not set");
-		assertTrue(helmDefaultCommand.contains("--repository-config=/path/to/my/repositories.yaml"),
-				"Option 'repository-config' not set");
-	}
-
-	@Test
-	public void verifyLocalHelmBinaryUsage(InitMojo mojo) throws MojoExecutionException {
-		// Because the download URL is hardcoded to linux, only proceed if the OS is indeed linux.
-		assumeTrue(isOSUnix());
-
-		URL resource = this.getClass().getResource("helm.tar.gz");
-		String helmExecutableDir = new File(resource.getFile()).getParent();
-		mojo.callCli("tar -xf "
-				+ helmExecutableDir
-				+ File.separator
-				// flatten directory structure using --strip to get helm executeable on basedir, see https://www.systutorials.com/docs/linux/man/1-tar/#lbAS
-				+ "helm.tar.gz --strip=1 --directory="
-				+ helmExecutableDir, "Unable to unpack helm to " + helmExecutableDir);
-
-		// configure mojo
-		mojo.setUseLocalHelmBinary(true);
-		mojo.setHelmExecutableDirectory(helmExecutableDir);
-
-		// execute
-		mojo.execute();
-	}
-
-	private boolean isOSUnix() {
-		return System.getProperty("os.name").matches(".*n[i|u]x.*");
 	}
 
 	private String getOsSpecificDownloadURL() {
