@@ -107,6 +107,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.tmpDir", defaultValue = "${java.io.tmpdir}/helm-maven-plugin")
 	private String tmpDir;
 
+	@Parameter(property = "helm.debug", defaultValue = "false")
+	private boolean debug;
+
 	@Parameter(property = "helm.registryConfig")
 	private String registryConfig;
 
@@ -187,31 +190,34 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return dateTimeFormatter.format(currentTime);
 	}
 
-	/**
-	 * Calls cli with specified command
-	 *
-	 * @param command the command to be executed
-	 * @param errorMessage a readable error message that will be shown in case of exceptions
-	 * @throws MojoExecutionException on error
-	 */
-	void callCli(String command, String errorMessage) throws MojoExecutionException {
-		callCli(command, errorMessage, null);
+	void helm(String arguments, String errorMessage) throws MojoExecutionException {
+		helm(arguments, errorMessage, null);
 	}
 
-	/**
-	 * Calls cli with specified command
-	 *
-	 * @param command the command to be executed
-	 * @param errorMessage a readable error message that will be shown in case of exceptions
-	 * @param stdin STDIN which is passed to the helm process
-	 * @throws MojoExecutionException on error
-	 */
-	void callCli(String command, String errorMessage, String stdin) throws MojoExecutionException {
-		int exitValue;
+	void helm(String arguments, String errorMessage, String stdin) throws MojoExecutionException {
+	
+		// get command
+
+		String command = getHelmExecuteablePath() + " " + arguments;
+		if (debug) {
+			command += " --debug";
+		}
+		if (StringUtils.isNotEmpty(registryConfig)) {
+			command += " --registry-config=" + registryConfig;
+		}
+		if (StringUtils.isNotEmpty(repositoryConfig)) {
+			command += " --repository-config=" + repositoryConfig;
+		}
+		if (StringUtils.isNotEmpty(repositoryCache)) {
+			command += " --repository-cache=" + repositoryCache;
+		}
+
+		// execute helm
 
 		String commandWithK8sArgs = command + getK8SArgs();
 		getLog().debug(commandWithK8sArgs);
 
+		int exitValue;
 		try {
 			Process p = Runtime.getRuntime().exec(commandWithK8sArgs);
 			new Thread(() -> {
