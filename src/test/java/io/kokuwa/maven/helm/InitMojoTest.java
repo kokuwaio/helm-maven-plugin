@@ -4,23 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.codehaus.plexus.util.Os;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 
 import io.kokuwa.maven.helm.junit.MojoExtension;
@@ -33,47 +25,6 @@ import io.kokuwa.maven.helm.pojo.RepoType;
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
 public class InitMojoTest {
-
-	@DisplayName("Init helm with different download urls.")
-	@ParameterizedTest
-	@ValueSource(strings = { "darwin", "linux", "windows" })
-	public void initMojoHappyPathWhenDownloadHelm(String os, InitMojo mojo) throws Exception {
-
-		// prepare execution
-		doNothing().when(mojo).helm(contains("helm "), anyString());
-		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
-		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
-		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
-		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL(os));
-
-		// run init
-		mojo.execute();
-
-		// check helm file
-		Path helm = Paths.get(mojo.getHelmExecutableDirectory(), "windows".equals(os) ? "helm.exe" : "helm")
-				.toAbsolutePath();
-		assertTrue(Files.exists(helm), "Helm executable not found at: " + helm);
-	}
-
-	@DisplayName("Init helm with a automatically detected URL")
-	@Test
-	public void autoDownloadHelm(InitMojo mojo) throws Exception {
-
-		// prepare execution
-		doNothing().when(mojo).helm(contains("helm "), anyString());
-		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
-		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
-		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
-		mojo.setHelmDownloadUrl(null);
-
-		// run init
-		mojo.execute();
-
-		// check helm file
-		Path helm = Paths.get(mojo.getHelmExecutableDirectory(), "windows".equals(Os.OS_FAMILY) ? "helm.exe" : "helm")
-				.toAbsolutePath();
-		assertTrue(Files.exists(helm), "Helm executable not found at: " + helm);
-	}
 
 	@Test
 	public void verifyAddingStableByDefault(InitMojo mojo) throws Exception {

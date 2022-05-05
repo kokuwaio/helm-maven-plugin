@@ -24,8 +24,8 @@ import lombok.Setter;
 @Setter
 public class PushMojo extends AbstractHelmMojo {
 
-	private static final String LOGIN_COMMAND_TEMPLATE = " registry login -u %s %s --password-stdin ";
-	private static final String CHART_PUSH_TEMPLATE = " push %s oci://%s ";
+	private static final String LOGIN_COMMAND_TEMPLATE = "registry login -u %s %s --password-stdin";
+	private static final String CHART_PUSH_TEMPLATE = "push %s oci://%s";
 
 	@Parameter(property = "helm.push.skip", defaultValue = "false")
 	private boolean skipPush;

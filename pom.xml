@@ -321,6 +321,7 @@
 						<configuration>
 							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
 							<parallelThreads>1C</parallelThreads>
+							<settingsFile>${project.basedir}/src/it/settings.xml</settingsFile>
 							<streamLogs>false</streamLogs>
 							<streamLogsOnFailures>true</streamLogsOnFailures>
 							<writeJunitReport>true</writeJunitReport>

@@ -1,0 +1,5 @@
+// verify that configured (and outdated) version was used
+
+return org.codehaus.plexus.util.FileUtils
+	.fileRead(basedir + "/build.log")
+	.contains("Downloading Helm: https://get.helm.sh/helm-v3.8.0-")

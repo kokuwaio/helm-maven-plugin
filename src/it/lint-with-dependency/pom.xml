@@ -26,15 +26,18 @@
 					</execution>
 				</executions>
 				<configuration>
-					<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
-					<chartVersion>${project.version}</chartVersion>
-					<addDefaultRepo>false</addDefaultRepo>
+					<autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
+					<useLocalHelmBinary>true</useLocalHelmBinary>
+					<helmExecutableDirectory>${project.basedir}/..</helmExecutableDirectory>
 					<helmExtraRepos>
 						<helmExtraRepo>
 							<name>kokuwaio</name>
 							<url>https://kokuwaio.github.io/helm-charts</url>
 						</helmExtraRepo>
 					</helmExtraRepos>
+					<addDefaultRepo>false</addDefaultRepo>
+					<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
+					<chartVersion>1.0.0</chartVersion>
 				</configuration>
 			</plugin>
 		</plugins>
