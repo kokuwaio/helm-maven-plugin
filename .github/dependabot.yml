@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: monthly
+    ignore:
+      # minimal maven version is fixed
+      - dependency-name: org.apache.maven:maven-plugin-api
+      - dependency-name: org.apache.maven:maven-settings
+      # newer checkstyle versions are build with java11
+      - dependency-name: com.puppycrawl.tools:checkstyle
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
