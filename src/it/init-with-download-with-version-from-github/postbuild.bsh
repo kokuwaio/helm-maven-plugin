@@ -1,0 +1,10 @@
+// verify that cache was created
+
+File cache = new File(System.getProperty("java.io.tmpdir") + "/helm-maven-plugin/github-release.json");
+if (!cache.isFile()) {
+	throw new FileNotFoundException("Could not find generated cache file: " + cache);
+}
+
+return org.codehaus.plexus.util.FileUtils
+	.fileRead(basedir + "/build.log")
+	.contains("Wrote Github cache to " + cache);

@@ -1,0 +1,8 @@
+// remove cache file
+
+File cache = new File(System.getProperty("java.io.tmpdir") + "/helm-maven-plugin/github-release.json");
+if (cache.exists()) {
+	if (!cache.delete()) {
+		throw new IOException("Could not delete cache file: " + cache);
+	}
+}

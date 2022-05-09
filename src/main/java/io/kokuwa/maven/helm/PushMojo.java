@@ -24,8 +24,8 @@ import lombok.Setter;
 @Setter
 public class PushMojo extends AbstractHelmMojo {
 
-	private static final String LOGIN_COMMAND_TEMPLATE = " registry login -u %s %s --password-stdin ";
-	private static final String CHART_PUSH_TEMPLATE = " push %s oci://%s ";
+	private static final String LOGIN_COMMAND_TEMPLATE = "registry login -u %s %s --password-stdin";
+	private static final String CHART_PUSH_TEMPLATE = "push %s oci://%s";
 
 	@Parameter(property = "helm.push.skip", defaultValue = "false")
 	private boolean skipPush;
@@ -44,13 +44,17 @@ public class PushMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		ComparableVersion helmVersion = new ComparableVersion(getHelmVersion());
-		ComparableVersion minimumHelmVersion = new ComparableVersion("3.8.0");
-		if (helmVersion.compareTo(minimumHelmVersion) < 0) {
-			getLog().error("your helm version is " + helmVersion.toString() + ", it's required to be >=3.8.0");
-			throw new IllegalStateException();
+		if (isUseLocalHelmBinary()) {
+			getLog().debug("helm version unknown");
 		} else {
-			getLog().debug("helm version minimum satisfied. the version is: " + helmVersion.toString());
+			ComparableVersion helmVersion = new ComparableVersion(getHelmVersion());
+			ComparableVersion minimumHelmVersion = new ComparableVersion("3.8.0");
+			if (helmVersion.compareTo(minimumHelmVersion) < 0) {
+				getLog().error("your helm version is " + helmVersion.toString() + ", it's required to be >=3.8.0");
+				throw new IllegalStateException();
+			} else {
+				getLog().debug("helm version minimum satisfied. the version is: " + helmVersion);
+			}
 		}
 
 		PasswordAuthentication authentication = getAuthentication(registry);

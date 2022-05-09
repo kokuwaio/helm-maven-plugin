@@ -22,9 +22,9 @@
 							<goal>init</goal>
 						</goals>
 						<configuration>
-							<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
-							<chartVersion>${project.version}</chartVersion>
-							<addDefaultRepo>false</addDefaultRepo>
+							<autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
+							<useLocalHelmBinary>true</useLocalHelmBinary>
+							<helmExecutableDirectory>${project.basedir}/..</helmExecutableDirectory>
 							<helmExtraRepos>
 								<helmExtraRepo>
 									<name>kokuwaio-with-credentials</name>
@@ -33,6 +33,9 @@
 									<password>ChangeMe</password>
 								</helmExtraRepo>
 							</helmExtraRepos>
+							<addDefaultRepo>false</addDefaultRepo>
+							<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
+							<chartVersion>1.0.0</chartVersion>
 						</configuration>
 					</execution>
 				</executions>

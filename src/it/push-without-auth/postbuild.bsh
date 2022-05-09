@@ -1,0 +1,5 @@
+// verify that push is correct
+
+return org.codehaus.plexus.util.FileUtils
+	.fileRead(basedir + "/build.log")
+	.contains(basedir + "/../helm push " + basedir + "/target/helm/repo/app-1.0.0.tgz oci://127.0.0.1\n")
