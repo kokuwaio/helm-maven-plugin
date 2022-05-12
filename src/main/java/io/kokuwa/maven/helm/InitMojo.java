@@ -34,6 +34,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Server;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -158,10 +159,26 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
 
+		if (!StringUtils.isBlank(getHelmDownloadUser())
+				&& !StringUtils.isBlank(getHelmDownloadPassword())
+				&& getSettings().getServer(getHelmDownloadServerId()) == null) {
+			throw new MojoExecutionException("Either use only helm.downloadUser and helm.downloadPassword " +
+					"or helm.downloadServerId properties");
+		}
+
 		if (!StringUtils.isBlank(getHelmDownloadUser()) && !StringUtils.isBlank(getHelmDownloadPassword())) {
 			Authenticator.setDefault(new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(getHelmDownloadUser(), getHelmDownloadPassword().toCharArray());
+				}
+			});
+		}
+
+		if (getSettings().getServer(getHelmDownloadServerId()) != null) {
+			Server serverId = getSettings().getServer(getHelmDownloadServerId());
+			Authenticator.setDefault(new Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(serverId.getUsername(), serverId.getPassword().toCharArray());
 				}
 			});
 		}
