@@ -96,6 +96,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.downloadUrl")
 	private String helmDownloadUrl;
 
+	@Parameter(property = "helm.downloadUser")
+	private String helmDownloadUser;
+
+	@Parameter(property = "helm.downloadPassword")
+	private String helmDownloadPassword;
+
 	@Parameter(property = "helm.version")
 	private String helmVersion;
 

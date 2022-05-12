@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -156,6 +157,15 @@ public class InitMojo extends AbstractHelmMojo {
 
 		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
+
+		if (!StringUtils.isBlank(getHelmDownloadUser()) && !StringUtils.isBlank(getHelmDownloadPassword())) {
+			Authenticator.setDefault(new Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(getHelmDownloadUser(), getHelmDownloadPassword().toCharArray());
+				}
+			});
+		}
+
 		try (InputStream dis = new URL(url).openStream();
 				InputStream cis = createCompressorInputStream(dis);
 				ArchiveInputStream is = createArchiverInputStream(cis)) {
