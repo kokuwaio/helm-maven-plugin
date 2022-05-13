@@ -297,7 +297,6 @@ Parameter | Type | User Property | Required | Description
 `<passphrase>` | string | helm.package.passphrase | false | passphrase for gpg key (requires helm 3.4 or newer)
 `<values>` | [ValueOverride](./src/main/java/io/kokuwa/maven/helm/ValueOverride.java) | helm.values | false | override some values for linting with helm.values.overrides (--set option), helm.values.stringOverrides (--set-string option), helm.values.fileOverrides (--set-file option) and last but not least helm.values.yamlFile (--values option)
 
-
 ## Packaging with the Helm Lifecycle
 
 To keep your pom files small you can use 'helm' packaging. This binds `helm:init` to the initialize phase, `helm:dependency-build` to the process-resources phase,  `helm:lint` to the test phase,`helm:package` to the package phase and `helm:upload` to the deploy phase.
