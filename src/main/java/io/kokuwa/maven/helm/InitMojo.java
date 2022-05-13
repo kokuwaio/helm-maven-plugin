@@ -62,6 +62,15 @@ public class InitMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.init.add-upload-repos", defaultValue = "false")
 	private boolean addUploadRepos;
 
+	@Parameter(property = "helm.downloadUser")
+	private String helmDownloadUser;
+
+	@Parameter(property = "helm.downloadPassword")
+	private String helmDownloadPassword;
+
+	@Parameter(property = "helm.downloadServerId")
+	private String helmDownloadServerId;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -159,26 +168,28 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
 
-		if (!StringUtils.isBlank(getHelmDownloadUser())
-				&& !StringUtils.isBlank(getHelmDownloadPassword())
-				&& getSettings().getServer(getHelmDownloadServerId()) == null) {
+		Server downloadServerId = getSettings().getServer(helmDownloadServerId);
+
+		if (StringUtils.isNotBlank(helmDownloadUser) && StringUtils.isNotBlank(helmDownloadPassword)
+				&& downloadServerId != null) {
 			throw new MojoExecutionException("Either use only helm.downloadUser and helm.downloadPassword " +
 					"or helm.downloadServerId properties");
 		}
 
-		if (!StringUtils.isBlank(getHelmDownloadUser()) && !StringUtils.isBlank(getHelmDownloadPassword())) {
+		if (StringUtils.isNotBlank(helmDownloadUser) && StringUtils.isNotBlank(helmDownloadPassword)) {
 			Authenticator.setDefault(new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(getHelmDownloadUser(), getHelmDownloadPassword().toCharArray());
+					return new PasswordAuthentication(helmDownloadUser, helmDownloadPassword.toCharArray());
 				}
 			});
 		}
 
-		if (getSettings().getServer(getHelmDownloadServerId()) != null) {
-			Server serverId = getSettings().getServer(getHelmDownloadServerId());
+		if (downloadServerId != null) {
 			Authenticator.setDefault(new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(serverId.getUsername(), serverId.getPassword().toCharArray());
+					return new PasswordAuthentication(
+							downloadServerId.getUsername(),
+							downloadServerId.getPassword().toCharArray());
 				}
 			});
 		}
