@@ -168,10 +168,10 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
 
-		Server downloadServerId = getSettings().getServer(helmDownloadServerId);
+		Server downloadServer = getSettings().getServer(helmDownloadServerId);
 
 		if (StringUtils.isNotBlank(helmDownloadUser) && StringUtils.isNotBlank(helmDownloadPassword)
-				&& downloadServerId != null) {
+				&& downloadServer != null) {
 			throw new MojoExecutionException("Either use only helm.downloadUser and helm.downloadPassword " +
 					"or helm.downloadServerId properties");
 		}
@@ -184,12 +184,12 @@ public class InitMojo extends AbstractHelmMojo {
 			});
 		}
 
-		if (downloadServerId != null) {
+		if (downloadServer != null) {
 			Authenticator.setDefault(new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(
-							downloadServerId.getUsername(),
-							downloadServerId.getPassword().toCharArray());
+							downloadServer.getUsername(),
+							downloadServer.getPassword().toCharArray());
 				}
 			});
 		}
