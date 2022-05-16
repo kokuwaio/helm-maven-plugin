@@ -261,6 +261,9 @@ Parameter | Type | User Property | Required | Description
 `<chartVersion>` | string | helm.chartVersion | true | Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
 `<appVersion>` | string | helm.appVersion | false | The version of the app. This needn't be SemVer.
 `<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm. Leave empty to autodetect URL based upon OS and architecture.
+`<helmDownloadUser>` | string | helm.downloadUser | false | Username used to authenticate while downloading helm binary package
+`<helmDownloadPassword>` | string | helm.downloadPassword | false | Password used to authenticate while downloading helm binary package
+`<helmDownloadServerId>` | string | helm.downloadServerId | false | Server Id in `settings.xml` which has username and password used to authenticate while downloading helm binary package
 `<helmVersion>` | string | helm.version | false | Version of helm to download.
 `<githubUserAgent>` | string | helm.githubUserAgent | false | To determine latest helm version this plugin uses the Github API. Therefore a [user agent](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#user-agent-required) is needed. Defaults to `kokuwaio/helm-maven-plugin`
 `<tmpDir>` | string | helm.tmpDir | false | Directory where to store cached Github responses. Defaults to `${java.io.tmpdir}/helm-maven-plugin`

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -33,6 +34,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Server;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -59,6 +61,15 @@ public class InitMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "helm.init.add-upload-repos", defaultValue = "false")
 	private boolean addUploadRepos;
+
+	@Parameter(property = "helm.downloadUser")
+	private String helmDownloadUser;
+
+	@Parameter(property = "helm.downloadPassword")
+	private String helmDownloadPassword;
+
+	@Parameter(property = "helm.downloadServerId")
+	private String helmDownloadServerId;
 
 	@Override
 	public void execute() throws MojoExecutionException {
@@ -156,6 +167,33 @@ public class InitMojo extends AbstractHelmMojo {
 
 		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
+
+		Server downloadServer = getSettings().getServer(helmDownloadServerId);
+
+		if (StringUtils.isNotBlank(helmDownloadUser) && StringUtils.isNotBlank(helmDownloadPassword)
+				&& downloadServer != null) {
+			throw new MojoExecutionException("Either use only helm.downloadUser and helm.downloadPassword " +
+					"or helm.downloadServerId properties");
+		}
+
+		if (StringUtils.isNotBlank(helmDownloadUser) && StringUtils.isNotBlank(helmDownloadPassword)) {
+			Authenticator.setDefault(new Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(helmDownloadUser, helmDownloadPassword.toCharArray());
+				}
+			});
+		}
+
+		if (downloadServer != null) {
+			Authenticator.setDefault(new Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(
+							downloadServer.getUsername(),
+							downloadServer.getPassword().toCharArray());
+				}
+			});
+		}
+
 		try (InputStream dis = new URL(url).openStream();
 				InputStream cis = createCompressorInputStream(dis);
 				ArchiveInputStream is = createArchiverInputStream(cis)) {
