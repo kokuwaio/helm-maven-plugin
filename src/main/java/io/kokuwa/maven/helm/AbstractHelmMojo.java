@@ -212,7 +212,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	void helm(String arguments, String errorMessage, String stdin) throws MojoExecutionException {
-	
+
 		// get command
 
 		String command = getHelmExecuteablePath() + " " + arguments;
@@ -473,7 +473,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	//TODO: Remove in next major release
-	private void warnOnMixOfK8sClusterAndGlobalFlags(){
+	private void warnOnMixOfK8sClusterAndGlobalFlags() {
 		StringBuilder warnMessage = new StringBuilder();
 		if (k8sCluster != null) {
 			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl()) && StringUtils.isNotEmpty(kubeApiServer)) {
