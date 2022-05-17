@@ -4,9 +4,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.StringUtils;
 
 import lombok.Setter;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Mojo for testing charts
