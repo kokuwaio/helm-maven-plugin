@@ -141,6 +141,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.version}", readonly = true)
 	private String projectVersion;
 
+	@Parameter(property = "helm.namespace")
+	private String namespace;
+
 	private Clock clock = Clock.systemDefaultZone();
 
 	@Override
@@ -211,6 +214,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		if (StringUtils.isNotEmpty(repositoryCache)) {
 			command += " --repository-cache=" + repositoryCache;
 		}
+		if (StringUtils.isNotEmpty(namespace)) {
+			command += " --namespace=" + namespace;
+		}
 
 		// execute helm
 
@@ -269,7 +275,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
+				getLog().warn("<k8sCluster><namespace/></k8sCluster> is deprecated. Use <namespace/> instead");
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
 				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());

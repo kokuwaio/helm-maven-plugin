@@ -296,6 +296,7 @@ Parameter | Type | User Property | Required | Description
 `<key>` | string  | helm.package.key | false | name of gpg key in keyring
 `<passphrase>` | string | helm.package.passphrase | false | passphrase for gpg key (requires helm 3.4 or newer)
 `<values>` | [ValueOverride](./src/main/java/io/kokuwa/maven/helm/ValueOverride.java) | helm.values | false | override some values for linting with helm.values.overrides (--set option), helm.values.stringOverrides (--set-string option), helm.values.fileOverrides (--set-file option) and last but not least helm.values.yamlFile (--values option)
+`<namespace>` | string | helm.namespace | false | namespace scope for helm command
 
 ## Packaging with the Helm Lifecycle
 

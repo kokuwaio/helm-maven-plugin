@@ -17,6 +17,13 @@ public class K8SCluster {
 	@Parameter(property = "helm.k8s.api-url")
 	private String apiUrl;
 
+	/**
+	 * Namespace to use while running helm command
+	 * @deprecated
+	 * This field should be used from base mojo
+	 * <p> Use {@link io.kokuwa.maven.helm.AbstractHelmMojo#getNamespace()} instead.
+	 */
+	@Deprecated
 	@Parameter(property = "helm.k8s.namespace")
 	private String namespace;
 
