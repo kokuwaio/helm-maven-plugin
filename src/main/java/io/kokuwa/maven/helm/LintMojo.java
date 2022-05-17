@@ -6,6 +6,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import lombok.Setter;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Mojo for testing charts
@@ -23,6 +24,9 @@ public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "helm.lint.strict", defaultValue = "false")
 	private boolean lintStrict;
 
+	@Parameter(property = "helm.lint.namespace")
+	private String lintNamespace;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -33,7 +37,8 @@ public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
 			getLog().info("\n\nTesting chart " + inputDirectory + "...");
-			String arguments = "lint " + inputDirectory + (lintStrict ? " --strict" : "") + getValuesOptions();
+			String arguments = "lint " + inputDirectory + (lintStrict ? " --strict" : "") + getValuesOptions()
+					+ (StringUtils.isNotBlank(lintNamespace) ? " --namespace=" + lintNamespace : "");
 			helm(arguments, "There are test failures");
 		}
 	}

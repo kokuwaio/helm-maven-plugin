@@ -38,4 +38,19 @@ public class LintMojoTest {
 
 		assertTrue(helmCommandCaptor.getValue().contains("--values overrideValues.yaml"));
 	}
+
+	@Test
+	public void lintWithNamespace(LintMojo mojo) throws Exception {
+		mojo.setLintNamespace("default");
+		mojo.setChartDirectory(Paths.get(getClass().getResource("Chart.yaml").toURI()).getParent().toString());
+
+		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
+				.getHelmExecuteablePath();
+
+		mojo.execute();
+
+		assertTrue(helmCommandCaptor.getValue().contains("--namespace=default"));
+	}
 }
