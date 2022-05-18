@@ -98,7 +98,7 @@ class AbstractHelmMojoTest {
 			K8SCluster k8sCluster = new K8SCluster();
 			subjectSpy.setK8sCluster(k8sCluster);
 			k8sCluster.setApiUrl("custom-api-url");
-			assertEquals(" --kube-apiserver custom-api-url", subjectSpy.getK8SArgs());
+			assertEquals(" --kube-apiserver=custom-api-url", subjectSpy.getK8SArgs());
 		}
 
 		@Test
@@ -106,7 +106,7 @@ class AbstractHelmMojoTest {
 			K8SCluster k8sCluster = new K8SCluster();
 			subjectSpy.setK8sCluster(k8sCluster);
 			k8sCluster.setAsUser("custom-user");
-			assertEquals(" --kube-as-user custom-user", subjectSpy.getK8SArgs());
+			assertEquals(" --kube-as-user=custom-user", subjectSpy.getK8SArgs());
 		}
 
 		@Test
@@ -114,7 +114,7 @@ class AbstractHelmMojoTest {
 			K8SCluster k8sCluster = new K8SCluster();
 			subjectSpy.setK8sCluster(k8sCluster);
 			k8sCluster.setAsGroup("custom-group");
-			assertEquals(" --kube-as-group custom-group", subjectSpy.getK8SArgs());
+			assertEquals(" --kube-as-group=custom-group", subjectSpy.getK8SArgs());
 		}
 
 
@@ -123,7 +123,7 @@ class AbstractHelmMojoTest {
 			K8SCluster k8sCluster = new K8SCluster();
 			subjectSpy.setK8sCluster(k8sCluster);
 			k8sCluster.setToken("custom-token");
-			assertEquals(" --kube-token custom-token", subjectSpy.getK8SArgs());
+			assertEquals(" --kube-token=custom-token", subjectSpy.getK8SArgs());
 		}
 
 		@Test
@@ -135,10 +135,10 @@ class AbstractHelmMojoTest {
 			k8sCluster.setAsGroup("custom-group");
 			k8sCluster.setToken("custom-token");
 			k8sCluster.setToken("custom-token");
-			assertEquals(" --kube-apiserver custom-api-url"
-					+ " --kube-as-user custom-user"
-					+ " --kube-as-group custom-group"
-					+ " --kube-token custom-token",
+			assertEquals(" --kube-apiserver=custom-api-url"
+					+ " --kube-as-user=custom-user"
+					+ " --kube-as-group=custom-group"
+					+ " --kube-token=custom-token",
 					subjectSpy.getK8SArgs());
 		}
 	}
