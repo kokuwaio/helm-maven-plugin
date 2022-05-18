@@ -155,7 +155,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private String kubeAsGroup;
 
 	@Parameter(property = "helm.kubeToken")
-	@ToString.Exclude
 	private String kubeToken;
 
 	private Clock clock = Clock.systemDefaultZone();
@@ -301,20 +300,21 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		StringBuilder k8sConfigArgs = new StringBuilder();
 		if (k8sCluster != null) {
 			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
-				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
+				k8sConfigArgs.append(" --kube-apiserver=").append(k8sCluster.getApiUrl());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
+				k8sConfigArgs.append(" --namespace=").append(k8sCluster.getNamespace());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
-				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());
+				k8sConfigArgs.append(" --kube-as-user=").append(k8sCluster.getAsUser());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
-				k8sConfigArgs.append(" --kube-as-group ").append(k8sCluster.getAsGroup());
+				k8sConfigArgs.append(" --kube-as-group=").append(k8sCluster.getAsGroup());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
-				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
+				k8sConfigArgs.append(" --kube-token=").append(k8sCluster.getToken());
 			}
+			getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
 		}
 		return k8sConfigArgs.toString();
 	}
@@ -491,7 +491,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			if (StringUtils.isNotEmpty(k8sCluster.getToken()) && StringUtils.isNotEmpty(kubeToken)) {
 				warnMessage.append("Both <kubeToken> and <k8sCluster><token/></k8sCluster> are set.\n");
 			}
-			warnMessage.append("As per current implementation - <k8sCluster><*></k8sCluster> options win.");
+			warnMessage.append("As per current implementation - <k8sCluster><*></k8sCluster> options win.\n");
+			warnMessage.append("NOTE: <k8sCluster> option will be removed in future major release.");
 		}
 		if (warnMessage.length() > 0) {
 			getLog().warn(warnMessage.toString());
