@@ -29,8 +29,8 @@ public class HideSensitiveDataLogTest {
 
 	@Test
 	void hideKubeToken() {
-		String content = "abcd --kube-token ABCDEF";
-		String expected = "abcd --kube-token *****";
+		String content = "abcd --kube-token=ABCDEF";
+		String expected = "abcd --kube-token=*****";
 		String actual = StripSensitiveDataLog.strip(content);
 		assertEquals(expected, actual);
 	}

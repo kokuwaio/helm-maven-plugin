@@ -141,6 +141,21 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.version}", readonly = true)
 	private String projectVersion;
 
+	@Parameter(property = "helm.namespace")
+	private String namespace;
+
+	@Parameter(property = "helm.kubeApiServer")
+	private String kubeApiServer;
+
+	@Parameter(property = "helm.kubeAsUser")
+	private String kubeAsUser;
+
+	@Parameter(property = "helm.kubeAsGroup")
+	private String kubeAsGroup;
+
+	@Parameter(property = "helm.kubeToken")
+	private String kubeToken;
+
 	private Clock clock = Clock.systemDefaultZone();
 
 	@Override
@@ -195,7 +210,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	void helm(String arguments, String errorMessage, String stdin) throws MojoExecutionException {
-	
+
 		// get command
 
 		String command = getHelmExecuteablePath() + " " + arguments;
@@ -211,11 +226,29 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		if (StringUtils.isNotEmpty(repositoryCache)) {
 			command += " --repository-cache=" + repositoryCache;
 		}
+		if (StringUtils.isNotEmpty(namespace)) {
+			command += " --namespace=" + namespace;
+		}
+		if (StringUtils.isNotEmpty(kubeApiServer)) {
+			command += " --kube-apiserver=" + kubeApiServer;
+		}
+		if (StringUtils.isNotEmpty(kubeAsUser)) {
+			command += " --kube-as-user=" + kubeAsUser;
+		}
+		if (StringUtils.isNotEmpty(kubeAsGroup)) {
+			command += " --kube-as-group=" + kubeAsGroup;
+		}
+		if (StringUtils.isNotEmpty(kubeToken)) {
+			command += " --kube-token=" + kubeToken;
+		}
 
 		// execute helm
 
 		String commandWithK8sArgs = command + getK8SArgs();
 		getLog().debug(commandWithK8sArgs);
+
+		//TODO: Remove in next major release
+		warnOnMixOfK8sClusterAndGlobalFlags();
 
 		int exitValue;
 		try {
@@ -266,20 +299,21 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		StringBuilder k8sConfigArgs = new StringBuilder();
 		if (k8sCluster != null) {
 			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
-				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
+				k8sConfigArgs.append(" --kube-apiserver=").append(k8sCluster.getApiUrl());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
+				k8sConfigArgs.append(" --namespace=").append(k8sCluster.getNamespace());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
-				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());
+				k8sConfigArgs.append(" --kube-as-user=").append(k8sCluster.getAsUser());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
-				k8sConfigArgs.append(" --kube-as-group ").append(k8sCluster.getAsGroup());
+				k8sConfigArgs.append(" --kube-as-group=").append(k8sCluster.getAsGroup());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
-				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
+				k8sConfigArgs.append(" --kube-token=").append(k8sCluster.getToken());
 			}
+			getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
 		}
 		return k8sConfigArgs.toString();
 	}
@@ -435,5 +469,32 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			return chartVersion.replace("SNAPSHOT", getCurrentTimestamp());
 		}
 		return chartVersion;
+	}
+
+	//TODO: Remove in next major release
+	private void warnOnMixOfK8sClusterAndGlobalFlags() {
+		StringBuilder warnMessage = new StringBuilder();
+		if (k8sCluster != null) {
+			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl()) && StringUtils.isNotEmpty(kubeApiServer)) {
+				warnMessage.append("Both <kubeApiServer> and <k8sCluster><apiUrl/></k8sCluster> are set.\n");
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getNamespace()) && StringUtils.isNotEmpty(namespace)) {
+				warnMessage.append("Both <namespace> and <k8sCluster><namespace/></k8sCluster> are set.\n");
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getAsUser()) && StringUtils.isNotEmpty(kubeAsUser)) {
+				warnMessage.append("Both <kubeAsUser> and <k8sCluster><asUser/></k8sCluster> are set.\n");
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup()) && StringUtils.isNotEmpty(kubeAsGroup)) {
+				warnMessage.append("Both <kubeAsGroup> and <k8sCluster><asGroup/></k8sCluster> are set.\n");
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getToken()) && StringUtils.isNotEmpty(kubeToken)) {
+				warnMessage.append("Both <kubeToken> and <k8sCluster><token/></k8sCluster> are set.\n");
+			}
+			warnMessage.append("As per current implementation - <k8sCluster><*></k8sCluster> options win.\n");
+			warnMessage.append("NOTE: <k8sCluster> option will be removed in future major release.");
+		}
+		if (warnMessage.length() > 0) {
+			getLog().warn(warnMessage.toString());
+		}
 	}
 }

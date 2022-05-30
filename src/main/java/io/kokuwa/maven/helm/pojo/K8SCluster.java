@@ -11,6 +11,7 @@ import lombok.ToString;
  * @author Kirill Nazarov
  * @since 29.12.21
  */
+//TODO: Remove in next major release
 @Data
 public class K8SCluster {
 
