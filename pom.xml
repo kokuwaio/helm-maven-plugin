@@ -96,13 +96,13 @@
 		<version.org.apache.maven.plugin.tools>3.6.4</version.org.apache.maven.plugin.tools>
 		<version.org.codehaus.plexus.dispatcher>2.0</version.org.codehaus.plexus.dispatcher>
 		<version.org.junit.jupiter>5.9.0</version.org.junit.jupiter>
-		<version.org.mockito>4.6.1</version.org.mockito>
+		<version.org.mockito>4.7.0</version.org.mockito>
 		<version.org.projectlombok>1.18.24</version.org.projectlombok>
 		<version.com.fasterxml.jackson>2.13.3</version.com.fasterxml.jackson>
 
 		<!-- plugins -->
 
-		<version.org.apache.maven.plugins.checkstyle>3.1.2</version.org.apache.maven.plugins.checkstyle>
+		<version.org.apache.maven.plugins.checkstyle>3.2.0</version.org.apache.maven.plugins.checkstyle>
 		<version.org.apache.maven.plugins.clean>3.2.0</version.org.apache.maven.plugins.clean>
 		<version.org.apache.maven.plugins.compiler>3.10.1</version.org.apache.maven.plugins.compiler>
 		<version.org.apache.maven.plugins.deploy>3.0.0</version.org.apache.maven.plugins.deploy>
