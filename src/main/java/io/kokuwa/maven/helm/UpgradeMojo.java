@@ -1,0 +1,41 @@
+package io.kokuwa.maven.helm;
+
+import lombok.Setter;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
+/**
+ * Mojo for simulate a Upgrade.
+ */
+@Mojo(name = "upgrade", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
+@Setter
+public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
+
+    @Parameter(property = "helm.upgrade.skip", defaultValue = "false")
+    private boolean skipUpgrade;
+
+    @Parameter(property = "helm.upgrade.upgradeWithInstall", defaultValue = "true")
+    private boolean upgradeWithInstall;
+
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip || skipUpgrade) {
+            getLog().info("Skip upgrade");
+            return;
+        }
+
+        for (String inputDirectory : getChartDirectories(getChartDirectory())) {
+            getLog().info(new StringBuilder()
+                                  .append("installing the chart ")
+                                  .append(upgradeWithInstall ? "with install " : "")
+                                  .append(inputDirectory)
+                                  .toString());
+
+            callCli(getCommand("upgrade " + (upgradeWithInstall ? " --install" : ""), inputDirectory),
+                    "Error happened during upgrading the chart");
+        }
+    }
+}
