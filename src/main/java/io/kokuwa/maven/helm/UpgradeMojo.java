@@ -14,30 +14,30 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Setter
 public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 
-    @Parameter(property = "helm.upgrade.skip", defaultValue = "false")
-    private boolean skipUpgrade;
+	@Parameter(property = "helm.upgrade.skip", defaultValue = "false")
+	private boolean skipUpgrade;
 
-    @Parameter(property = "helm.upgrade.upgradeWithInstall", defaultValue = "true")
-    private boolean upgradeWithInstall;
+	@Parameter(property = "helm.upgrade.upgradeWithInstall", defaultValue = "true")
+	private boolean upgradeWithInstall;
+ 
+	@Parameter(property = "helm.releaseName")
+	private String releaseName;
 
-    @Parameter(property = "helm.releaseName")
-    private String releaseName;
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (skip || skipUpgrade) {
+			getLog().info("Skip upgrade");
+			return;
+		}
 
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skip || skipUpgrade) {
-            getLog().info("Skip upgrade");
-            return;
-        }
-
-        for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-            getLog().info(new StringBuilder()
-                                  .append("installing the chart ")
-                                  .append(upgradeWithInstall ? "with install " : "")
-                                  .append(inputDirectory)
-                                  .toString());
-            String arguments = "upgrade " + releaseName + " " + inputDirectory + " " + (upgradeWithInstall ? "--install" : "") + getValuesOptions();
-            helm(arguments, "Error happened during upgrading the chart");
-        }
-    }
+		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
+			getLog().info(new StringBuilder()
+					.append("installing the chart ")
+					.append(upgradeWithInstall ? "with install " : "")
+					.append(inputDirectory)
+					.toString());
+			String arguments = "upgrade " + releaseName + " " + inputDirectory + " " + (upgradeWithInstall ? "--install" : "") + getValuesOptions();
+			helm(arguments, "Error happened during upgrading the chart");
+		}
+	}
 }
