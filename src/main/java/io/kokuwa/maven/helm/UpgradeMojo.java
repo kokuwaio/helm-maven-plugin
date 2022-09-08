@@ -20,6 +20,9 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
     @Parameter(property = "helm.upgrade.upgradeWithInstall", defaultValue = "true")
     private boolean upgradeWithInstall;
 
+    @Parameter(property = "helm.releaseName")
+    private String releaseName;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip || skipUpgrade) {
@@ -33,9 +36,8 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
                                   .append(upgradeWithInstall ? "with install " : "")
                                   .append(inputDirectory)
                                   .toString());
-
-            callCli(getCommand("upgrade " + (upgradeWithInstall ? " --install" : ""), inputDirectory),
-                    "Error happened during upgrading the chart");
+            String arguments = "upgrade " + releaseName + " " + inputDirectory + " " + (upgradeWithInstall ? "--install" : "") + getValuesOptions();
+            helm(arguments, "Error happened during upgrading the chart");
         }
     }
 }

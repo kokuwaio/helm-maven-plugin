@@ -3,13 +3,9 @@ package io.kokuwa.maven.helm;
 import io.kokuwa.maven.helm.pojo.ValueOverride;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.util.Locale;
 import java.util.Map;
-
-import static java.lang.String.format;
 
 @Setter
 public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo {
@@ -44,32 +40,6 @@ public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo
             }
         }
         return setValuesOptions.toString();
-    }
-
-    protected final String getCommand(String action, String inputDirectory)
-            throws MojoExecutionException {
-        return getCommand(action, "", inputDirectory);
-    }
-
-    protected final String getCommand(String action, String args, String inputDirectory) throws MojoExecutionException {
-        return new StringBuilder(getHelmCommand(action, args))
-                       .append(StringUtils.isNotEmpty(getReleaseName()) ? format(" %s ", getReleaseName()) : " --generate-name ")
-                       .append(inputDirectory)
-                       .append(StringUtils.isNotEmpty(getNamespace())
-                                       ? format(" -n %s ", getNamespace().toLowerCase(Locale.ROOT))
-                                       : "")
-                       .append(isDebug() ? " --debug " : "")
-                       .append(StringUtils.isNotEmpty(getRegistryConfig())
-                                       ? format(" --registry-config %s ", getRegistryConfig())
-                                       : "")
-                       .append(StringUtils.isNotEmpty(getRepositoryCache())
-                                       ? format(" --repository-cache %s ", getRepositoryCache())
-                                       : "")
-                       .append(StringUtils.isNotEmpty(getRepositoryConfig())
-                                       ? format(" --repository-config %s ", getRepositoryConfig())
-                                       : "")
-                       .append(getValuesOptions())
-                       .toString();
     }
 
     private void appendOverrideMap(StringBuilder setValues, Map<String, String> overrides) {

@@ -5,8 +5,6 @@ import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.K8SCluster;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -38,27 +36,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Base class for mojos
@@ -145,9 +130,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
     @Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
     private String helmSecurity;
 
-    @Parameter(property = "helm.releaseName")
-    private String releaseName;
-
     @Parameter(property = "helm.skip", defaultValue = "false")
     protected boolean skip;
 
@@ -180,6 +162,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
     @Parameter(property = "helm.kubeToken")
     private String kubeToken;
+
+    @Parameter(property = "helm.kubeCaFile")
+    private String kubeCaFile;
 
     private Clock clock = Clock.systemDefaultZone();
 
@@ -266,6 +251,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
         if (StringUtils.isNotEmpty(kubeToken)) {
             command += " --kube-token=" + kubeToken;
         }
+        if (StringUtils.isNotEmpty(kubeCaFile)) {
+            command += " --kube-ca-file=" + kubeCaFile;
+        }
 
         // execute helm
 
@@ -341,129 +329,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
             getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
         }
         return k8sConfigArgs.toString();
-    }
-
-    void callCli(String command, String errorMessage) throws MojoExecutionException {
-        getLog().debug("executing command: " + command);
-
-        AtomicInteger exitValue = new AtomicInteger(0);
-
-        try {
-            final Process p = Runtime.getRuntime().exec(command);
-            new Thread(
-                    () -> {
-                        try {
-                            String inputLine = IOUtils.toString(p.getInputStream(), StandardCharsets.UTF_8);
-                            String errorLine = IOUtils.toString(p.getErrorStream(), StandardCharsets.UTF_8);
-                            getLog().debug(inputLine);
-                            if (isNotBlank(errorLine)) {
-                                getLog().error(errorLine);
-                            }
-                        } catch (IOException e) {
-                            getLog().error(e);
-                        }
-                    })
-                    .start();
-            p.waitFor();
-            exitValue.set(p.exitValue());
-        } catch (Exception e) {
-            throw new MojoExecutionException(format("Error processing command [%s]", command), e);
-        }
-
-        if (exitValue.get() != 0) {
-            throw new MojoExecutionException(errorMessage);
-        }
-    }
-
-    protected String getHelmCommand(String action, String args) throws MojoExecutionException {
-        return new StringBuilder().append(getHelmExecutablePath())
-                       .append(format(" %s ", action))
-                       .append(format(" %s ", args))
-                       .toString();
-    }
-
-    Path getHelmExecutablePath() throws MojoExecutionException {
-        String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
-
-        Optional<Path> path =
-                isUseLocalHelmBinary() && isAutoDetectLocalHelmBinary()
-                        ? findInPath(helmExecutable)
-                        : Optional.of(Paths.get(helmExecutableDirectory, helmExecutable))
-                                  .map(Path::toAbsolutePath)
-                                  .filter(Files::exists);
-
-        return path.orElseThrow(() -> new MojoExecutionException("Helm executable is not found."));
-    }
-
-    private String appendOverrides(Map<String, ?> overrides) {
-        final Map<String, ?> flattenOverrides = flattenOverrides(overrides);
-        return flattenOverrides.keySet().stream()
-                       .map(key -> getKeyValue(key, flattenOverrides.get(key)))
-                       .flatMap(List::stream)
-                       .collect(joining(","));
-    }
-
-    public static <U> Map<String, U> flattenOverrides(Map<String, U> overrides) {
-        final Map<String, U> mutableMap = new TreeMap<>();
-        overrides.forEach(
-                (key, value) -> {
-                    if (value instanceof Map) {
-                        Map<String, U> flatMap = flattenOverrides((Map) value);
-                        String finalKey = key;
-                        flatMap.forEach(
-                                (flatMapKey, flatMapValue) ->
-                                        mutableMap.put(
-                                                new StringBuilder(finalKey).append(".").append(flatMapKey).toString(),
-                                                flatMapValue));
-                    } else {
-                        if (key.startsWith("^") && key.endsWith("^")) {
-                            key = key.replace("^", EMPTY).replaceAll("\\.", "\\\\.");
-                        }
-                        mutableMap.put(key, value);
-                    }
-                });
-        return mutableMap;
-    }
-
-    @SneakyThrows
-    private static <U extends Object> List<String> getKeyValue(String key, U value) {
-        if (isEmpty(key)) {
-            return Collections.EMPTY_LIST;
-        }
-        if (isNull(value) || value instanceof String) {
-            return Arrays.asList(format("STRING_KEY_STRING_VALUE_TEMPLATE", key, nvl(value, EMPTY)));
-        } else if (value instanceof Collection) {
-            List<U> convertedList = (List<U>) value;
-            return IntStream.range(0, convertedList.size())
-                           .mapToObj(
-                                   index -> {
-                                       U item = convertedList.get(index);
-                                       if (item instanceof String) {
-                                           return format("STRING_KEY_LIST_VALUE_TEMPLATE", key, index, item);
-                                       } else if (item instanceof Map) {
-                                           final Map<String, U> convertedMap = (Map<String, U>) item;
-                                           return convertedMap.keySet().stream()
-                                                          .map(subMapKey -> getKeyValue(subMapKey, convertedMap.get(subMapKey)))
-                                                          .flatMap(List::stream)
-                                                          .map(el -> format("STRING_KEY_LIST_SUB_VALUE_TEMPLATE", key, index, el))
-                                                          .collect(joining(","));
-                                       } else {
-                                           throw new RuntimeException("UNKNOWN_VALUE_TYPE_MESSAGE");
-                                       }
-                                   })
-                           .collect(toList());
-        } else {
-            throw new MojoExecutionException("UNKNOWN_VALUE_TYPE_MESSAGE");
-        }
-    }
-
-    public static <T> T nvl(T a, T b) {
-        if (Objects.isNull(a)) {
-            return b;
-        } else if (a instanceof String && StringUtils.isEmpty((String) a)) {
-            return b;
-        }
-        return a;
     }
 
     List<String> getChartDirectories(String path) throws MojoExecutionException {
