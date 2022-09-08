@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import static java.lang.String.format;
+
 import io.kokuwa.maven.helm.github.Github;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.K8SCluster;
@@ -42,8 +44,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.lang.String.format;
 
 /**
  * Base class for mojos
