@@ -37,7 +37,8 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 					.append(upgradeWithInstall ? "with install " : "")
 					.append(inputDirectory)
 					.toString());
-			String arguments = "upgrade " + releaseName + " " + inputDirectory + " " + (upgradeWithInstall ? "--install" : "") + getValuesOptions();
+			String arguments = "upgrade " + releaseName + " " + inputDirectory + " "
+					+ (upgradeWithInstall ? "--install" : "") + getValuesOptions();
 			helm(arguments, "Error happened during upgrading the chart");
 		}
 	}
