@@ -245,7 +245,7 @@ and disables the auto-detection feature:
 ## Goals
 
 - `helm:init` initializes Helm by downloading a specific version
-- `helm:dependency-build` resolves the chart dependencies
+- `helm:dependency-build` resolves the chart dependencies  
 - `helm:package` packages the given charts (chart.tar.gz)
 - `helm:lint` tests the given charts
 - `helm:template` Locally render templates
