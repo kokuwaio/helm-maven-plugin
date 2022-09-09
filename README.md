@@ -8,8 +8,7 @@ This is a Maven plugin for testing, packaging and uploading HELM charts.
 
 Visit <https://docs.helm.sh> for detailed information.
 
-Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum)
-, [Artifactory](https://jfrog.com/artifactory/) and [Nexus](https://github.com/sonatype/nexus-public) is supported.
+Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum), [Artifactory](https://jfrog.com/artifactory/) and [Nexus](https://github.com/sonatype/nexus-public) is supported.
 
 ## Helm v3
 
@@ -17,8 +16,7 @@ From version **5.0** Helm v3 is required.
 There is no longer support for Helm v2.
 For convenience reasons the stable repo is added by default.
 
-Helm v2 users can still use plugin
-version [4.13](https://search.maven.org/artifact/io.kokuwa.maven/helm-maven-plugin/4.13/maven-plugin).
+Helm v2 users can still use plugin version [4.13](https://search.maven.org/artifact/io.kokuwa.maven/helm-maven-plugin/4.13/maven-plugin).
 
 ## Why?
 
@@ -26,18 +24,16 @@ Currently (October 2017) there is no simple Maven plugin to package existing HEL
 
 ## How?
 
-By default, the plugin automatically downloads Helm at the specified version. You can also manually specify the download
-URL.
+By default, the plugin automatically downloads Helm at the specified version. You can also manually specify the download URL.
 Next to that it is possible to specify a local Helm binary. In all cases Helm will be executed in the background.
 
 Add following dependency to your pom.xml:
 
 ```xml
-
 <dependency>
-    <groupId>io.kokuwa.maven</groupId>
-    <artifactId>helm-maven-plugin</artifactId>
-    <version>6.3.0</version>
+  <groupId>io.kokuwa.maven</groupId>
+  <artifactId>helm-maven-plugin</artifactId>
+  <version>6.3.0</version>
 </dependency>
 ```
 
@@ -48,45 +44,42 @@ Add following dependency to your pom.xml:
 The default setting is to construct the Helm download URL based upon the detected OS and architecture:
 
 ```xml
-
 <build>
-    <plugins>
-        <plugin>
-            <groupId>io.kokuwa.maven</groupId>
-            <artifactId>helm-maven-plugin</artifactId>
-            <version>6.3.0</version>
-            <configuration>
-                <chartDirectory>${project.basedir}</chartDirectory>
-                <chartVersion>${project.version}</chartVersion>
-            </configuration>
-        </plugin>
-    </plugins>
+  <plugins>
+    <plugin>
+      <groupId>io.kokuwa.maven</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>6.3.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+      </configuration>
+    </plugin>
+  </plugins>
 </build>
 ```
 
-If you leave `helmVersion` and `helmDownloadUrl` empty the plugin will determine the latest version based
-on [https://api.github.com/repos/helm/helm/releases/latest].
+If you leave `helmVersion` and `helmDownloadUrl` empty the plugin will determine the latest version based on [https://api.github.com/repos/helm/helm/releases/latest].
 
 ### Usage with Downloaded Binary
 
 ```xml
-
 <build>
-    <plugins>
-        ...
-        <plugin>
-            <groupId>io.kokuwa.maven</groupId>
-            <artifactId>helm-maven-plugin</artifactId>
-            <version>6.3.0</version>
-            <configuration>
-                <chartDirectory>${project.basedir}</chartDirectory>
-                <chartVersion>${project.version}</chartVersion>
-                <!-- This is the related section when using binary download -->
-                <helmDownloadUrl>https://get.helm.sh/helm-v3.8.1-linux-amd64.tar.gz</helmDownloadUrl>
-            </configuration>
-        </plugin>
-        ...
-    </plugins>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>io.kokuwa.maven</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>6.3.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section when using binary download -->
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.8.1-linux-amd64.tar.gz</helmDownloadUrl>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
 </build>
 ```
 
@@ -95,23 +88,22 @@ on [https://api.github.com/repos/helm/helm/releases/latest].
 When `useLocalHelmBinary` is enabled, the plugin by default will search for the `helm` executable in `PATH`:
 
 ```xml
-
 <build>
-    <plugins>
-        ...
-        <plugin>
-            <groupId>io.kokuwa.maven</groupId>
-            <artifactId>helm-maven-plugin</artifactId>
-            <version>6.3.0</version>
-            <configuration>
-                <chartDirectory>${project.basedir}</chartDirectory>
-                <chartVersion>${project.version}</chartVersion>
-                <!-- This is the related section to use local binary with auto-detection enabled. -->
-                <useLocalHelmBinary>true</useLocalHelmBinary>
-            </configuration>
-        </plugin>
-        ...
-    </plugins>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>io.kokuwa.maven</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>6.3.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section to use local binary with auto-detection enabled. -->
+        <useLocalHelmBinary>true</useLocalHelmBinary>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
 </build>
 ```
 
@@ -119,126 +111,123 @@ The following is an example configuration that explicitly sets the directory in 
 and disables the auto-detection feature:
 
 ```xml
-
 <build>
-    <plugins>
-        ...
-        <plugin>
-            <groupId>io.kokuwa.maven</groupId>
-            <artifactId>helm-maven-plugin</artifactId>
-            <version>6.3.0</version>
-            <configuration>
-                <chartDirectory>${project.basedir}</chartDirectory>
-                <chartVersion>${project.version}</chartVersion>
-                <!-- This is the related section to use local binary with auto-detection disabled. -->
-                <useLocalHelmBinary>true</useLocalHelmBinary>
-                <autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
-                <helmExecutableDirectory>/usr/local/bin</helmExecutableDirectory>
-            </configuration>
-        </plugin>
-        ...
-    </plugins>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>io.kokuwa.maven</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>6.3.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section to use local binary with auto-detection disabled. -->
+        <useLocalHelmBinary>true</useLocalHelmBinary>
+        <autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
+        <helmExecutableDirectory>/usr/local/bin</helmExecutableDirectory>        
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
 </build>
 ```
 
 ### Configure Plugin to Use Credentials from settings.xml for Upload
 
 ```xml
-
 <build>
-    <plugins>
-        ...
-        <plugin>
-            <groupId>io.kokuwa.maven</groupId>
-            <artifactId>helm-maven-plugin</artifactId>
-            <version>6.3.0</version>
-            <configuration>
-                <chartDirectory>${project.basedir}</chartDirectory>
-                <chartVersion>${project.version}</chartVersion>
-                <!-- This is the related section to configure upload repos -->
-                <uploadRepoStable>
-                    <name>stable-repo</name>
-                    <url>https://repo.example.com/artifactory/helm-stable</url>
-                    <type>ARTIFACTORY</type>
-                </uploadRepoStable>
-                <uploadRepoSnapshot>
-                    <name>snapshot-repo</name>
-                    <url>https://my.chart.museum:8080/api/charts</url>
-                    <type>CHARTMUSEUM</type>
-                </uploadRepoSnapshot>
-                <helmDownloadUrl>https://get.helm.sh/helm-v3.8.1-linux-amd64.tar.gz</helmDownloadUrl>
-            </configuration>
-        </plugin>
-        ...
-    </plugins>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>io.kokuwa.maven</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>6.3.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <!-- This is the related section to configure upload repos -->
+        <uploadRepoStable>
+            <name>stable-repo</name>
+            <url>https://repo.example.com/artifactory/helm-stable</url>
+            <type>ARTIFACTORY</type>
+        </uploadRepoStable>
+        <uploadRepoSnapshot>
+            <name>snapshot-repo</name>
+            <url>https://my.chart.museum:8080/api/charts</url>
+            <type>CHARTMUSEUM</type>
+        </uploadRepoSnapshot>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.8.1-linux-amd64.tar.gz</helmDownloadUrl>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
 </build>
 ```
 
 ### More Complex Example
 
 ```xml
-
 <build>
-    <plugins>
-        ...
-        <plugin>
-            <groupId>io.kokuwa.maven</groupId>
-            <artifactId>helm-maven-plugin</artifactId>
-            <version>6.3.0</version>
-            <configuration>
-                <chartDirectory>${project.basedir}</chartDirectory>
-                <chartVersion>${project.version}</chartVersion>
-                <uploadRepoStable>
-                    <name>stable-repo</name>
-                    <url>https://repo.example.com/artifactory/helm-stable</url>
-                    <type>ARTIFACTORY</type>
-                    <username>foo</username>
-                    <password>bar</password>
-                </uploadRepoStable>
-                <uploadRepoSnapshot>
-                    <name>snapshot-repo</name>
-                    <url>https://my.chart.museum/api/charts</url>
-                    <type>CHARTMUSEUM</type>
-                </uploadRepoSnapshot>
-                <helmDownloadUrl>https://get.helm.sh/helm-v3.8.2-linux-amd64.tar.gz</helmDownloadUrl>
-                <registryConfig>~/.config/helm/registry.json</registryConfig>
-                <repositoryCache>~/.cache/helm/repository</repositoryCache>
-                <repositoryConfig>~/.config/helm/repositories.yaml</repositoryConfig>
-                <!-- Add a gpg signature to the chart -->
-                <keyring>~/.gpg/secring.gpg</keyring>
-                <key>MySigningKey</key>
-                <passphrase>SecretPassPhrase</passphrase>
-                <!-- Lint with strict mode -->
-                <lintStrict>true</lintStrict>
-                <!-- Disable adding of default repo stable https://charts.helm.sh/stable -->
-                <addDefaultRepo>false</addDefaultRepo>
-                <!-- Exclude a directory to avoid processing -->
-                <excludes>
-                    <exclude>${project.basedir}/excluded</exclude>
-                    <exclude>${project.basedir}/**/excluded*</exclude>
-                </excludes>
-                <!-- Add an additional repo -->
-                <helmExtraRepos>
-                    <helmRepo>
-                        <name>kokuwa</name>
-                        <url>https://kokuwa.github.io</url>
-                    </helmRepo>
-                </helmExtraRepos>
-                <!-- extra value settings for the lint command -->
-                <values>
-                    <overrides>
-                        <component1.install.path>/opt/component1</component1.install.path>
-                    </overrides>
-                    <yamlFile>${project.basedir}/src/test/resources/myOverrides.yaml</yamlFile>
-                    <yamlFiles>
-                        <yamlFile>${project.basedir}/src/test/resources/myOverrides-1.yaml</yamlFile>
-                        <yamlFile>${project.basedir}/src/test/resources/myOverrides-2.yaml</yamlFile>
-                    </yamlFiles>
-                </values>
-            </configuration>
-        </plugin>
-        ...
-    </plugins>
+  <plugins>
+  ...
+    <plugin>
+      <groupId>io.kokuwa.maven</groupId>
+      <artifactId>helm-maven-plugin</artifactId>
+      <version>6.3.0</version>
+      <configuration>
+        <chartDirectory>${project.basedir}</chartDirectory>
+        <chartVersion>${project.version}</chartVersion>
+        <uploadRepoStable>
+            <name>stable-repo</name>
+            <url>https://repo.example.com/artifactory/helm-stable</url>
+            <type>ARTIFACTORY</type>
+            <username>foo</username>
+            <password>bar</password>
+        </uploadRepoStable>
+        <uploadRepoSnapshot>
+            <name>snapshot-repo</name>
+            <url>https://my.chart.museum/api/charts</url>
+            <type>CHARTMUSEUM</type>
+        </uploadRepoSnapshot>
+        <helmDownloadUrl>https://get.helm.sh/helm-v3.8.2-linux-amd64.tar.gz</helmDownloadUrl>
+        <registryConfig>~/.config/helm/registry.json</registryConfig>
+        <repositoryCache>~/.cache/helm/repository</repositoryCache>
+        <repositoryConfig>~/.config/helm/repositories.yaml</repositoryConfig>
+        <!-- Add a gpg signature to the chart -->
+        <keyring>~/.gpg/secring.gpg</keyring>
+        <key>MySigningKey</key>
+        <passphrase>SecretPassPhrase</passphrase>
+        <!-- Lint with strict mode -->
+        <lintStrict>true</lintStrict>
+        <!-- Disable adding of default repo stable https://charts.helm.sh/stable -->
+        <addDefaultRepo>false</addDefaultRepo>
+        <!-- Exclude a directory to avoid processing -->
+        <excludes>
+          <exclude>${project.basedir}/excluded</exclude>
+          <exclude>${project.basedir}/**/excluded*</exclude>
+        </excludes>
+        <!-- Add an additional repo -->
+        <helmExtraRepos>
+          <helmRepo>
+            <name>kokuwa</name>
+            <url>https://kokuwa.github.io</url>
+          </helmRepo>
+        </helmExtraRepos>
+        <!-- extra value settings for the lint command -->
+        <values>
+          <overrides>
+            <component1.install.path>/opt/component1</component1.install.path>
+          </overrides>
+          <yamlFile>${project.basedir}/src/test/resources/myOverrides.yaml</yamlFile>
+          <yamlFiles>
+              <yamlFile>${project.basedir}/src/test/resources/myOverrides-1.yaml</yamlFile>
+              <yamlFile>${project.basedir}/src/test/resources/myOverrides-2.yaml</yamlFile>
+          </yamlFiles>
+        </values>
+      </configuration>
+    </plugin>
+  ...
+  </plugins>
 </build>
 ```
 
@@ -248,8 +237,7 @@ and disables the auto-detection feature:
 - Test Helm charts (Helm lint)
 - Recursive chart detection (subcharts)
 - Helm does not need to be installed
-- Upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum)
-  or [Artifactory](https://jfrog.com/artifactory/)
+- Upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmuseum) or [Artifactory](https://jfrog.com/artifactory/)
 - Repository names are interpreted as server IDs to retrieve basic authentication from server list in settings.xml.
 
 ## Usage
@@ -314,34 +302,31 @@ Parameter | Type | User Property | Required | Description
 `<kubeAsUser>` | string | helm.kubeAsUser | false | username to impersonate for the operation
 `<kubeAsGroup>` | string | helm.kubeAsGroup | false | group to impersonate for the operation, this flag can be repeated to specify multiple groups
 `<kubeToken>` | string | helm.kubeToken | false | bearer token used for authentication
-`<releaseName>` | string | helm.releaseName               | false | Name of the release
+`<releaseName>` | string | helm.releaseName | false | Name of the release
 
 ## Packaging with the Helm Lifecycle
 
-To keep your pom files small you can use 'helm' packaging. This binds `helm:init` to the initialize
-phase, `helm:dependency-build` to the process-resources phase,  `helm:lint` to the test phase,`helm:package` to the
-package phase and `helm:upload` to the deploy phase.
+To keep your pom files small you can use 'helm' packaging. This binds `helm:init` to the initialize phase, `helm:dependency-build` to the process-resources phase,  `helm:lint` to the test phase,`helm:package` to the package phase and `helm:upload` to the deploy phase.
 
 ```xml
-
 <pom>
-    <artifactId>my-helm-charts</artifactId>
-    <version>0.0.1</version>
-    <packaging>helm</packaging>
-    ...
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>io.kokuwa.maven</groupId>
-                <artifactId>helm-maven-plugin</artifactId>
-                <!-- Mandatory when you use a custom lifecycle -->
-                <extensions>true</extensions>
-                <configuration>
-                    ...
-                </configuration>
-            </plugin>
-        </plugins>
-        ....
-    </build>
+  <artifactId>my-helm-charts</artifactId>
+  <version>0.0.1</version>
+  <packaging>helm</packaging>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.kokuwa.maven</groupId>
+        <artifactId>helm-maven-plugin</artifactId>
+        <!-- Mandatory when you use a custom lifecycle -->
+        <extensions>true</extensions>
+        <configuration>
+          ...
+        </configuration>
+      </plugin>
+    </plugins>
+    ....
+  </build>
 </pom>
 ```
