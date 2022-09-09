@@ -21,6 +21,9 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "helm.upgrade.upgradeWithInstall", defaultValue = "true")
 	private boolean upgradeWithInstall;
 
+	@Parameter(property = "helm.upgrade.dryRun", defaultValue = "false")
+	private boolean upgradeDryRun;
+
 	@Parameter(property = "helm.releaseName")
 	private String releaseName;
 
@@ -32,13 +35,15 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 		}
 
 		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			getLog().info(new StringBuilder()
-					.append("installing the chart ")
-					.append(upgradeWithInstall ? "with install " : "")
-					.append(inputDirectory)
-					.toString());
-			String arguments = "upgrade " + releaseName + " " + inputDirectory + " "
-					+ (upgradeWithInstall ? "--install" : "") + getValuesOptions();
+			getLog().info("installing the chart " +
+					(upgradeWithInstall ? "with install " : "") +
+					(upgradeDryRun ? "as dry run " : "") +
+					inputDirectory);
+			String arguments = "upgrade " + releaseName + " "
+					+ inputDirectory + " "
+					+ (upgradeWithInstall ? "--install " : "")
+					+ (upgradeDryRun ? "--dry-run " : "")
+					+ getValuesOptions();
 			helm(arguments, "Error happened during upgrading the chart");
 		}
 	}
