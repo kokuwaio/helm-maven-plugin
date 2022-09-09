@@ -101,15 +101,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.version")
 	private String helmVersion;
 
-	/**
-	 * UserAgent to use for accessing Github api.
-	 */
+	/** UserAgent to use for accessing Github api. */
 	@Parameter(property = "helm.githubUserAgent", defaultValue = "kokuwaio/helm-maven-plugin")
 	private String githubUserAgent;
 
-	/**
-	 * Directory where to store Github cache.
-	 */
+	/** Directory where to store Github cache. */
 	@Parameter(property = "helm.tmpDir", defaultValue = "${java.io.tmpdir}/helm-maven-plugin")
 	private String tmpDir;
 
@@ -137,9 +133,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.k8s")
 	private K8SCluster k8sCluster;
 
-	/**
-	 * The current user system settings for use in Maven.
-	 */
+	/** The current user system settings for use in Maven. */
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
@@ -422,7 +416,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @param repository Helm repo with id and optional credentials.
 	 * @return Authentication object or <code>null</code> if no credentials are present.
 	 * @throws IllegalArgumentException Unable to get authentication because of misconfiguration.
-	 * @throws MojoExecutionException   Unable to get password from settings.xml
+	 * @throws MojoExecutionException Unable to get password from settings.xml
 	 */
 	PasswordAuthentication getAuthentication(HelmRepository repository)
 			throws IllegalArgumentException, MojoExecutionException {
