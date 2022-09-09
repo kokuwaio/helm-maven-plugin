@@ -1,7 +1,5 @@
 package io.kokuwa.maven.helm;
 
-import static java.lang.String.format;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -460,7 +458,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	protected String formatIfValueIsNotEmpty(String format, String value) {
 		if (StringUtils.isNotEmpty(value)) {
-			return format(format, value);
+			return String.format(format, value);
 		}
 		return "";
 	}
@@ -484,7 +482,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		StringBuilder warnMessage = new StringBuilder();
 		if (k8sCluster != null) {
 			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl()) && StringUtils.isNotEmpty(kubeApiServer)) {
-				warnMessage.append("Both <kubeApiServer> and <k8sCluöster><apiUrl/></k8sCluster> are set.\n");
+				warnMessage.append("Both <kubeApiServer> and <k8sCluster><apiUrl/></k8sCluster> are set.\n");
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getNamespace()) && StringUtils.isNotEmpty(namespace)) {
 				warnMessage.append("Both <namespace> and <k8sCluster><namespace/></k8sCluster> are set.\n");
