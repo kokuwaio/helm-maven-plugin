@@ -9,13 +9,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import lombok.Setter;
 
 /**
- * Mojo for simulate a Upgrade.
+ * Mojo for executing an Upgrade.
  */
 @Mojo(name = "upgrade", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 
-	@Parameter(property = "helm.upgrade.skip", defaultValue = "false")
+	@Parameter(property = "helm.upgrade.skip", defaultValue = "true")
 	private boolean skipUpgrade;
 
 	@Parameter(property = "helm.upgrade.upgradeWithInstall", defaultValue = "true")
