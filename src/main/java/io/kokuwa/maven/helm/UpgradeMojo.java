@@ -43,7 +43,7 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 					+ (upgradeWithInstall ? "--install " : "")
 					+ (upgradeDryRun ? "--dry-run " : "")
 					+ getValuesOptions();
-			helm(arguments, "Error happened during upgrading the chart");
+			helm(arguments, "Error occurred while upgrading the chart");
 		}
 	}
 }
