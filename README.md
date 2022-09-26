@@ -252,6 +252,7 @@ and disables the auto-detection feature:
 - `helm:dry-run` simulates an install
 - `helm:upload` upload charts via HTTP PUT
 - `helm:push` push charts to OCI (docker registry)
+- `helm:upgrade` upgrade an already existing installation
 
 ## Configuration
 
@@ -301,6 +302,8 @@ Parameter | Type | User Property | Required | Description
 `<kubeAsUser>` | string | helm.kubeAsUser | false | username to impersonate for the operation
 `<kubeAsGroup>` | string | helm.kubeAsGroup | false | group to impersonate for the operation, this flag can be repeated to specify multiple groups
 `<kubeToken>` | string | helm.kubeToken | false | bearer token used for authentication
+`<releaseName>` | string | helm.releaseName | false | Name of the release for upgrade goal
+`<upgradeDryRun>` | boolean | helm.upgrade.dryRun | false | Run upgrade goal only in dry run mode
 
 ## Packaging with the Helm Lifecycle
 

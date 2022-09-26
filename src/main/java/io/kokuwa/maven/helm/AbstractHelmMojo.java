@@ -156,6 +156,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.kubeToken")
 	private String kubeToken;
 
+	@Parameter(property = "helm.kubeCaFile")
+	private String kubeCaFile;
+
 	private Clock clock = Clock.systemDefaultZone();
 
 	@Override
@@ -240,6 +243,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		}
 		if (StringUtils.isNotEmpty(kubeToken)) {
 			command += " --kube-token=" + kubeToken;
+		}
+		if (StringUtils.isNotEmpty(kubeCaFile)) {
+			command += " --kube-ca-file=" + kubeCaFile;
 		}
 
 		// execute helm
