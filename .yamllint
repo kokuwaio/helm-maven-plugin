@@ -8,3 +8,12 @@ rules:
 
   # line length is not important
   line-length: disable
+
+  # force double quotes everywhere
+  quoted-strings:
+    quote-type: double
+    required: only-when-needed
+
+  # allow everything on keys
+  truthy:
+    check-keys: false

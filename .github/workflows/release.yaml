@@ -1,6 +1,6 @@
 name: Release
 
-"on": workflow_dispatch
+on: workflow_dispatch
 
 jobs:
   build:
@@ -25,9 +25,9 @@ jobs:
           server-password: SERVER_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
-      - run: mvn -B dependency:go-offline
-      - run: mvn -B release:prepare
-      - run: mvn -B release:perform
+      - run: mvn -B -ntp dependency:go-offline
+      - run: mvn -B -ntp release:prepare
+      - run: mvn -B -ntp release:perform
         env:
           SERVER_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           SERVER_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
