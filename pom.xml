@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>io.kokuwa.maven</groupId>
@@ -115,7 +115,7 @@
 		<version.org.apache.maven.plugins.resources>3.3.0</version.org.apache.maven.plugins.resources>
 		<version.org.apache.maven.plugins.source>3.2.1</version.org.apache.maven.plugins.source>
 		<version.org.apache.maven.plugins.surefire>3.0.0-M6</version.org.apache.maven.plugins.surefire>
-		<version.org.codehaus.mojo.tidy>1.1.0</version.org.codehaus.mojo.tidy>
+		<version.org.codehaus.mojo.tidy>1.2.0</version.org.codehaus.mojo.tidy>
 		<version.org.sonatype.plugins.nexus-staging>1.6.13</version.org.sonatype.plugins.nexus-staging>
 		<version.com.puppycrawl.tools.checkstyle>9.3</version.com.puppycrawl.tools.checkstyle>
 		<version.io.kokuwa.checkstyle>0.5.6</version.io.kokuwa.checkstyle>
