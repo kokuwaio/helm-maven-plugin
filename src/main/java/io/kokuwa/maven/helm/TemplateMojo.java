@@ -19,6 +19,7 @@ import lombok.Setter;
 @Setter
 public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 
+	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "action", defaultValue = "template")
 	private String action;
 

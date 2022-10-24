@@ -17,6 +17,7 @@ import lombok.Setter;
 @Setter
 public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 
+	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;
 
