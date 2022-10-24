@@ -22,7 +22,7 @@ import io.kokuwa.maven.helm.pojo.HelmRepository;
 import lombok.Setter;
 
 /**
- * Mojo for uploading to helm repo (e.g. chartmuseum)
+ * Mojo for uploading to helm repo (e.g. chartmuseum).
  *
  * @author Fabian Schlegel
  * @since 02.01.18
@@ -31,12 +31,15 @@ import lombok.Setter;
 @Setter
 public class UploadMojo extends AbstractHelmMojo {
 
+	/** Set this to `true` to skip invoking upload goal. */
 	@Parameter(property = "helm.upload.skip", defaultValue = "false")
 	private boolean skipUpload;
 
+	/** Project groupId. */
 	@Parameter(defaultValue = "${project.groupId}", readonly = true)
 	private String projectGroupId;
 
+	/** Project version. */
 	@Parameter(defaultValue = "${project.version}", readonly = true)
 	private String projectVersion;
 

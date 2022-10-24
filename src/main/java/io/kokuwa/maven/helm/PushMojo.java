@@ -20,6 +20,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import lombok.Setter;
 
+/**
+ * Mojo for executing "helm registry login" and "helm push".
+ *
+ * @see "https://helm.sh/docs/helm/helm_registry_login"
+ * @see "https://helm.sh/docs/helm/helm_push"
+ * @since 20.04.2022
+ */
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class PushMojo extends AbstractHelmMojo {
@@ -27,6 +34,7 @@ public class PushMojo extends AbstractHelmMojo {
 	private static final String LOGIN_COMMAND_TEMPLATE = "registry login -u %s %s --password-stdin";
 	private static final String CHART_PUSH_TEMPLATE = "push %s oci://%s";
 
+	/** Set this to `true` to skip invoking push goal. */
 	@Parameter(property = "helm.push.skip", defaultValue = "false")
 	private boolean skipPush;
 

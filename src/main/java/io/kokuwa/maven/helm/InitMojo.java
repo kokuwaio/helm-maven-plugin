@@ -44,7 +44,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 /**
- * Mojo for initializing helm
+ * Mojo for initializing helm.
  *
  * @author Fabian Schlegel
  * @since 06.11.17
@@ -55,27 +55,35 @@ public class InitMojo extends AbstractHelmMojo {
 
 	public static final String STABLE_HELM_REPO = "https://charts.helm.sh/stable";
 
+	/** Set this to `true` to skip invoking init goal. */
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
 
+	/** If `true`, stable repo (https://charts.helm.sh/stable) will be added. */
 	@Parameter(property = "helm.init.add-default-repo", defaultValue = "true")
 	private boolean addDefaultRepo;
 
+	/** If `true`, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured. */
 	@Parameter(property = "helm.init.add-upload-repos", defaultValue = "false")
 	private boolean addUploadRepos;
 
+	/** Additional repositories to add. */
 	@Parameter
 	private HelmRepository[] helmExtraRepos;
 
+	/** Download url of helm. */
 	@Parameter(property = "helm.downloadUrl")
 	private URL helmDownloadUrl;
 
+	/** Username used to authenticate while downloading helm binary package. */
 	@Parameter(property = "helm.downloadUser")
 	private String helmDownloadUser;
 
+	/** Password used to authenticate while downloading helm binary package. */
 	@Parameter(property = "helm.downloadPassword")
 	private String helmDownloadPassword;
 
+	/** ServerId which has username and password used to authenticate while downloading helm binary package. */
 	@Parameter(property = "helm.downloadServerId")
 	private String helmDownloadServerId;
 

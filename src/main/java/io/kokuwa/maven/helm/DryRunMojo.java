@@ -8,7 +8,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import lombok.Setter;
 
 /**
- * Mojo for simulate a dry run.
+ * Mojo for executing "helm install --dry-run".
  *
  * @author Axel Koehler
  * @since 14.11.17
@@ -17,10 +17,12 @@ import lombok.Setter;
 @Setter
 public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 
+	/** Helm command to execute. */
 	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;
 
+	/** Set this to `true` to skip invoking dry-run goal. */
 	@Parameter(property = "helm.dry-run.skip", defaultValue = "false")
 	private boolean skipDryRun;
 

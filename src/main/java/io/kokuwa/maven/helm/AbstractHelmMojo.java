@@ -57,39 +57,58 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
 
+	/**
+	 * Controls whether a local binary should be used instead of downloading it.
+	 * If set to `true` path has to be set with property `executableDirectory`.
+	 */
 	@Parameter(property = "helm.useLocalHelmBinary", defaultValue = "false")
 	private boolean useLocalHelmBinary;
 
+	/**
+	 * Controls whether the local binary should be auto-detected from `PATH` environment variable.
+	 * If set to `false` the binary in `helmExecutableDirectory` is used.
+	 * This property has no effect unless `useLocalHelmBinary` is set to `true`.
+	 */
 	@Parameter(property = "helm.autoDetectLocalHelmBinary", defaultValue = "true")
 	private boolean autoDetectLocalHelmBinary;
 
+	/** Directory of your helm installation. */
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecutableDirectory;
 
+	/** Chart output directory. */
 	@Parameter(property = "helm.outputDirectory", defaultValue = "${project.build.directory}/helm/repo")
 	private String outputDirectory;
 
+	/** List of chart directories to exclude. */
 	@Parameter(property = "helm.excludes")
 	private String[] excludes;
 
+	/** Root directory of your charts. */
 	@Parameter(property = "helm.chartDirectory", required = true)
 	private String chartDirectory;
 
+	/** Version of the charts. The version have to be in the SEMVER-Format (https://semver.org/), required by helm. */
 	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
 
-	@Parameter(property = "helm.chartVersion.timestampOnSnapshot")
+	/** If `true` add timestamps to snapshots. */
+	@Parameter(property = "helm.chartVersion.timestampOnSnapshot", defaultValue = "false")
 	private boolean timestampOnSnapshot;
 
+	/** If `timestampOnSnapshot` is `true` then use this format for timestamps. */
 	@Parameter(property = "helm.chartVersion.timestampFormat", defaultValue = "yyyyMMddHHmmss")
 	private String timestampFormat;
 
+	/** Upload repository for stable charts. */
 	@Parameter
 	private HelmRepository uploadRepoStable;
 
+	/** Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT'). */
 	@Parameter
 	private HelmRepository uploadRepoSnapshot;
 
+	/** Version of helm to download. */
 	@Parameter(property = "helm.version")
 	private String helmVersion;
 
@@ -101,24 +120,31 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.tmpDir", defaultValue = "${java.io.tmpdir}/helm-maven-plugin")
 	private String tmpDir;
 
+	/** Enable verbose output. */
 	@Parameter(property = "helm.debug", defaultValue = "false")
 	private boolean debug;
 
+	/** Path to the registry config file (default `~/.config/helm/registry/config.json`). */
 	@Parameter(property = "helm.registryConfig")
 	private String registryConfig;
 
+	/** Path to the file containing cached repository indexes (default `~/.cache/helm/repository`). */
 	@Parameter(property = "helm.repositoryCache")
 	private String repositoryCache;
 
+	/** Path to the file containing repository names and URLs (default `~/.config/helm/repositories.yaml`). */
 	@Parameter(property = "helm.repositoryConfig")
 	private String repositoryConfig;
 
+	/** Path to security settings. */
 	@Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
 	private String helmSecurity;
 
+	/** Set this to `true` to skip all goals. */
 	@Parameter(property = "helm.skip", defaultValue = "false")
 	protected boolean skip;
 
+	/** Deprecated, use: `helm.kube*` */
 	@Parameter
 	private K8SCluster k8sCluster;
 
@@ -126,21 +152,27 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
+	/** Namespace scope for this request. */
 	@Parameter(property = "helm.namespace")
 	private String namespace;
 
+	/** The address and the port for the Kubernetes API server. */
 	@Parameter(property = "helm.kubeApiServer")
 	private String kubeApiServer;
 
+	/** Username to impersonate for the operation. */
 	@Parameter(property = "helm.kubeAsUser")
 	private String kubeAsUser;
 
+	/** Group to impersonate for the operation, this flag can be repeated to specify multiple groups. */
 	@Parameter(property = "helm.kubeAsGroup")
 	private String kubeAsGroup;
 
+	/** Bearer token used for authentication. */
 	@Parameter(property = "helm.kubeToken")
 	private String kubeToken;
 
+	/** The certificate authority file for the Kubernetes API server connection. */
 	@Parameter(property = "helm.kubeCaFile")
 	private String kubeCaFile;
 

@@ -308,6 +308,19 @@
 		</pluginManagement>
 		<plugins>
 
+			<!-- generate help -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>helpmojo</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- run invoker tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

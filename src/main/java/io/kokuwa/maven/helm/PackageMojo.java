@@ -9,27 +9,33 @@ import org.codehaus.plexus.util.StringUtils;
 import lombok.Setter;
 
 /**
- * Mojo for packaging charts
+ * Mojo for executing "helm package".
  *
  * @author Fabian Schlegel
+ * @see "https://helm.sh/docs/helm/helm_package"
  * @since 06.11.17
  */
 @Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true)
 @Setter
 public class PackageMojo extends AbstractHelmMojo {
 
+	/** Set this to `true` to skip invoking package goal. */
 	@Parameter(property = "helm.package.skip", defaultValue = "false")
 	private boolean skipPackage;
 
+	/** Path to gpg secret keyring for signing. */
 	@Parameter(property = "helm.package.keyring")
 	private String keyring;
 
+	/** Name of gpg key in keyring. */
 	@Parameter(property = "helm.package.key")
 	private String key;
 
+	/** Passphrase for gpg key (requires helm 3.4 or newer). */
 	@Parameter(property = "helm.package.passphrase")
 	private String passphrase;
 
+	/** The version of the app. This needn't be SemVer. */
 	@Parameter(property = "helm.appVersion")
 	private String appVersion;
 
