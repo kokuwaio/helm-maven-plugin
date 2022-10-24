@@ -117,7 +117,6 @@ class AbstractHelmMojoTest {
 			assertEquals(" --kube-as-group=custom-group", subjectSpy.getK8SArgs());
 		}
 
-
 		@Test
 		void k8sClusterArg_Token() {
 			K8SCluster k8sCluster = new K8SCluster();
@@ -247,7 +246,8 @@ class AbstractHelmMojoTest {
 
 			subjectSpy.setUseLocalHelmBinary(true);
 			subjectSpy.setAutoDetectLocalHelmBinary(true);
-			doReturn(new String[] { testPath.toAbsolutePath().toString() }).when(subjectSpy).getPathsFromEnvironmentVariables();
+			doReturn(new String[] { testPath.toAbsolutePath().toString() })
+					.when(subjectSpy).getPathsFromEnvironmentVariables();
 		}
 
 		@Test
