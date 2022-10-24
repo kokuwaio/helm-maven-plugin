@@ -87,10 +87,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.appVersion")
 	private String appVersion;
 
-	@Parameter(property = "helm.uploadRepo.stable")
+	@Parameter
 	private HelmRepository uploadRepoStable;
 
-	@Parameter(property = "helm.uploadRepo.snapshot")
+	@Parameter
 	private HelmRepository uploadRepoSnapshot;
 
 	@Parameter(property = "helm.downloadUrl")
@@ -119,7 +119,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.repositoryConfig")
 	private String repositoryConfig;
 
-	@Parameter(property = "helm.extraRepos")
+	@Parameter
 	private HelmRepository[] helmExtraRepos;
 
 	@Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
@@ -128,7 +128,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.skip", defaultValue = "false")
 	protected boolean skip;
 
-	@Parameter(property = "helm.k8s")
+	@Parameter
 	private K8SCluster k8sCluster;
 
 	/** The current user system settings for use in Maven. */

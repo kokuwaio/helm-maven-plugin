@@ -277,9 +277,9 @@ Parameter | Type | User Property | Required | Description
 `<registryConfig>` | string | helm.registryConfig | false | path to the registry config file
 `<repositoryCache>` | string | helm.repositoryCache | false | path to the file containing cached repository indexes
 `<repositoryConfig>` | string | helm.repositoryConfig | false | path to the file containing repository names and URLs
-`<helmExtraRepos>` | list of [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | helm.extraRepos | false | adds extra repositories while init
-`<uploadRepoStable>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | helm.uploadRepo.stable | true | Upload repository for stable charts
-`<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | helm.uploadRepo.snapshot | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
+`<helmExtraRepos>` | list of [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | | false | adds extra repositories while init
+`<uploadRepoStable>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | | true | Upload repository for stable charts
+`<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
 `<lintStrict>` | boolean | helm.lint.strict | false | run lint command with strict option (fail on lint warnings)
 `<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (<https://charts.helm.sh/stable>) will be added
 `<addUploadRepos>` | boolean | helm.init.add-upload-repos | false | If true, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured
@@ -296,7 +296,7 @@ Parameter | Type | User Property | Required | Description
 `<keyring>` | string | helm.package.keyring | false | path to gpg secret keyring for signing
 `<key>` | string  | helm.package.key | false | name of gpg key in keyring
 `<passphrase>` | string | helm.package.passphrase | false | passphrase for gpg key (requires helm 3.4 or newer)
-`<values>` | [ValueOverride](./src/main/java/io/kokuwa/maven/helm/pojo/ValueOverride.java) | helm.values | false | override some values for linting with helm.values.overrides (--set option), helm.values.stringOverrides (--set-string option), helm.values.fileOverrides (--set-file option) and last but not least helm.values.yamlFile (--values option)
+`<values>` | [ValueOverride](./src/main/java/io/kokuwa/maven/helm/pojo/ValueOverride.java) | | false | override some values for linting with helm.values.overrides (--set option), helm.values.stringOverrides (--set-string option), helm.values.fileOverrides (--set-file option) and last but not least helm.values.yamlFile (--values option)
 `<namespace>` | string | helm.namespace | false | namespace scope for helm command
 `<kubeApiServer>` | string | helm.kubeApiServer | false | the address and the port for the Kubernetes API server
 `<kubeAsUser>` | string | helm.kubeAsUser | false | username to impersonate for the operation
