@@ -30,6 +30,9 @@ public class PackageMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.package.passphrase")
 	private String passphrase;
 
+	@Parameter(property = "helm.appVersion")
+	private String appVersion;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -48,9 +51,9 @@ public class PackageMojo extends AbstractHelmMojo {
 				arguments += " --version " + getChartVersionWithProcessing();
 			}
 
-			if (getAppVersion() != null) {
-				getLog().info(String.format("Setting App version to %s", getAppVersion()));
-				arguments += " --app-version " + getAppVersion();
+			if (appVersion != null) {
+				getLog().info(String.format("Setting App version to %s", appVersion));
+				arguments += " --app-version " + appVersion;
 			}
 
 			String stdin = null;

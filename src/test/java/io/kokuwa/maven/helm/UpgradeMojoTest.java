@@ -18,7 +18,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MojoExtension.class)
-@MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
 @MojoProperty(name = "releaseName", value = "myRel")
