@@ -35,7 +35,6 @@ import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 
 @ExtendWith(MojoExtension.class)
-@MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v2.14.3-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
 public class UploadMojoTest {
@@ -184,8 +183,8 @@ public class UploadMojoTest {
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
 		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-		doReturn(projectGroupId).when(mojo).getProjectGroupId();
-		doReturn(projectVersion).when(mojo).getProjectVersion();
+		mojo.setProjectGroupId(projectGroupId);
+		mojo.setProjectVersion(projectVersion);
 
 		HttpURLConnection connection = mojo.getConnectionForUploadToArtifactory(fileToUpload, helmRepo.isUseGroupId());
 		assertEquals(
@@ -216,8 +215,8 @@ public class UploadMojoTest {
 
 		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
 		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-		doReturn(projectGroupId).when(mojo).getProjectGroupId();
-		doReturn(projectVersion).when(mojo).getProjectVersion();
+		mojo.setProjectGroupId(projectGroupId);
+		mojo.setProjectVersion(projectVersion);
 
 		HttpURLConnection connection = mojo.getConnectionForUploadToArtifactory(fileToUpload, helmRepo.isUseGroupId());
 		assertEquals(helmRepo.getUrl() + "/" + chartFileName, connection.getURL().toString());

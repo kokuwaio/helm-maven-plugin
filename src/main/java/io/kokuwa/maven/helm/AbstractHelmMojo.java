@@ -84,17 +84,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartVersion.timestampFormat", defaultValue = "yyyyMMddHHmmss")
 	private String timestampFormat;
 
-	@Parameter(property = "helm.appVersion")
-	private String appVersion;
-
 	@Parameter
 	private HelmRepository uploadRepoStable;
 
 	@Parameter
 	private HelmRepository uploadRepoSnapshot;
-
-	@Parameter(property = "helm.downloadUrl")
-	private String helmDownloadUrl;
 
 	@Parameter(property = "helm.version")
 	private String helmVersion;
@@ -119,9 +113,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.repositoryConfig")
 	private String repositoryConfig;
 
-	@Parameter
-	private HelmRepository[] helmExtraRepos;
-
 	@Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
 	private String helmSecurity;
 
@@ -134,12 +125,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	/** The current user system settings for use in Maven. */
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
-
-	@Parameter(defaultValue = "${project.groupId}", readonly = true)
-	private String projectGroupId;
-
-	@Parameter(defaultValue = "${project.version}", readonly = true)
-	private String projectVersion;
 
 	@Parameter(property = "helm.namespace")
 	private String namespace;

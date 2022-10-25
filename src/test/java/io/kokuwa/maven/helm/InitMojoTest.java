@@ -1,11 +1,13 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 
+import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -253,7 +255,7 @@ public class InitMojoTest {
 				"Adding upload stable repo expected");
 	}
 
-	private String getOsSpecificDownloadURL() {
+	private URL getOsSpecificDownloadURL() {
 		String osForDownload;
 		switch (Os.OS_FAMILY) {
 			case Os.FAMILY_UNIX:
@@ -269,7 +271,8 @@ public class InitMojoTest {
 		return getOsSpecificDownloadURL(osForDownload);
 	}
 
-	private String getOsSpecificDownloadURL(String os) {
-		return "https://get.helm.sh/helm-v3.0.0-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz");
+	private URL getOsSpecificDownloadURL(String os) {
+		return assertDoesNotThrow(() -> new URL(
+				"https://get.helm.sh/helm-v3.0.0-" + os + "-amd64." + ("windows".equals(os) ? "zip" : "tar.gz")));
 	}
 }

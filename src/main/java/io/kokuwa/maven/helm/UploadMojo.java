@@ -34,6 +34,12 @@ public class UploadMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.upload.skip", defaultValue = "false")
 	private boolean skipUpload;
 
+	@Parameter(defaultValue = "${project.groupId}", readonly = true)
+	private String projectGroupId;
+
+	@Parameter(defaultValue = "${project.version}", readonly = true)
+	private String projectVersion;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -131,7 +137,7 @@ public class UploadMojo extends AbstractHelmMojo {
 			uploadUrl += "/";
 		}
 		if (useGroupId) {
-			uploadUrl += getProjectGroupId().replace(".", "/") + "/" + getProjectVersion() + "/";
+			uploadUrl += projectGroupId.replace(".", "/") + "/" + projectVersion + "/";
 		}
 
 		uploadUrl = uploadUrl + file.getName();

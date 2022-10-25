@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.spy;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -103,7 +105,10 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 					context.getRequiredTestClass().getAnnotationsByType(MojoProperty.class),
 					context.getRequiredTestMethod().getAnnotationsByType(MojoProperty.class));
 			for (MojoProperty mojoProperty : mojoProperties) {
-				getField(mojoType, mojoProperty.name()).set(mojo, resolve(context, mojoProperty.value()));
+				Field field = getField(mojoType, mojoProperty.name());
+				field.set(mojo, field.getType().equals(URL.class)
+						? new URL(mojoProperty.value())
+						: resolve(context, mojoProperty.value()));
 			}
 
 			// settings
@@ -127,7 +132,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback, Befo
 			}
 
 			return mojo;
-		} catch (ReflectiveOperationException e) {
+		} catch (ReflectiveOperationException | IOException e) {
 			throw new ParameterResolutionException("Failed to setup mockito.", e);
 		}
 	}

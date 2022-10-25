@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
+import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -40,6 +41,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 /**
  * Mojo for initializing helm
@@ -61,6 +63,12 @@ public class InitMojo extends AbstractHelmMojo {
 
 	@Parameter(property = "helm.init.add-upload-repos", defaultValue = "false")
 	private boolean addUploadRepos;
+
+	@Parameter
+	private HelmRepository[] helmExtraRepos;
+
+	@Parameter(property = "helm.downloadUrl")
+	private URL helmDownloadUrl;
 
 	@Parameter(property = "helm.downloadUser")
 	private String helmDownloadUser;
@@ -116,8 +124,8 @@ public class InitMojo extends AbstractHelmMojo {
 			}
 		}
 
-		if (getHelmExtraRepos() != null) {
-			for (HelmRepository repository : getHelmExtraRepos()) {
+		if (helmExtraRepos != null) {
+			for (HelmRepository repository : helmExtraRepos) {
 				addRepository(repository);
 			}
 		}
@@ -149,6 +157,7 @@ public class InitMojo extends AbstractHelmMojo {
 		helm(arguments, "Unable add repo");
 	}
 
+	@SneakyThrows(MalformedURLException.class)
 	protected void downloadAndUnpackHelm() throws MojoExecutionException {
 
 		Path directory = Paths.get(getHelmExecutableDirectory());
@@ -157,12 +166,13 @@ public class InitMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		String url = getHelmDownloadUrl();
-		if (StringUtils.isBlank(url)) {
-			String os = getOperatingSystem();
-			String architecture = getArchitecture();
-			String extension = getExtension();
-			url = String.format("https://get.helm.sh/helm-v%s-%s-%s.%s", getHelmVersion(), os, architecture, extension);
+		URL url = helmDownloadUrl;
+		if (url == null) {
+			url = new URL(String.format("https://get.helm.sh/helm-v%s-%s-%s.%s",
+					getHelmVersion(),
+					getOperatingSystem(),
+					getArchitecture(),
+					getExtension()));
 		}
 
 		getLog().debug("Downloading Helm: " + url);
@@ -194,7 +204,7 @@ public class InitMojo extends AbstractHelmMojo {
 			});
 		}
 
-		try (InputStream dis = new URL(url).openStream();
+		try (InputStream dis = url.openStream();
 				InputStream cis = createCompressorInputStream(dis);
 				ArchiveInputStream is = createArchiverInputStream(cis)) {
 
