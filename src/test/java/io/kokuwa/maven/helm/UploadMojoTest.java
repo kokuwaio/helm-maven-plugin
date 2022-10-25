@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.settings.Server;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +39,7 @@ import io.kokuwa.maven.helm.pojo.RepoType;
 public class UploadMojoTest {
 
 	@Test
-	public void uploadToArtifactoryRequiresCredentials(UploadMojo mojo) throws MojoExecutionException {
+	public void uploadToArtifactoryRequiresCredentials(UploadMojo mojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
@@ -58,7 +57,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void uploadToArtifactoryWithRepositoryCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToArtifactoryWithRepositoryCredentials(UploadMojo mojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
@@ -79,7 +78,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void uploadToArtifactoryWithPlainCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToArtifactoryWithPlainCredentialsFromSettings(UploadMojo mojo) throws Exception {
 		Server server = new Server();
 		server.setId("my-artifactory");
 		server.setUsername("foo");
@@ -106,7 +105,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void uploadToArtifactoryWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToArtifactoryWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws Exception {
 		Server server = new Server();
 		server.setId("my-artifactory");
 		server.setUsername("foo");
@@ -132,13 +131,14 @@ public class UploadMojoTest {
 
 		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
 
-		PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
+		PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443,
+				"https", "", "basicauth");
 		assertEquals("foo", pwd.getUserName());
 		assertEquals("bar", String.valueOf(pwd.getPassword()));
 	}
 
 	@Test
-	public void verifyHttpConnectionForArtifactoryUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
+	public void verifyHttpConnectionForArtifactoryUpload(UploadMojo uploadMojo) throws Exception {
 		URL resource = this.getClass().getResource("app-0.1.0.tgz");
 		File fileToUpload = new File(resource.getFile());
 
@@ -164,7 +164,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void uploadToArtifactoryByGroupId(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToArtifactoryByGroupId(UploadMojo mojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
@@ -196,7 +196,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void uploadToArtifactoryWithoutByGroupId(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToArtifactoryWithoutByGroupId(UploadMojo mojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.ARTIFACTORY);
 		helmRepo.setName("my-artifactory");
@@ -223,7 +223,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void verifyHttpConnectionForChartmuseumUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
+	public void verifyHttpConnectionForChartmuseumUpload(UploadMojo uploadMojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.CHARTMUSEUM);
 		helmRepo.setName("my-chartmuseum");
@@ -243,7 +243,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void verifyUploadToArtifactory(UploadMojo uploadMojo) throws MojoExecutionException, IOException {
+	public void verifyUploadToArtifactory(UploadMojo uploadMojo) throws Exception, IOException {
 		URL resource = this.getClass().getResource("app-0.1.0.tgz");
 		File fileToUpload = new File(resource.getFile());
 		List<String> tgzs = new ArrayList<>();
@@ -274,7 +274,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void repositoryTypeRequired(UploadMojo uploadMojo) throws MojoExecutionException {
+	public void repositoryTypeRequired(UploadMojo uploadMojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setName("unknown-repo");
 		helmRepo.setUrl("https://somwhere.com/repo");
@@ -291,8 +291,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void verfifyNullErrorStreamOnFailedUpload(UploadMojo uploadMojo)
-			throws IOException, MojoExecutionException {
+	public void verfifyNullErrorStreamOnFailedUpload(UploadMojo uploadMojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.CHARTMUSEUM);
 		helmRepo.setName("my-chartmuseum");
@@ -319,7 +318,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void uploadToNexusWithRepositoryCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToNexusWithRepositoryCredentials(UploadMojo mojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.NEXUS);
 		helmRepo.setName("my-nexus");
@@ -340,7 +339,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void uploadToNexusWithPlainCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToNexusWithPlainCredentialsFromSettings(UploadMojo mojo) throws Exception {
 		Server server = new Server();
 		server.setId("my-nexus");
 		server.setUsername("foo");
@@ -367,7 +366,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void uploadToNexusWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToNexusWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws Exception {
 		Server server = new Server();
 		server.setId("my-nexus");
 		server.setUsername("foo");
@@ -393,13 +392,14 @@ public class UploadMojoTest {
 
 		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
 
-		PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443, "https", "", "basicauth");
+		PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443,
+				"https", "", "basicauth");
 		assertEquals("foo", pwd.getUserName());
 		assertEquals("bar", String.valueOf(pwd.getPassword()));
 	}
 
 	@Test
-	public void uploadToNexusWithoutCredentials(UploadMojo mojo) throws IOException, MojoExecutionException {
+	public void uploadToNexusWithoutCredentials(UploadMojo mojo) throws Exception {
 		HelmRepository helmRepo = new HelmRepository();
 		helmRepo.setType(RepoType.NEXUS);
 		helmRepo.setName("my-nexus");
@@ -418,7 +418,7 @@ public class UploadMojoTest {
 	}
 
 	@Test
-	public void verifyHttpConnectionForNexusUpload(UploadMojo uploadMojo) throws IOException, MojoExecutionException {
+	public void verifyHttpConnectionForNexusUpload(UploadMojo uploadMojo) throws Exception {
 		URL resource = this.getClass().getResource("app-0.1.0.tgz");
 		File fileToUpload = new File(resource.getFile());
 
