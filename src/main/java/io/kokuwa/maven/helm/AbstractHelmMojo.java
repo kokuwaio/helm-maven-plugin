@@ -125,7 +125,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private boolean timestampOnSnapshot;
 
 	/**
-	 * If `timestampOnSnapshot` is <code>true</code> then use this format for timestamps.
+	 * If "helm.chartVersion.timestampOnSnapshot" is <code>true</code> then use this format for timestamps.
 	 *
 	 * @since 5.11
 	 */
