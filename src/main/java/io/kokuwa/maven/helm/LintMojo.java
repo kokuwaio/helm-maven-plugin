@@ -12,17 +12,25 @@ import lombok.Setter;
  *
  * @author Fabian Schlegel
  * @see <a href="https://helm.sh/docs/helm/helm_lint">helm lint</a>
- * @since 06.11.17
+ * @since 1.0
  */
 @Mojo(name = "lint", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 @Setter
 public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 
-	/** Set this to <code>true</code> to skip invoking lint goal. */
+	/**
+	 * Set this to <code>true</code> to skip invoking lint goal.
+	 *
+	 * @since 3.3
+	 */
 	@Parameter(property = "helm.lint.skip", defaultValue = "false")
 	private boolean skipLint;
 
-	/** Set this to <code>true</code> to fail on lint warnings. */
+	/**
+	 * Set this to <code>true</code> to fail on lint warnings.
+	 *
+	 * @since 5.0
+	 */
 	@Parameter(property = "helm.lint.strict", defaultValue = "false")
 	private boolean lintStrict;
 

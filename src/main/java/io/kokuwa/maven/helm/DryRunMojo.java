@@ -11,7 +11,7 @@ import lombok.Setter;
  * Mojo for executing "helm install --dry-run".
  *
  * @author Axel Koehler
- * @since 14.11.17
+ * @since 1.0
  */
 @Mojo(name = "dry-run", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 @Setter
@@ -26,7 +26,11 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;
 
-	/** Set this to <code>true</code> to skip invoking dry-run goal. */
+	/**
+	 * Set this to <code>true</code> to skip invoking dry-run goal.
+	 *
+	 * @since 3.3
+	 */
 	@Parameter(property = "helm.dry-run.skip", defaultValue = "false")
 	private boolean skipDryRun;
 

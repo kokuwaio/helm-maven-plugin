@@ -11,7 +11,11 @@ import lombok.Setter;
 @Setter
 public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo {
 
-	/** Additional values to set. */
+	/**
+	 * Additional values to set.
+	 *
+	 * @since 5.6
+	 */
 	@Parameter
 	private ValueOverride values;
 

@@ -25,7 +25,7 @@ import lombok.Setter;
  *
  * @see <a href="https://helm.sh/docs/helm/helm_registry_login">helm registry login</a>
  * @see <a href="https://helm.sh/docs/helm/helm_push">helm push</a>
- * @since 20.04.2022
+ * @since 6.1.0
  */
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter

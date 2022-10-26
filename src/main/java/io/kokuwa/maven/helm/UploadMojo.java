@@ -26,21 +26,33 @@ import lombok.Setter;
  * Mojo for uploading to helm repo (see types {@link RepoType}).
  *
  * @author Fabian Schlegel
- * @since 02.01.18
+ * @since 1.4
  */
 @Mojo(name = "upload", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class UploadMojo extends AbstractHelmMojo {
 
-	/** Set this to <code>true</code> to skip invoking upload goal. */
+	/**
+	 * Set this to <code>true</code> to skip invoking upload goal.
+	 *
+	 * @since 3.3
+	 */
 	@Parameter(property = "helm.upload.skip", defaultValue = "false")
 	private boolean skipUpload;
 
-	/** Project groupId. */
+	/**
+	 * Project groupId.
+	 *
+	 * @since 5.10
+	 */
 	@Parameter(defaultValue = "${project.groupId}", readonly = true)
 	private String projectGroupId;
 
-	/** Project version. */
+	/**
+	 * Project version.
+	 *
+	 * @since 5.10
+	 */
 	@Parameter(defaultValue = "${project.version}", readonly = true)
 	private String projectVersion;
 

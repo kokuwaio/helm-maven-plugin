@@ -7,7 +7,7 @@ import lombok.ToString;
  * POJO for extra repo configuration
  *
  * @author Fabian Schlegel
- * @since 22.2.18
+ * @since 1.8
  */
 @Data
 public class HelmRepository {

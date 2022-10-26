@@ -48,7 +48,7 @@ import lombok.Setter;
  * Base class for mojos
  *
  * @author Fabian Schlegel
- * @since 06.11.17
+ * @since 1.0
  */
 @Getter
 @Setter
@@ -60,6 +60,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	/**
 	 * Controls whether a local binary should be used instead of downloading it.
 	 * If set to <code>true</code> path has to be set with property "helm.executableDirectory".
+	 *
+	 * @since 4.0
 	 */
 	@Parameter(property = "helm.useLocalHelmBinary", defaultValue = "false")
 	private boolean useLocalHelmBinary;
@@ -68,11 +70,17 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * Controls whether the local binary should be auto-detected from PATH environment variable.
 	 * If set to <code>false</code> the binary in "helm.executableDirectory" is used.
 	 * This property has no effect unless "helm.useLocalHelmBinary" is set to <code>true</code>.
+	 *
+	 * @since 4.1
 	 */
 	@Parameter(property = "helm.autoDetectLocalHelmBinary", defaultValue = "true")
 	private boolean autoDetectLocalHelmBinary;
 
-	/** Directory of your helm installation. */
+	/**
+	 * Directory of your helm installation.
+	 *
+	 * @since 1.3
+	 */
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecutableDirectory;
 
@@ -88,65 +96,122 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartDirectory", required = true)
 	private String chartDirectory;
 
-	/** Version of the charts. The version have to be in the SEMVER-Format (https://semver.org/), required by helm. */
+	/**
+	 * Version of the charts. The version have to be in the SEMVER-Format (https://semver.org/), required by helm.
+	 *
+	 * @since 1.5
+	 */
 	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
 
-	/** If <code>true</code> add timestamps to snapshots. */
+	/**
+	 * If <code>true</code> add timestamps to snapshots.
+	 *
+	 * @since 5.11
+	 */
 	@Parameter(property = "helm.chartVersion.timestampOnSnapshot", defaultValue = "false")
 	private boolean timestampOnSnapshot;
 
-	/** If `timestampOnSnapshot` is <code>true</code> then use this format for timestamps. */
+	/**
+	 * If `timestampOnSnapshot` is <code>true</code> then use this format for timestamps.
+	 *
+	 * @since 5.11
+	 */
 	@Parameter(property = "helm.chartVersion.timestampFormat", defaultValue = "yyyyMMddHHmmss")
 	private String timestampFormat;
 
-	/** Upload repository for stable charts. */
+	/**
+	 * Upload repository for stable charts.
+	 *
+	 * @since 1.10
+	 */
 	@Parameter
 	private HelmRepository uploadRepoStable;
 
-	/** Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT'). */
+	/**
+	 * Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT').
+	 *
+	 * @since 1.10
+	 */
 	@Parameter
 	private HelmRepository uploadRepoSnapshot;
 
-	/** Version of helm to download. */
+	/**
+	 * Version of helm to download.
+	 *
+	 * @since 5.5
+	 */
 	@Parameter(property = "helm.version")
 	private String helmVersion;
 
-	/** UserAgent to use for accessing Github api. */
+	/**
+	 * UserAgent to use for accessing Github api to identify latest version.
+	 *
+	 * @since 6.1.0
+	 */
 	@Parameter(property = "helm.githubUserAgent", defaultValue = "kokuwaio/helm-maven-plugin")
 	private String githubUserAgent;
 
-	/** Directory where to store Github cache. */
+	/**
+	 * Directory where to store Github cache.
+	 *
+	 * @since 6.1.0
+	 */
 	@Parameter(property = "helm.tmpDir", defaultValue = "${java.io.tmpdir}/helm-maven-plugin")
 	private String tmpDir;
 
-	/** Enable verbose output. */
+	/**
+	 * Enable verbose output.
+	 *
+	 * @since 6.2.0
+	 */
 	@Parameter(property = "helm.debug", defaultValue = "false")
 	private boolean debug;
 
-	/** Path to the registry config file (default ~/.config/helm/registry/config.json). */
+	/**
+	 * Path to the registry config file (default ~/.config/helm/registry/config.json).
+	 *
+	 * @since 5.0
+	 */
 	@Parameter(property = "helm.registryConfig")
 	private String registryConfig;
 
-	/** Path to the file containing cached repository indexes (default ~/.cache/helm/repository). */
+	/**
+	 * Path to the file containing cached repository indexes (default ~/.cache/helm/repository).
+	 *
+	 * @since 5.0
+	 */
 	@Parameter(property = "helm.repositoryCache")
 	private String repositoryCache;
 
-	/** Path to the file containing repository names and URLs (default ~/.config/helm/repositories.yaml). */
+	/**
+	 * Path to the file containing repository names and URLs (default ~/.config/helm/repositories.yaml).
+	 *
+	 * @since 5.0
+	 */
 	@Parameter(property = "helm.repositoryConfig")
 	private String repositoryConfig;
 
-	/** Path to security settings. */
+	/**
+	 * Path to security settings.
+	 *
+	 * @since 3.0
+	 */
 	@Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
 	private String helmSecurity;
 
-	/** Set this to <code>true</code> to skip all goals. */
+	/**
+	 * Set this to <code>true</code> to skip all goals.
+	 *
+	 * @since 3.2
+	 */
 	@Parameter(property = "helm.skip", defaultValue = "false")
 	protected boolean skip;
 
 	/**
 	 * Deprecated, use: "helm.kube*"
 	 *
+	 * @since 5.10
 	 * @deprecated Duplicate with flags in {@link AbstractHelmMojo}. Will be removed in 7.x
 	 */
 	@Deprecated // java8 (since = "6.3.0", forRemoval = true)
@@ -157,27 +222,51 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
-	/** Namespace scope for this request. */
+	/**
+	 * Namespace scope for this request.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.namespace")
 	private String namespace;
 
-	/** The address and the port for the Kubernetes API server. */
+	/**
+	 * The address and the port for the Kubernetes API server.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.kubeApiServer")
 	private String kubeApiServer;
 
-	/** Username to impersonate for the operation. */
+	/**
+	 * Username to impersonate for the operation.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.kubeAsUser")
 	private String kubeAsUser;
 
-	/** Group to impersonate for the operation, this flag can be repeated to specify multiple groups. */
+	/**
+	 * Group to impersonate for the operation, this flag can be repeated to specify multiple groups.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.kubeAsGroup")
 	private String kubeAsGroup;
 
-	/** Bearer token used for authentication. */
+	/**
+	 * Bearer token used for authentication.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.kubeToken")
 	private String kubeToken;
 
-	/** The certificate authority file for the Kubernetes API server connection. */
+	/**
+	 * The certificate authority file for the Kubernetes API server connection.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.kubeCaFile")
 	private String kubeCaFile;
 

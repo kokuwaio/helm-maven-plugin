@@ -11,7 +11,7 @@ import lombok.Setter;
  * Mojo for executing "helm upgrade".
  *
  * @see <a href="https://helm.sh/docs/helm/helm_upgrade">helm upgrade</a>
- * @since 20.04.2022
+ * @since 6.4.0
  */
 @Mojo(name = "upgrade", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter

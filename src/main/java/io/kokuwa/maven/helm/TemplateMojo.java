@@ -14,7 +14,7 @@ import lombok.Setter;
  *
  * @author Tim IJntema, Kirill Nazarov
  * @see <a href="https://helm.sh/docs/helm/helm_template">helm template</a>
- * @since 07.02.2021
+ * @since 5.10
  */
 @Mojo(name = "template", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 @Setter
@@ -29,7 +29,12 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "action", defaultValue = "template")
 	private String action;
 
-	/** Additional arguments. */
+	/**
+	 * Additional arguments.
+	 *
+	 * @deprecated Will be removed in 7.x and use "helm.values".
+	 */
+	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "helm.additional.arguments")
 	private String additionalArguments;
 

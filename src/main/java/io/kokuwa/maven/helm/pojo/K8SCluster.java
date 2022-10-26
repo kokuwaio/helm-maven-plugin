@@ -8,7 +8,7 @@ import lombok.ToString;
  * POJO for K8S cluster configuration
  *
  * @author Kirill Nazarov
- * @since 29.12.21
+ * @since 5.10
  * @deprecated Duplicate with flags in {@link AbstractHelmMojo}. Will be removed in 7.x
  */
 @Deprecated // java8 (since = "6.3.0", forRemoval = true)

@@ -18,7 +18,11 @@ import lombok.Setter;
 @Setter
 public class DependencyBuildMojo extends AbstractHelmMojo {
 
-	/** Set this to <code>true</code> to skip invoking dependency-build goal. */
+	/**
+	 * Set this to <code>true</code> to skip invoking dependency-build goal.
+	 *
+	 * @since 3.3
+	 */
 	@Parameter(property = "helm.dependency-build.skip", defaultValue = "false")
 	private boolean skipDependencyBuild;
 

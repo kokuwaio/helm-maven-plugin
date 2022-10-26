@@ -15,7 +15,7 @@ import lombok.Setter;
  *
  * @author Tim IJntema
  * @see <a href="https://helm.sh/docs/helm/helm_install">helm install</a>
- * @since 07.02.2021
+ * @since 5.10
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
