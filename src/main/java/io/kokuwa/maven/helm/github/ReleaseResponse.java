@@ -9,6 +9,7 @@ import lombok.Data;
  * Response for fetching Github releases.
  *
  * @author Stephan Schnabel
+ * @since 6.1.0
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

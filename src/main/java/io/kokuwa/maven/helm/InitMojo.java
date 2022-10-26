@@ -44,10 +44,10 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 /**
- * Mojo for initializing helm
+ * Mojo for initializing helm.
  *
  * @author Fabian Schlegel
- * @since 06.11.17
+ * @since 1.0
  */
 @Mojo(name = "init", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true)
 @Setter
@@ -55,27 +55,67 @@ public class InitMojo extends AbstractHelmMojo {
 
 	public static final String STABLE_HELM_REPO = "https://charts.helm.sh/stable";
 
+	/**
+	 * Set this to <code>true</code> to skip invoking init goal.
+	 *
+	 * @since 3.3
+	 */
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
 
+	/**
+	 * If <code>true</code>, stable repo (https://charts.helm.sh/stable) will be added.
+	 *
+	 * @since 5.1
+	 */
 	@Parameter(property = "helm.init.add-default-repo", defaultValue = "true")
 	private boolean addDefaultRepo;
 
+	/**
+	 * If <code>true</code>, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured.
+	 *
+	 * @since 5.10
+	 */
 	@Parameter(property = "helm.init.add-upload-repos", defaultValue = "false")
 	private boolean addUploadRepos;
 
+	/**
+	 * Additional repositories to add.
+	 *
+	 * @since 1.8
+	 */
 	@Parameter
 	private HelmRepository[] helmExtraRepos;
 
+	/**
+	 * Download url of helm.
+	 *
+	 * @since 1.0
+	 */
 	@Parameter(property = "helm.downloadUrl")
 	private URL helmDownloadUrl;
 
+	/**
+	 * Username used to authenticate while downloading helm binary package.
+	 *
+	 * @since 6.3.0
+	 */
 	@Parameter(property = "helm.downloadUser")
 	private String helmDownloadUser;
 
+	/**
+	 * Password used to authenticate while downloading helm binary package.
+	 *
+	 * @since 6.3.0
+	 */
 	@Parameter(property = "helm.downloadPassword")
 	private String helmDownloadPassword;
 
+	/**
+	 * ServerId which has username and password used to authenticate while downloading helm binary package.
+	 *
+	 * @since 6.3.0
+	 */
 	@Parameter(property = "helm.downloadServerId")
 	private String helmDownloadServerId;
 
@@ -158,7 +198,7 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	@SneakyThrows(MalformedURLException.class)
-	protected void downloadAndUnpackHelm() throws MojoExecutionException {
+	private void downloadAndUnpackHelm() throws MojoExecutionException {
 
 		Path directory = Paths.get(getHelmExecutableDirectory());
 		if (Files.exists(directory.resolve(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm"))) {

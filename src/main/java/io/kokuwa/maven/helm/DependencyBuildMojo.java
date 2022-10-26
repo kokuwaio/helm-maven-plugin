@@ -8,15 +8,21 @@ import org.apache.maven.plugins.annotations.Parameter;
 import lombok.Setter;
 
 /**
- * Mojo for building chart dependencies
+ * Mojo for executing "helm dependency-build".
  *
  * @author Axel Köhler
+ * @see <a href="https://helm.sh/docs/helm/helm_dependency_build">helm dependency-build</a>
  * @since 1.1
  */
 @Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 @Setter
 public class DependencyBuildMojo extends AbstractHelmMojo {
 
+	/**
+	 * Set this to <code>true</code> to skip invoking dependency-build goal.
+	 *
+	 * @since 3.3
+	 */
 	@Parameter(property = "helm.dependency-build.skip", defaultValue = "false")
 	private boolean skipDependencyBuild;
 

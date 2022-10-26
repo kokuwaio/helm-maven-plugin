@@ -9,7 +9,7 @@ import lombok.Data;
  * POJO for extra value override configuration (typically passed with --set or -f options)
  *
  * @author Emile de Weerd
- * @since October 12th 2020
+ * @since 5.6
  */
 @Data
 public class ValueOverride {

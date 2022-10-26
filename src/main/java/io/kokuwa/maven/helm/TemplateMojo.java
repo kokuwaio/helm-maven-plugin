@@ -10,22 +10,41 @@ import org.codehaus.plexus.util.StringUtils;
 import lombok.Setter;
 
 /**
- * Mojo for simulate a template.
+ * Mojo for executing "helm template".
  *
  * @author Tim IJntema, Kirill Nazarov
- * @since 07.02.2021
+ * @see <a href="https://helm.sh/docs/helm/helm_template">helm template</a>
+ * @since 5.10
  */
 @Mojo(name = "template", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 @Setter
 public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 
+	/**
+	 * Helm command to execute.
+	 *
+	 * @since 5.10
+	 * @deprecated Will be removed in 7.x and set to "template".
+	 */
 	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "action", defaultValue = "template")
 	private String action;
 
+	/**
+	 * Additional arguments.
+	 *
+	 * @since 5.10
+	 * @deprecated Will be removed in 7.x and use "helm.values".
+	 */
+	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "helm.additional.arguments")
 	private String additionalArguments;
 
+	/**
+	 * Set this to <code>true</code> to skip invoking template goal.
+	 *
+	 * @since 5.10
+	 */
 	@Parameter(property = "helm.template.skip", defaultValue = "true")
 	private boolean skipTemplate;
 

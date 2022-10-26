@@ -11,19 +11,31 @@ import org.apache.maven.plugins.annotations.Parameter;
 import lombok.Setter;
 
 /**
- * Mojo for simulate a template.
+ * Mojo for executing "helm install".
  *
  * @author Tim IJntema
- * @since 07.02.2021
+ * @see <a href="https://helm.sh/docs/helm/helm_install">helm install</a>
+ * @since 5.10
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 
+	/**
+	 * Helm command to execute.
+	 *
+	 * @since 5.10
+	 * @deprecated Will be removed in 7.x and set to "install".
+	 */
 	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;
 
+	/**
+	 * Set this to <code>true</code> to skip invoking install goal.
+	 *
+	 * @since 5.10
+	 */
 	@Parameter(property = "helm.install.skip", defaultValue = "true")
 	private boolean skipInstall;
 

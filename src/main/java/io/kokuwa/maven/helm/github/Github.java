@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
  * Utility for Github requests with cachging.
  *
  * @author Stephan Schnabel
+ * @since 6.1.0
  */
 @RequiredArgsConstructor
 public class Github {
