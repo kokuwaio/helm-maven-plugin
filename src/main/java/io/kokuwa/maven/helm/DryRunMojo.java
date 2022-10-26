@@ -17,7 +17,11 @@ import lombok.Setter;
 @Setter
 public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 
-	/** Helm command to execute. */
+	/**
+	 * Helm command to execute.
+	 *
+	 * @deprecated Will be removed in 7.x and set to "template".
+	 */
 	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;

@@ -144,7 +144,12 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.skip", defaultValue = "false")
 	protected boolean skip;
 
-	/** Deprecated, use: `helm.kube*` */
+	/**
+	 * Deprecated, use: "helm.kube*"
+	 *
+	 * @deprecated Duplicate with flags in {@link AbstractHelmMojo}. Will be removed in 7.x
+	 */
+	@Deprecated // java8 (since = "6.3.0", forRemoval = true)
 	@Parameter
 	private K8SCluster k8sCluster;
 
