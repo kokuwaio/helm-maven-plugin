@@ -24,6 +24,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	 * Helm command to execute.
 	 *
 	 * @deprecated Will be removed in 7.x and set to "template".
+	 * @since 5.10
 	 */
 	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "action", defaultValue = "template")
@@ -33,12 +34,17 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	 * Additional arguments.
 	 *
 	 * @deprecated Will be removed in 7.x and use "helm.values".
+	 * @since 5.10
 	 */
 	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "helm.additional.arguments")
 	private String additionalArguments;
 
-	/** Set this to <code>true</code> to skip invoking template goal. */
+	/**
+	 * Set this to <code>true</code> to skip invoking template goal.
+	 *
+	 * @since 5.10
+	 */
 	@Parameter(property = "helm.template.skip", defaultValue = "true")
 	private boolean skipTemplate;
 

@@ -84,15 +84,27 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
 	private String helmExecutableDirectory;
 
-	/** Chart output directory. */
+	/**
+	 * Chart output directory.
+	 *
+	 * @since 1.0
+	 */
 	@Parameter(property = "helm.outputDirectory", defaultValue = "${project.build.directory}/helm/repo")
 	private String outputDirectory;
 
-	/** List of chart directories to exclude. */
+	/**
+	 * List of chart directories to exclude.
+	 *
+	 * @since 1.0
+	 */
 	@Parameter(property = "helm.excludes")
 	private String[] excludes;
 
-	/** Root directory of your charts. */
+	/**
+	 * Root directory of your charts.
+	 *
+	 * @since 1.0
+	 */
 	@Parameter(property = "helm.chartDirectory", required = true)
 	private String chartDirectory;
 

@@ -34,7 +34,11 @@ public class PushMojo extends AbstractHelmMojo {
 	private static final String LOGIN_COMMAND_TEMPLATE = "registry login -u %s %s --password-stdin";
 	private static final String CHART_PUSH_TEMPLATE = "push %s oci://%s";
 
-	/** Set this to <code>true</code> to skip invoking push goal. */
+	/**
+	 * Set this to <code>true</code> to skip invoking push goal.
+	 *
+	 * @since 6.1.0
+	 */
 	@Parameter(property = "helm.push.skip", defaultValue = "false")
 	private boolean skipPush;
 

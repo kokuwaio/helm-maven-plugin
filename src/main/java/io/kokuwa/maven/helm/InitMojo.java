@@ -87,7 +87,11 @@ public class InitMojo extends AbstractHelmMojo {
 	@Parameter
 	private HelmRepository[] helmExtraRepos;
 
-	/** Download url of helm. */
+	/**
+	 * Download url of helm.
+	 *
+	 * @since 1.0
+	 */
 	@Parameter(property = "helm.downloadUrl")
 	private URL helmDownloadUrl;
 

@@ -17,19 +17,35 @@ import lombok.Setter;
 @Setter
 public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 
-	/** Set this to <code>true</code> to skip invoking upgrade goal. */
+	/**
+	 * Set this to <code>true</code> to skip invoking upgrade goal.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.upgrade.skip", defaultValue = "true")
 	private boolean skipUpgrade;
 
-	/** Upgrade with install parameter. */
+	/**
+	 * Upgrade with install parameter.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.upgrade.upgradeWithInstall", defaultValue = "true")
 	private boolean upgradeWithInstall;
 
-	/** Run upgrade goal only in dry run mode. */
+	/**
+	 * Run upgrade goal only in dry run mode.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.upgrade.dryRun", defaultValue = "false")
 	private boolean upgradeDryRun;
 
-	/** Name of the release for upgrade goal. */
+	/**
+	 * Name of the release for upgrade goal.
+	 *
+	 * @since 6.4.0
+	 */
 	@Parameter(property = "helm.releaseName")
 	private String releaseName;
 
