@@ -26,7 +26,7 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;
 
-	/** Set this to `true` to skip invoking dry-run goal. */
+	/** Set this to <code>true</code> to skip invoking dry-run goal. */
 	@Parameter(property = "helm.dry-run.skip", defaultValue = "false")
 	private boolean skipDryRun;
 

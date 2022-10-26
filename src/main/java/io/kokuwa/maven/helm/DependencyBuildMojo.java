@@ -11,14 +11,14 @@ import lombok.Setter;
  * Mojo for executing "helm dependency-build".
  *
  * @author Axel Köhler
- * @see "https://helm.sh/docs/helm/helm_dependency_build"
+ * @see <a href="https://helm.sh/docs/helm/helm_dependency_build">helm dependency-build</a>
  * @since 1.1
  */
 @Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 @Setter
 public class DependencyBuildMojo extends AbstractHelmMojo {
 
-	/** Set this to `true` to skip invoking dependency-build goal. */
+	/** Set this to <code>true</code> to skip invoking dependency-build goal. */
 	@Parameter(property = "helm.dependency-build.skip", defaultValue = "false")
 	private boolean skipDependencyBuild;
 

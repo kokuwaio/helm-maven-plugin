@@ -59,15 +59,15 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	/**
 	 * Controls whether a local binary should be used instead of downloading it.
-	 * If set to `true` path has to be set with property `executableDirectory`.
+	 * If set to <code>true</code> path has to be set with property "helm.executableDirectory".
 	 */
 	@Parameter(property = "helm.useLocalHelmBinary", defaultValue = "false")
 	private boolean useLocalHelmBinary;
 
 	/**
-	 * Controls whether the local binary should be auto-detected from `PATH` environment variable.
-	 * If set to `false` the binary in `helmExecutableDirectory` is used.
-	 * This property has no effect unless `useLocalHelmBinary` is set to `true`.
+	 * Controls whether the local binary should be auto-detected from PATH environment variable.
+	 * If set to <code>false</code> the binary in "helm.executableDirectory" is used.
+	 * This property has no effect unless "helm.useLocalHelmBinary" is set to <code>true</code>.
 	 */
 	@Parameter(property = "helm.autoDetectLocalHelmBinary", defaultValue = "true")
 	private boolean autoDetectLocalHelmBinary;
@@ -92,11 +92,11 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
 
-	/** If `true` add timestamps to snapshots. */
+	/** If <code>true</code> add timestamps to snapshots. */
 	@Parameter(property = "helm.chartVersion.timestampOnSnapshot", defaultValue = "false")
 	private boolean timestampOnSnapshot;
 
-	/** If `timestampOnSnapshot` is `true` then use this format for timestamps. */
+	/** If `timestampOnSnapshot` is <code>true</code> then use this format for timestamps. */
 	@Parameter(property = "helm.chartVersion.timestampFormat", defaultValue = "yyyyMMddHHmmss")
 	private String timestampFormat;
 
@@ -124,15 +124,15 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.debug", defaultValue = "false")
 	private boolean debug;
 
-	/** Path to the registry config file (default `~/.config/helm/registry/config.json`). */
+	/** Path to the registry config file (default ~/.config/helm/registry/config.json). */
 	@Parameter(property = "helm.registryConfig")
 	private String registryConfig;
 
-	/** Path to the file containing cached repository indexes (default `~/.cache/helm/repository`). */
+	/** Path to the file containing cached repository indexes (default ~/.cache/helm/repository). */
 	@Parameter(property = "helm.repositoryCache")
 	private String repositoryCache;
 
-	/** Path to the file containing repository names and URLs (default `~/.config/helm/repositories.yaml`). */
+	/** Path to the file containing repository names and URLs (default ~/.config/helm/repositories.yaml). */
 	@Parameter(property = "helm.repositoryConfig")
 	private String repositoryConfig;
 
@@ -140,7 +140,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.security", defaultValue = "~/.m2/settings-security.xml")
 	private String helmSecurity;
 
-	/** Set this to `true` to skip all goals. */
+	/** Set this to <code>true</code> to skip all goals. */
 	@Parameter(property = "helm.skip", defaultValue = "false")
 	protected boolean skip;
 

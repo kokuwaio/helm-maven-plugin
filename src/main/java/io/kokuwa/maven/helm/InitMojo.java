@@ -55,15 +55,15 @@ public class InitMojo extends AbstractHelmMojo {
 
 	public static final String STABLE_HELM_REPO = "https://charts.helm.sh/stable";
 
-	/** Set this to `true` to skip invoking init goal. */
+	/** Set this to <code>true</code> to skip invoking init goal. */
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
 
-	/** If `true`, stable repo (https://charts.helm.sh/stable) will be added. */
+	/** If <code>true</code>, stable repo (https://charts.helm.sh/stable) will be added. */
 	@Parameter(property = "helm.init.add-default-repo", defaultValue = "true")
 	private boolean addDefaultRepo;
 
-	/** If `true`, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured. */
+	/** If <code>true</code>, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured. */
 	@Parameter(property = "helm.init.add-upload-repos", defaultValue = "false")
 	private boolean addUploadRepos;
 
@@ -166,7 +166,7 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	@SneakyThrows(MalformedURLException.class)
-	protected void downloadAndUnpackHelm() throws MojoExecutionException {
+	private void downloadAndUnpackHelm() throws MojoExecutionException {
 
 		Path directory = Paths.get(getHelmExecutableDirectory());
 		if (Files.exists(directory.resolve(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm"))) {

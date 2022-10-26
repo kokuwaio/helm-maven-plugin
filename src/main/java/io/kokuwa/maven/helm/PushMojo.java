@@ -23,8 +23,8 @@ import lombok.Setter;
 /**
  * Mojo for executing "helm registry login" and "helm push".
  *
- * @see "https://helm.sh/docs/helm/helm_registry_login"
- * @see "https://helm.sh/docs/helm/helm_push"
+ * @see <a href="https://helm.sh/docs/helm/helm_registry_login">helm registry login</a>
+ * @see <a href="https://helm.sh/docs/helm/helm_push">helm push</a>
  * @since 20.04.2022
  */
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
@@ -34,7 +34,7 @@ public class PushMojo extends AbstractHelmMojo {
 	private static final String LOGIN_COMMAND_TEMPLATE = "registry login -u %s %s --password-stdin";
 	private static final String CHART_PUSH_TEMPLATE = "push %s oci://%s";
 
-	/** Set this to `true` to skip invoking push goal. */
+	/** Set this to <code>true</code> to skip invoking push goal. */
 	@Parameter(property = "helm.push.skip", defaultValue = "false")
 	private boolean skipPush;
 

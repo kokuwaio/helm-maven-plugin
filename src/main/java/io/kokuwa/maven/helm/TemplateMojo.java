@@ -13,7 +13,7 @@ import lombok.Setter;
  * Mojo for executing "helm template".
  *
  * @author Tim IJntema, Kirill Nazarov
- * @see "https://helm.sh/docs/helm/helm_template/"
+ * @see <a href="https://helm.sh/docs/helm/helm_template">helm template</a>
  * @since 07.02.2021
  */
 @Mojo(name = "template", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
@@ -33,7 +33,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "helm.additional.arguments")
 	private String additionalArguments;
 
-	/** Set this to `true` to skip invoking template goal. */
+	/** Set this to <code>true</code> to skip invoking template goal. */
 	@Parameter(property = "helm.template.skip", defaultValue = "true")
 	private boolean skipTemplate;
 

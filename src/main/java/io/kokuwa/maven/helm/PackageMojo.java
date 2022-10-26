@@ -12,14 +12,14 @@ import lombok.Setter;
  * Mojo for executing "helm package".
  *
  * @author Fabian Schlegel
- * @see "https://helm.sh/docs/helm/helm_package"
+ * @see <a href="https://helm.sh/docs/helm/helm_package">helm package</a>
  * @since 06.11.17
  */
 @Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true)
 @Setter
 public class PackageMojo extends AbstractHelmMojo {
 
-	/** Set this to `true` to skip invoking package goal. */
+	/** Set this to <code>true</code> to skip invoking package goal. */
 	@Parameter(property = "helm.package.skip", defaultValue = "false")
 	private boolean skipPackage;
 

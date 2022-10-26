@@ -10,14 +10,14 @@ import lombok.Setter;
 /**
  * Mojo for executing "helm upgrade".
  *
- * @see "https://helm.sh/docs/helm/helm_upgrade"
+ * @see <a href="https://helm.sh/docs/helm/helm_upgrade">helm upgrade</a>
  * @since 20.04.2022
  */
 @Mojo(name = "upgrade", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 
-	/** Set this to `true` to skip invoking upgrade goal. */
+	/** Set this to <code>true</code> to skip invoking upgrade goal. */
 	@Parameter(property = "helm.upgrade.skip", defaultValue = "true")
 	private boolean skipUpgrade;
 

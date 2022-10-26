@@ -19,10 +19,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import io.kokuwa.maven.helm.exception.BadUploadException;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
+import io.kokuwa.maven.helm.pojo.RepoType;
 import lombok.Setter;
 
 /**
- * Mojo for uploading to helm repo (e.g. chartmuseum).
+ * Mojo for uploading to helm repo (see types {@link RepoType}).
  *
  * @author Fabian Schlegel
  * @since 02.01.18
@@ -31,7 +32,7 @@ import lombok.Setter;
 @Setter
 public class UploadMojo extends AbstractHelmMojo {
 
-	/** Set this to `true` to skip invoking upload goal. */
+	/** Set this to <code>true</code> to skip invoking upload goal. */
 	@Parameter(property = "helm.upload.skip", defaultValue = "false")
 	private boolean skipUpload;
 

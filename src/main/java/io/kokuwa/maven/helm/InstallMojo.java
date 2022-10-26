@@ -14,7 +14,7 @@ import lombok.Setter;
  * Mojo for executing "helm install".
  *
  * @author Tim IJntema
- * @see "https://helm.sh/docs/helm/helm_install"
+ * @see <a href="https://helm.sh/docs/helm/helm_install">helm install</a>
  * @since 07.02.2021
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
@@ -30,7 +30,7 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "action", defaultValue = "install")
 	private String action;
 
-	/** Set this to `true` to skip invoking install goal. */
+	/** Set this to <code>true</code> to skip invoking install goal. */
 	@Parameter(property = "helm.install.skip", defaultValue = "true")
 	private boolean skipInstall;
 
