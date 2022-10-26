@@ -24,8 +24,8 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 	/**
 	 * Helm command to execute.
 	 *
-	 * @deprecated Will be removed in 7.x and set to "install".
 	 * @since 5.10
+	 * @deprecated Will be removed in 7.x and set to "install".
 	 */
 	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
 	@Parameter(property = "action", defaultValue = "install")
