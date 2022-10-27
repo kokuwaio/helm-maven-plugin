@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -432,6 +433,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			List<String> chartDirs = files.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
 					.map(p -> p.getParent().toString())
 					.filter(shouldIncludeDirectory(exclusionPatterns))
+					.sorted(Comparator.reverseOrder())
 					.collect(Collectors.toList());
 
 			if (chartDirs.isEmpty()) {

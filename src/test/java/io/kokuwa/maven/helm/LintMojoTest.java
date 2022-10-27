@@ -1,41 +1,49 @@
 package io.kokuwa.maven.helm;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-
-import java.nio.file.Paths;
-
-import org.codehaus.plexus.util.Os;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 
-import io.kokuwa.maven.helm.junit.MojoExtension;
-import io.kokuwa.maven.helm.junit.MojoProperty;
 import io.kokuwa.maven.helm.pojo.ValueOverride;
 
-@ExtendWith(MojoExtension.class)
-@MojoProperty(name = "chartDirectory", value = "junit-chart")
-@MojoProperty(name = "chartVersion", value = "0.0.1")
-public class LintMojoTest {
+@DisplayName("helm:lint")
+public class LintMojoTest extends AbstractMojoTest {
 
+	@DisplayName("default values")
 	@Test
-	public void valuesFile(LintMojo mojo) throws Exception {
-		ValueOverride override = new ValueOverride();
-		override.setYamlFile("overrideValues.yaml");
-		mojo.setValues(override);
-		mojo.setChartDirectory(Paths.get(getClass().getResource("Chart.yaml").toURI()).getParent().toString());
+	void lint(LintMojo mojo) {
+		assertHelm(mojo, "lint src/test/resources/simple");
+	}
 
-		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
-		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
-				.getHelmExecuteablePath();
+	@DisplayName("with flag skip")
+	@Test
+	void skip(LintMojo mojo) {
+		assertHelm(mojo.setSkipLint(false).setSkip(true));
+		assertHelm(mojo.setSkipLint(true).setSkip(false));
+		assertHelm(mojo.setSkipLint(true).setSkip(true));
+	}
 
-		mojo.execute();
+	@DisplayName("with flag strict")
+	@Test
+	void strict(LintMojo mojo) {
+		mojo.setLintStrict(true);
+		assertHelm(mojo, "lint src/test/resources/simple --strict");
+	}
 
-		assertTrue(helmCommandCaptor.getValue().contains("--values overrideValues.yaml"));
+	@DisplayName("with values file")
+	@Test
+	void overrideFile(LintMojo mojo) {
+		mojo.setValues(new ValueOverride().setYamlFile("values.yaml"));
+		assertHelm(mojo, "lint src/test/resources/simple --values values.yaml");
+	}
+
+	@DisplayName("with dependencies")
+	@Test
+	void dependencies(LintMojo mojo) {
+		mojo.setChartDirectory("src/test/resources/dependencies");
+		assertHelm(mojo,
+				"lint src/test/resources/dependencies/b",
+				"lint src/test/resources/dependencies/a2",
+				"lint src/test/resources/dependencies/a1",
+				"lint src/test/resources/dependencies");
 	}
 }
