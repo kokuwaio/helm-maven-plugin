@@ -27,6 +27,10 @@
 
 	<developers>
 		<developer>
+			<name>Stephan Schnabel</name>
+			<email>stephan.schnabel@grayc.de</email>
+		</developer>
+		<developer>
 			<name>Fabian Schlegel</name>
 			<email>fabian.schlegel@grayc.de</email>
 		</developer>
@@ -84,18 +88,6 @@
 		<!-- ============================= Versions ============================== -->
 		<!-- ===================================================================== -->
 
-		<!-- dependencies -->
-
-		<version.org.apache.commons.compress>1.21</version.org.apache.commons.compress>
-		<version.org.apache.commons.io>2.11.0</version.org.apache.commons.io>
-		<version.org.apache.commons.lang3>3.12.0</version.org.apache.commons.lang3>
-		<version.org.apache.maven.plugin.tools>3.6.4</version.org.apache.maven.plugin.tools>
-		<version.org.codehaus.plexus.dispatcher>2.0</version.org.codehaus.plexus.dispatcher>
-		<version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
-		<version.org.mockito>4.8.0</version.org.mockito>
-		<version.org.projectlombok>1.18.24</version.org.projectlombok>
-		<version.com.fasterxml.jackson>2.13.4.1</version.com.fasterxml.jackson>
-
 		<!-- plugins -->
 
 		<version.org.apache.maven.plugins.checkstyle>3.2.0</version.org.apache.maven.plugins.checkstyle>
@@ -116,78 +108,139 @@
 		<version.com.puppycrawl.tools.checkstyle>9.3</version.com.puppycrawl.tools.checkstyle>
 		<version.io.kokuwa.checkstyle>0.5.6</version.io.kokuwa.checkstyle>
 
+		<!-- dependencies -->
+
+		<version.org.apache.commons.compress>1.21</version.org.apache.commons.compress>
+		<version.org.apache.commons.io>2.11.0</version.org.apache.commons.io>
+		<version.org.apache.commons.lang3>3.12.0</version.org.apache.commons.lang3>
+		<version.org.apache.maven.plugin.tools>3.6.4</version.org.apache.maven.plugin.tools>
+		<version.org.codehaus.plexus.dispatcher>2.0</version.org.codehaus.plexus.dispatcher>
+		<version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
+		<version.org.mockito>4.8.0</version.org.mockito>
+		<version.org.projectlombok>1.18.24</version.org.projectlombok>
+		<version.com.fasterxml.jackson>2.13.4.1</version.com.fasterxml.jackson>
+
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- maven -->
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-plugin-api</artifactId>
+				<version>${project.prerequisites.maven}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-settings</artifactId>
+				<version>${project.prerequisites.maven}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.plugin-tools</groupId>
+				<artifactId>maven-plugin-annotations</artifactId>
+				<version>${version.org.apache.maven.plugin.tools}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-sec-dispatcher</artifactId>
+				<version>${version.org.codehaus.plexus.dispatcher}</version>
+			</dependency>
+
+			<!-- libraries -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${version.com.fasterxml.jackson}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>${version.org.apache.commons.compress}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${version.org.apache.commons.lang3}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${version.org.apache.commons.io}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${version.org.projectlombok}</version>
+			</dependency>
+
+			<!-- test -->
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>${version.org.junit.jupiter}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${version.org.mockito}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 
 		<!-- maven -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>${project.prerequisites.maven}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-settings</artifactId>
-			<version>${project.prerequisites.maven}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-annotations</artifactId>
-			<version>${version.org.apache.maven.plugin.tools}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-sec-dispatcher</artifactId>
-			<version>${version.org.codehaus.plexus.dispatcher}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>${version.org.apache.commons.compress}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${version.org.apache.commons.lang3}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>${version.org.apache.commons.io}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${version.org.projectlombok}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${version.com.fasterxml.jackson}</version>
 		</dependency>
 
 		<!-- test -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>${version.org.junit.jupiter}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-params</artifactId>
-			<version>${version.org.junit.jupiter}</version>
+			<artifactId>junit-jupiter-api</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>${version.org.mockito}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -200,7 +253,7 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
 					<version>${version.org.apache.maven.plugins.checkstyle}</version>
-					<configuration>	
+					<configuration>
 						<configLocation>checkstyle.xml</configLocation>
 						<suppressionsLocation>checkstyle-suppression.xml</suppressionsLocation>
 						<includeTestSourceDirectory>true</includeTestSourceDirectory>

@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: maven
     directory: /
     schedule:
-      interval: monthly
+      interval: daily
     ignore:
       # minimal maven version is fixed
       - dependency-name: org.apache.maven:maven-plugin-api
