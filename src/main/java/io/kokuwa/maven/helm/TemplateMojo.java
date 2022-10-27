@@ -63,7 +63,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 					inputDirectory,
 					StringUtils.isNotEmpty(additionalArguments) ? additionalArguments : "",
 					getValuesOptions()),
-					"There are test failures");
+					"There are test failures", null);
 		}
 	}
 }
