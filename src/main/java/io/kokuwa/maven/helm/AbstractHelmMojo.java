@@ -577,13 +577,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return securityDispatcher;
 	}
 
-	protected String formatIfValueIsNotEmpty(String format, String value) {
-		if (StringUtils.isNotEmpty(value)) {
-			return String.format(format, value);
-		}
-		return "";
-	}
-
 	public String getHelmVersion() throws MojoExecutionException {
 		if (helmVersion == null) {
 			helmVersion = new Github(getLog(), Paths.get(tmpDir), githubUserAgent).getHelmVersion();
