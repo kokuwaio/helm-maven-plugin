@@ -36,6 +36,18 @@ jobs:
           cache: maven
       - run: mvn -B -ntp javadoc:javadoc-no-fork -Dmaven.javadoc.failOnWarnings=true -Ddoclint=all
 
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: maven
+      - run: mvn -B -ntp dependency:go-offline
+      - run: mvn -B -ntp checkstyle:check
+
   codeql:
     runs-on: ubuntu-latest
     permissions:
@@ -65,7 +77,7 @@ jobs:
           java-version: 8
           cache: maven
       - run: mvn -B -ntp dependency:go-offline
-      - run: mvn -B -ntp verify
+      - run: mvn -B -ntp verify "-Dcheckstyle.skip=true"
 
   deploy:
     if: ${{ github.ref == 'refs/heads/main' }}
