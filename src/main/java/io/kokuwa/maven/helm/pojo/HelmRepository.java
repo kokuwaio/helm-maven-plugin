@@ -38,4 +38,12 @@ public class HelmRepository {
 
 	@ToString.Exclude
 	private boolean useGroupId;
+
+	/**
+	 * If <code>true</code>, replaces (overwrite) the repo if it already exists.
+	 * Will be combined with "helm.repo.add.force-update".
+	 *
+	 * @since 6.6.0
+	 */
+	private boolean forceUpdate = false;
 }
