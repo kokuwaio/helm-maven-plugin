@@ -15,9 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -27,7 +24,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
@@ -37,7 +33,7 @@ class AbstractHelmMojoTest {
 
 	@Spy
 	@InjectMocks
-	private NoopHelmMojo subjectSpy = new NoopHelmMojo();
+	private final NoopHelmMojo subjectSpy = new NoopHelmMojo();
 	private Path testPath;
 	private Path testHelmExecutablePath;
 
@@ -45,19 +41,9 @@ class AbstractHelmMojoTest {
 	private String excludeDir1;
 	private String excludeDir2;
 
-	private static final LocalDate LOCAL_DATE = LocalDate.of(2000, 01, 01);
-
-	@Mock
-	private Clock clock;
-
-	private Clock fixedClock;
-
 	@BeforeEach
 	void setUp() throws IOException {
 		MockitoAnnotations.initMocks(this);
-		fixedClock = Clock.fixed(LOCAL_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
-		doReturn(fixedClock.instant()).when(clock).instant();
-		doReturn(fixedClock.getZone()).when(clock).getZone();
 
 		chartDir = getBaseChartsDirectory().toString();
 		excludeDir1 = chartDir + File.separator + "exclude1";
@@ -139,60 +125,6 @@ class AbstractHelmMojoTest {
 					+ " --kube-as-group=custom-group"
 					+ " --kube-token=custom-token",
 					subjectSpy.getK8SArgs());
-		}
-	}
-
-	@Nested
-	class TimeStampAsVersion {
-
-		@Test
-		void timestamp_Formats() {
-			doReturn("yyyy MM dd HH:mm:ss").when(subjectSpy).getTimestampFormat();
-			assertEquals("2000 01 01 00:00:00", subjectSpy.getCurrentTimestamp());
-
-			doReturn("yyyy MM dd HHmmss").when(subjectSpy).getTimestampFormat();
-			assertEquals("2000 01 01 000000", subjectSpy.getCurrentTimestamp());
-		}
-
-		@Test
-		void timestampAsVersion() {
-			String timeStamp = "2000-01-01 00:00:00";
-			doReturn("yyyy-MM-dd HH:mm:ss").when(subjectSpy).getTimestampFormat();
-			doReturn(timeStamp).when(subjectSpy).getCurrentTimestamp();
-			doReturn(true).when(subjectSpy).isTimestampOnSnapshot();
-			String chartVersion = "0.0.0-SNAPSHOT";
-			subjectSpy.setChartVersion(chartVersion);
-			assertEquals(chartVersion.replace("SNAPSHOT", timeStamp), subjectSpy.getChartVersionWithProcessing());
-
-			doReturn(false).when(subjectSpy).isTimestampOnSnapshot();
-			assertEquals(chartVersion, subjectSpy.getChartVersionWithProcessing());
-		}
-
-		@Test
-		void snapshotAsVersion() {
-			doReturn("yyyy-MM-dd HH:mm:ss").when(subjectSpy).getTimestampFormat();
-			doReturn("2000-01-01 00:00:00").when(subjectSpy).getCurrentTimestamp();
-			doReturn(true).when(subjectSpy).isTimestampOnSnapshot();
-			String chartVersion = "0.0.0-SNAPSHOT";
-			subjectSpy.setChartVersion(chartVersion);
-
-			doReturn(false).when(subjectSpy).isTimestampOnSnapshot();
-			assertEquals(chartVersion, subjectSpy.getChartVersionWithProcessing());
-		}
-
-		@Test
-		void releaseVersions() {
-			doReturn("yyyy-MM-dd HH:mm:ss").when(subjectSpy).getTimestampFormat();
-			doReturn("2000-01-01 00:00:00").when(subjectSpy).getCurrentTimestamp();
-			doReturn(true).when(subjectSpy).isTimestampOnSnapshot();
-			String chartVersion = "0.0.0";
-			subjectSpy.setChartVersion(chartVersion);
-
-			doReturn(false).when(subjectSpy).isTimestampOnSnapshot();
-			assertEquals(chartVersion, subjectSpy.getChartVersionWithProcessing());
-
-			doReturn(true).when(subjectSpy).isTimestampOnSnapshot();
-			assertEquals(chartVersion, subjectSpy.getChartVersionWithProcessing());
 		}
 	}
 

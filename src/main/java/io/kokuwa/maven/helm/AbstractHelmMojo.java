@@ -11,9 +11,6 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -115,22 +112,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 */
 	@Parameter(property = "helm.chartVersion")
 	private String chartVersion;
-
-	/**
-	 * If <code>true</code> add timestamps to snapshots.
-	 *
-	 * @since 5.11
-	 */
-	@Parameter(property = "helm.chartVersion.timestampOnSnapshot", defaultValue = "false")
-	private boolean timestampOnSnapshot;
-
-	/**
-	 * If "helm.chartVersion.timestampOnSnapshot" is <code>true</code> then use this format for timestamps.
-	 *
-	 * @since 5.11
-	 */
-	@Parameter(property = "helm.chartVersion.timestampFormat", defaultValue = "yyyyMMddHHmmss")
-	private String timestampFormat;
 
 	/**
 	 * Upload repository for stable charts.
@@ -282,8 +263,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.kubeCaFile")
 	private String kubeCaFile;
 
-	private Clock clock = Clock.systemDefaultZone();
-
 	@Override
 	public void setLog(Log log) {
 		super.setLog(new StripSensitiveDataLog(log));
@@ -321,14 +300,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	String[] getPathsFromEnvironmentVariables() {
-
 		return System.getenv("PATH").split(Pattern.quote(File.pathSeparator));
-	}
-
-	String getCurrentTimestamp() {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(getTimestampFormat());
-		LocalDateTime currentTime = LocalDateTime.now(clock);
-		return dateTimeFormatter.format(currentTime);
 	}
 
 	void helm(String arguments, String errorMessage, String stdin) throws MojoExecutionException {
@@ -584,14 +556,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return helmVersion;
 	}
 
-	public String getChartVersionWithProcessing() {
-		if (isTimestampOnSnapshot() && chartVersion.endsWith("-SNAPSHOT")) {
-			return chartVersion.replace("SNAPSHOT", getCurrentTimestamp());
-		}
-		return chartVersion;
-	}
-
-	// TODO: Remove in next major release
 	private void warnOnMixOfK8sClusterAndGlobalFlags() {
 
 		if (k8sCluster == null) {

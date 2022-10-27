@@ -1,5 +1,9 @@
 package io.kokuwa.maven.helm;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -59,6 +63,22 @@ public class PackageMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.appVersion")
 	private String appVersion;
 
+	/**
+	 * If <code>true</code> add timestamps to snapshots.
+	 *
+	 * @since 5.11
+	 */
+	@Parameter(property = "helm.chartVersion.timestampOnSnapshot", defaultValue = "false")
+	private boolean timestampOnSnapshot;
+
+	/**
+	 * If "helm.chartVersion.timestampOnSnapshot" is <code>true</code> then use this format for timestamps.
+	 *
+	 * @since 5.11
+	 */
+	@Parameter(property = "helm.chartVersion.timestampFormat", defaultValue = "yyyyMMddHHmmss")
+	private String timestampFormat;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -72,9 +92,14 @@ public class PackageMojo extends AbstractHelmMojo {
 
 			String arguments = "package " + inputDirectory + " -d " + getOutputDirectory();
 
-			if (getChartVersion() != null) {
-				getLog().info(String.format("Setting chart version to %s", getChartVersionWithProcessing()));
-				arguments += " --version " + getChartVersionWithProcessing();
+			String chartVersion = getChartVersion();
+			if (chartVersion != null) {
+				if (timestampOnSnapshot && chartVersion.endsWith("-SNAPSHOT")) {
+					String suffix = DateTimeFormatter.ofPattern(timestampFormat).format(getTimestamp());
+					chartVersion = chartVersion.replace("SNAPSHOT", suffix);
+				}
+				getLog().info("Setting chart version to " + chartVersion);
+				arguments += " --version " + chartVersion;
 			}
 
 			if (appVersion != null) {
@@ -83,7 +108,7 @@ public class PackageMojo extends AbstractHelmMojo {
 			}
 
 			String stdin = null;
-			if (isSignEnabled()) {
+			if (StringUtils.isNotEmpty(keyring) && StringUtils.isNotEmpty(key)) {
 				getLog().info("Enable signing");
 				arguments += " --sign --keyring " + keyring + " --key " + key;
 				if (StringUtils.isNotEmpty(passphrase)) {
@@ -96,7 +121,7 @@ public class PackageMojo extends AbstractHelmMojo {
 		}
 	}
 
-	private boolean isSignEnabled() {
-		return StringUtils.isNotEmpty(keyring) && StringUtils.isNotEmpty(key);
+	LocalDateTime getTimestamp() {
+		return LocalDateTime.now(Clock.systemDefaultZone());
 	}
 }
