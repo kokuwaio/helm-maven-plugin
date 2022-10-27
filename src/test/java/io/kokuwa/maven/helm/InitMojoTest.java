@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 
@@ -33,7 +34,7 @@ public class InitMojoTest {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(false);
@@ -61,7 +62,7 @@ public class InitMojoTest {
 		helmRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoSnapshot(helmRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -89,7 +90,7 @@ public class InitMojoTest {
 		helmRepo.setUrl("https://somwhere.com/repo/stable");
 		mojo.setUploadRepoStable(helmRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -112,7 +113,7 @@ public class InitMojoTest {
 
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -144,7 +145,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(true);
@@ -182,7 +183,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(true);
@@ -213,7 +214,7 @@ public class InitMojoTest {
 		helmUploadSnapshotRepo.setUrl("https://somwhere.com/repo/snapshot");
 		mojo.setUploadRepoSnapshot(helmUploadSnapshotRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
@@ -242,7 +243,7 @@ public class InitMojoTest {
 		helmUploadStableRepo.setUrl("https://somwhere.com/repo/stable");
 		mojo.setUploadRepoStable(helmUploadStableRepo);
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		mojo.setHelmDownloadUrl(getOsSpecificDownloadURL());
 		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);

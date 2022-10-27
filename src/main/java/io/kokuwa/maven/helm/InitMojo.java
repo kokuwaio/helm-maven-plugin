@@ -194,7 +194,7 @@ public class InitMojo extends AbstractHelmMojo {
 		if (auth != null) {
 			arguments += " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword());
 		}
-		helm(arguments, "Unable add repo");
+		helm(arguments, "Unable add repo", null);
 	}
 
 	@SneakyThrows(MalformedURLException.class)
@@ -312,7 +312,7 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		helm("version", "Unable to verify local HELM binary");
+		helm("version", "Unable to verify local HELM binary", null);
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {

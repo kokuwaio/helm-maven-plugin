@@ -331,10 +331,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return dateTimeFormatter.format(currentTime);
 	}
 
-	void helm(String arguments, String errorMessage) throws MojoExecutionException {
-		helm(arguments, errorMessage, null);
-	}
-
 	void helm(String arguments, String errorMessage, String stdin) throws MojoExecutionException {
 
 		// get command
