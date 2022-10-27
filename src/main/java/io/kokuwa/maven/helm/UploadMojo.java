@@ -9,9 +9,16 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -75,6 +82,41 @@ public class UploadMojo extends AbstractHelmMojo {
 						e);
 			}
 		}
+	}
+
+	private boolean isChartFile(Path p) {
+		String filename = p.getFileName().toString();
+		return filename.endsWith(".tgz") || filename.endsWith("tgz.prov");
+	}
+
+	List<String> getChartFiles(String path) throws MojoExecutionException {
+		try (Stream<Path> files = Files.walk(Paths.get(path))) {
+			return files.filter(this::isChartFile)
+					.map(Path::toString)
+					.collect(Collectors.toList());
+		} catch (IOException e) {
+			throw new MojoExecutionException("Unable to scan repo directory at " + path, e);
+		}
+	}
+
+	/**
+	 * Returns the proper upload URL based on the provided chart version. Charts w/ an SNAPSHOT suffix will be uploaded
+	 * to SNAPSHOT repo.
+	 *
+	 * @return Upload URL based on chart version
+	 */
+	private String getHelmUploadUrl() {
+		String chartVersion = getChartVersion();
+		HelmRepository uploadRepoStable = getUploadRepoStable();
+		HelmRepository uploadRepoSnapshot = getUploadRepoSnapshot();
+		String uploadUrl = uploadRepoStable.getUrl();
+		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
+				&& uploadRepoSnapshot != null
+				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
+			uploadUrl = uploadRepoSnapshot.getUrl();
+		}
+
+		return uploadUrl;
 	}
 
 	protected void uploadSingle(String file) throws IOException, BadUploadException, MojoExecutionException {

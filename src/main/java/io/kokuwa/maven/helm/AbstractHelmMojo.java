@@ -459,38 +459,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		};
 	}
 
-	List<String> getChartFiles(String path) throws MojoExecutionException {
-		try (Stream<Path> files = Files.walk(Paths.get(path))) {
-			return files.filter(this::isChartFile)
-					.map(Path::toString)
-					.collect(Collectors.toList());
-		} catch (IOException e) {
-			throw new MojoExecutionException("Unable to scan repo directory at " + path, e);
-		}
-	}
-
-	private boolean isChartFile(Path p) {
-		String filename = p.getFileName().toString();
-		return filename.endsWith(".tgz") || filename.endsWith("tgz.prov");
-	}
-
-	/**
-	 * Returns the proper upload URL based on the provided chart version. Charts w/ an SNAPSHOT suffix will be uploaded
-	 * to SNAPSHOT repo.
-	 *
-	 * @return Upload URL based on chart version
-	 */
-	String getHelmUploadUrl() {
-		String uploadUrl = uploadRepoStable.getUrl();
-		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
-				&& uploadRepoSnapshot != null
-				&& StringUtils.isNotEmpty(uploadRepoSnapshot.getUrl())) {
-			uploadUrl = uploadRepoSnapshot.getUrl();
-		}
-
-		return uploadUrl;
-	}
-
 	HelmRepository getHelmUploadRepo() {
 		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
@@ -535,21 +503,17 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		}
 
 		try {
+			if (securityDispatcher instanceof DefaultSecDispatcher) {
+				((DefaultSecDispatcher) securityDispatcher).setConfigurationFile(getHelmSecurity());
+			}
 			return new PasswordAuthentication(server.getUsername(),
-					getSecDispatcher().decrypt(server.getPassword()).toCharArray());
+					securityDispatcher.decrypt(server.getPassword()).toCharArray());
 		} catch (SecDispatcherException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
 	}
 
-	protected SecDispatcher getSecDispatcher() {
-		if (securityDispatcher instanceof DefaultSecDispatcher) {
-			((DefaultSecDispatcher) securityDispatcher).setConfigurationFile(getHelmSecurity());
-		}
-		return securityDispatcher;
-	}
-
-	public String getHelmVersion() throws MojoExecutionException {
+	String getHelmVersion() throws MojoExecutionException {
 		if (helmVersion == null) {
 			helmVersion = new Github(getLog(), Paths.get(tmpDir), githubUserAgent).getHelmVersion();
 		}
