@@ -77,7 +77,7 @@ jobs:
           java-version: 8
           cache: maven
       - run: mvn -B -ntp dependency:go-offline
-      - run: mvn -B -ntp verify -Dcheckstyle.skip
+      - run: mvn -B -ntp verify "-Dcheckstyle.skip=true"
 
   deploy:
     if: ${{ github.ref == 'refs/heads/main' }}
