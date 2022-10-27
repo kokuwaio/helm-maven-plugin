@@ -1,6 +1,7 @@
 package io.kokuwa.maven.helm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -33,7 +34,7 @@ public class UpgradeMojoTest {
 		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
 
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
 				.getHelmExecuteablePath();
 
@@ -56,7 +57,7 @@ public class UpgradeMojoTest {
 		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
 
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
 				.getHelmExecuteablePath();
 
@@ -81,7 +82,7 @@ public class UpgradeMojoTest {
 		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
 
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
 				.getHelmExecuteablePath();
 
@@ -106,7 +107,7 @@ public class UpgradeMojoTest {
 		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
 
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
 				.getHelmExecuteablePath();
 
@@ -132,7 +133,7 @@ public class UpgradeMojoTest {
 		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
 
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
 				.getHelmExecuteablePath();
 
@@ -151,7 +152,7 @@ public class UpgradeMojoTest {
 		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
 
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString());
+		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
 		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
 				.getHelmExecuteablePath();
 

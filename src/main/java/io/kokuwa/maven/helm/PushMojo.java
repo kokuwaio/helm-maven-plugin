@@ -89,7 +89,7 @@ public class PushMojo extends AbstractHelmMojo {
 	}
 
 	private void uploadSingle(Path tgz, HelmRepository registry) throws MojoExecutionException {
-		helm(String.format(CHART_PUSH_TEMPLATE, tgz, registry.getUrl()), "Upload failed");
+		helm(String.format(CHART_PUSH_TEMPLATE, tgz, registry.getUrl()), "Upload failed", null);
 	}
 
 	List<String> getChartTgzs(String path) throws MojoExecutionException {
