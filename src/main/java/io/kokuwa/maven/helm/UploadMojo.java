@@ -7,7 +7,6 @@ import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -149,19 +148,19 @@ public class UploadMojo extends AbstractHelmMojo {
 		if (connection.getResponseCode() >= 300) {
 			String response;
 			if (connection.getErrorStream() != null) {
-				response = IOUtils.toString(connection.getErrorStream(), Charset.defaultCharset());
+				response = new String(IOUtils.toByteArray(connection.getErrorStream()));
 			} else if (connection.getInputStream() != null) {
-				response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+				response = new String(IOUtils.toByteArray(connection.getInputStream()));
 			} else {
 				response = "No details provided";
 			}
 			throw new BadUploadException(response);
 		} else {
-			StringBuilder message = new StringBuilder().append(Integer.toString(connection.getResponseCode()));
+			String message = Integer.toString(connection.getResponseCode());
 			if (connection.getInputStream() != null) {
-				message.append(" - ").append(IOUtils.toString(connection.getInputStream(), Charset.defaultCharset()));
+				message += " - " + new String(IOUtils.toByteArray(connection.getInputStream()));
 			}
-			getLog().info(message.toString());
+			getLog().info(message);
 		}
 		connection.disconnect();
 	}
