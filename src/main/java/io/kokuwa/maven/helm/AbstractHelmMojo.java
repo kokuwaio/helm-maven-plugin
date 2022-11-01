@@ -418,7 +418,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return k8sConfigArgs.toString();
 	}
 
-	List<String> getChartDirectories(String path) throws MojoExecutionException {
+	List<String> getChartDirectories() throws MojoExecutionException {
+		String path = chartDirectory;
 		List<String> exclusions = new ArrayList<>();
 
 		if (getExcludes() != null) {

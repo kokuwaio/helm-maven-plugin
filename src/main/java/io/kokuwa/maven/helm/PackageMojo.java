@@ -87,10 +87,10 @@ public class PackageMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			getLog().info("Packaging chart " + inputDirectory + "...");
+		for (String chartDirectory : getChartDirectories()) {
+			getLog().info("Packaging chart " + chartDirectory + "...");
 
-			String arguments = "package " + inputDirectory + " -d " + getOutputDirectory();
+			String arguments = "package " + chartDirectory + " -d " + getOutputDirectory();
 
 			String chartVersion = getChartVersion();
 			if (chartVersion != null) {
@@ -117,7 +117,7 @@ public class PackageMojo extends AbstractHelmMojo {
 				}
 			}
 
-			helm(arguments, "Unable to package chart at " + inputDirectory, stdin);
+			helm(arguments, "Unable to package chart at " + chartDirectory, stdin);
 		}
 	}
 

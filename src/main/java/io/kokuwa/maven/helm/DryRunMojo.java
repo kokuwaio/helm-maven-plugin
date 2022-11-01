@@ -43,9 +43,9 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			getLog().info("\n\nPerform dry-run for chart " + inputDirectory + "...");
-			String arguments = action + " " + inputDirectory + " --dry-run --generate-name" + getValuesOptions();
+		for (String chartDirectory : getChartDirectories()) {
+			getLog().info("\n\nPerform dry-run for chart " + chartDirectory + "...");
+			String arguments = action + " " + chartDirectory + " --dry-run --generate-name" + getValuesOptions();
 			helm(arguments, "There are test failures", null);
 		}
 	}
