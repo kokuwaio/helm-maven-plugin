@@ -1,165 +1,53 @@
 package io.kokuwa.maven.helm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.maven.plugin.MojoExecutionException;
-import org.codehaus.plexus.util.Os;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 
-import io.kokuwa.maven.helm.junit.MojoExtension;
-import io.kokuwa.maven.helm.junit.MojoProperty;
+import io.kokuwa.maven.helm.pojo.ValueOverride;
 
-@ExtendWith(MojoExtension.class)
-@MojoProperty(name = "chartDirectory", value = "junit-helm")
-@MojoProperty(name = "chartVersion", value = "0.0.1")
-@MojoProperty(name = "releaseName", value = "myRel")
-public class UpgradeMojoTest {
+@DisplayName("helm:upgrade")
+public class UpgradeMojoTest extends AbstractMojoTest {
 
+	@DisplayName("default values")
 	@Test
-	public void verifyUpgradeCommand(UpgradeMojo mojo) throws MojoExecutionException {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
-
-		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
-		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
-				.getHelmExecuteablePath();
-
-		mojo.execute();
-
-		String helmDefaultCommand = helmCommandCaptor.getAllValues()
-				.stream()
-				.filter(cmd -> cmd.contains("upgrade"))
-				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"))
-				.trim();
-
-		assertEquals("upgrade myRel " + tgzs.get(0), helmDefaultCommand);
+	void upgrade(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
+		assertHelm(mojo, "upgrade foo src/test/resources/simple --install");
 	}
 
+	@DisplayName("with flag skip")
 	@Test
-	public void verifyDryRunUpgradeCommand(UpgradeMojo mojo) throws MojoExecutionException {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
+	void skip(UpgradeMojo mojo) {
+		assertHelm(mojo.setSkipUpgrade(false).setSkip(true));
+		assertHelm(mojo.setSkipUpgrade(true).setSkip(false));
+		assertHelm(mojo.setSkipUpgrade(true).setSkip(true));
+	}
 
-		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
-		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
-				.getHelmExecuteablePath();
-
+	@DisplayName("with flag dry-run")
+	@Test
+	void dryRun(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
 		mojo.setUpgradeDryRun(true);
-
-		mojo.execute();
-
-		String helmDefaultCommand = helmCommandCaptor.getAllValues()
-				.stream()
-				.filter(cmd -> cmd.contains("upgrade"))
-				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"))
-				.trim();
-
-		assertEquals("upgrade myRel " + tgzs.get(0) + " --dry-run", helmDefaultCommand);
+		assertHelm(mojo, "upgrade foo src/test/resources/simple --install --dry-run");
 	}
 
+	@DisplayName("without flag install")
 	@Test
-	public void verifyInstallUpgradeCommand(UpgradeMojo mojo) throws MojoExecutionException {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
-
-		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
-		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
-				.getHelmExecuteablePath();
-
-		mojo.setUpgradeWithInstall(true);
-
-		mojo.execute();
-
-		String helmDefaultCommand = helmCommandCaptor.getAllValues()
-				.stream()
-				.filter(cmd -> cmd.contains("upgrade"))
-				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"))
-				.trim();
-
-		assertEquals("upgrade myRel " + tgzs.get(0) + " --install", helmDefaultCommand);
+	void install(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
+		mojo.setUpgradeWithInstall(false);
+		assertHelm(mojo, "upgrade foo src/test/resources/simple");
 	}
 
+	@DisplayName("with values overrides")
 	@Test
-	public void verifyDryRunAndInstallUpgradeCommand(UpgradeMojo mojo) throws MojoExecutionException {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
-
-		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
-		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
-				.getHelmExecuteablePath();
-
-		mojo.setUpgradeWithInstall(true);
-		mojo.setUpgradeDryRun(true);
-
-		mojo.execute();
-
-		String helmDefaultCommand = helmCommandCaptor.getAllValues()
-				.stream()
-				.filter(cmd -> cmd.contains("upgrade"))
-				.findAny().orElseThrow(() -> new IllegalArgumentException("Only one helm repo command expected"))
-				.trim();
-
-		assertEquals("upgrade myRel " + tgzs.get(0) + " --install --dry-run", helmDefaultCommand);
-	}
-
-	@Test
-	public void verifyNothingHappenWhenSkip(UpgradeMojo mojo) throws MojoExecutionException {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
-
-		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
-		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
-				.getHelmExecuteablePath();
-
-		mojo.setSkip(true);
-
-		mojo.execute();
-
-		assertEquals(0, helmCommandCaptor.getAllValues().size());
-	}
-
-	@Test
-	public void verifyNothingHappenWhenSkipUpgrade(UpgradeMojo mojo) throws MojoExecutionException {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-		doReturn(tgzs).when(mojo).getChartDirectories(anyString());
-
-		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
-		doNothing().when(mojo).helm(helmCommandCaptor.capture(), anyString(), any());
-		doReturn(Paths.get("helm" + (Os.OS_FAMILY == Os.FAMILY_WINDOWS ? ".exe" : ""))).when(mojo)
-				.getHelmExecuteablePath();
-
-		mojo.setSkipUpgrade(true);
-
-		mojo.execute();
-
-		assertEquals(0, helmCommandCaptor.getAllValues().size());
+	void valuesFile(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
+		mojo.setValues(new ValueOverride().setYamlFile("bar.yaml"));
+		assertHelm(mojo, "upgrade foo src/test/resources/simple --install --values bar.yaml");
 	}
 }

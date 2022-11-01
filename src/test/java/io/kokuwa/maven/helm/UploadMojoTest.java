@@ -1,451 +1,251 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.PasswordAuthentication;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.List;
 
-import org.apache.maven.settings.Server;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import io.kokuwa.maven.helm.exception.BadUploadException;
-import io.kokuwa.maven.helm.junit.MojoExtension;
-import io.kokuwa.maven.helm.junit.MojoProperty;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.http.RequestMethod;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 
-@ExtendWith(MojoExtension.class)
-@MojoProperty(name = "chartDirectory", value = "junit-helm")
-@MojoProperty(name = "chartVersion", value = "0.0.1")
-public class UploadMojoTest {
+@DisplayName("helm:upload")
+public class UploadMojoTest extends AbstractMojoTest {
 
+	@RegisterExtension
+	static WireMockExtension mock = WireMockExtension.newInstance().failOnUnmatchedRequests(true).build();
+
+	@DisplayName("no tar gz present")
 	@Test
-	public void uploadToArtifactoryRequiresCredentials(UploadMojo mojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.ARTIFACTORY);
-		helmRepo.setName("my-artifactory");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		mojo.setUploadRepoStable(helmRepo);
+	void upgrade(UploadMojo mojo) {
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.CHARTMUSEUM)
+				.setName("my-chartmuseum")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/chartmuseum"));
+		assertHelm(mojo);
+		assertTrue(mock.findAll(RequestPatternBuilder.allRequests()).isEmpty());
+	}
 
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
+	@DisplayName("with flag skip")
+	@Test
+	void skip(UploadMojo mojo) {
+		assertHelm(mojo.setSkipUpload(false).setSkip(true));
+		assertHelm(mojo.setSkipUpload(true).setSkip(false));
+		assertHelm(mojo.setSkipUpload(true).setSkip(true));
+	}
 
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
+	@DisplayName("chartmuseum: without authentication")
+	@Test
+	void urlChartmusemWithoutAuthentication(UploadMojo mojo) {
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.CHARTMUSEUM)
+				.setName("my-chartmuseum")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/chartmuseum"));
+		copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.POST, "/chartmuseum", null);
+	}
 
+	@DisplayName("chartmuseum: with username/password")
+	@Test
+	void urlChartmuseumWithUsernameAndPassword(UploadMojo mojo) {
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.CHARTMUSEUM)
+				.setName("my-chartmuseum")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/chartmuseum")
+				.setUsername("foo")
+				.setPassword("secret"));
+		copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.POST, "/chartmuseum", BASIC_FOO_SECRET);
+	}
+
+	@DisplayName("chartmuseum: with serverId")
+	@Test
+	void urlChartmuseumWithServerId(UploadMojo mojo) {
+		mojo.getSettings().addServer(getServer("my-chartmuseum", "foo", "secret"));
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.CHARTMUSEUM)
+				.setName("my-chartmuseum")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/chartmuseum"));
+		copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.POST, "/chartmuseum", BASIC_FOO_SECRET);
+	}
+
+	@DisplayName("chartmuseum: with serverId and encrypted password")
+	@Test
+	void urlChartmuseumWithServerIdEncrypted(UploadMojo mojo) {
+		mojo.getSettings().addServer(getServer("my-chartmuseum", "foo", SECRET_ENCRYPTED));
+		mojo.setHelmSecurity(SETTINGS_SECURITY_XML);
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.CHARTMUSEUM)
+				.setName("my-chartmuseum")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/chartmuseum"));
+		copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.POST, "/chartmuseum", BASIC_FOO_SECRET);
+	}
+
+	@DisplayName("nexus: without authentication")
+	@Test
+	void urlNexusWithoutAuthentication(UploadMojo mojo) {
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/nexus"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName(), null);
+	}
+
+	@DisplayName("nexus: with username/password")
+	@Test
+	void urlNexusWithUsernameAndPassword(UploadMojo mojo) {
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/nexus")
+				.setUsername("foo")
+				.setPassword("secret"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName(), BASIC_FOO_SECRET);
+	}
+
+	@DisplayName("nexus: with serverId")
+	@Test
+	void urlNexusWithServerId(UploadMojo mojo) {
+		mojo.getSettings().addServer(getServer("my-nexus", "foo", "secret"));
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/nexus"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName(), BASIC_FOO_SECRET);
+	}
+
+	@DisplayName("nexus: with serverId and encrypted password")
+	@Test
+	void urlNexusWithServerIdEncrypted(UploadMojo mojo) {
+		mojo.getSettings().addServer(getServer("my-chartmuseum", "foo", SECRET_ENCRYPTED));
+		mojo.setHelmSecurity(SETTINGS_SECURITY_XML);
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/nexus"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName(), BASIC_FOO_SECRET);
+	}
+
+	@DisplayName("artifactory: without authentication")
+	@Test
+	void urlArtifactoryWithoutAuthentication(UploadMojo mojo) {
+		copyPackagedHelmChartToOutputdirectory(mojo);
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("my-artifactory")
+				.setUrl("http://example.org/repo"));
 		assertThrows(IllegalArgumentException.class, mojo::execute, "Missing credentials must fail.");
 	}
 
+	@DisplayName("artifactory: with username/password")
 	@Test
-	public void uploadToArtifactoryWithRepositoryCredentials(UploadMojo mojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.ARTIFACTORY);
-		helmRepo.setName("my-artifactory");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		helmRepo.setUsername("foo");
-		helmRepo.setPassword("bar");
-		mojo.setUploadRepoStable(helmRepo);
-
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-
-		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
+	void urlArtifactoryWithUsernameAndPassword(UploadMojo mojo) {
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("my-artifactory")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/artifactory")
+				.setUsername("foo")
+				.setPassword("secret"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.PUT, "/artifactory/" + packaged.getFileName(), BASIC_FOO_SECRET);
 	}
 
+	@DisplayName("artifactory: with username/password and groupId on repository level")
 	@Test
-	public void uploadToArtifactoryWithPlainCredentialsFromSettings(UploadMojo mojo) throws Exception {
-		Server server = new Server();
-		server.setId("my-artifactory");
-		server.setUsername("foo");
-		server.setPassword("bar");
-		List<Server> servers = new ArrayList<>();
-		servers.add(server);
-		mojo.getSettings().setServers(servers);
-
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.ARTIFACTORY);
-		helmRepo.setName("my-artifactory");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		mojo.setUploadRepoStable(helmRepo);
-
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-
-		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
+	void urlArtifactoryWithServerIdEncryptedWithRepositoryGroupId(UploadMojo mojo) {
+		mojo.setProjectGroupId("io.kokuwa.maven.helm");
+		mojo.setProjectVersion("6.5.0");
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("my-artifactory")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/artifactory")
+				.setUsername("foo")
+				.setPassword("secret")
+				.setUseGroupId(true));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		String expectedPath = "/artifactory/io/kokuwa/maven/helm/6.5.0/" + packaged.getFileName();
+		assertUpload(mojo, RequestMethod.PUT, expectedPath, BASIC_FOO_SECRET);
 	}
 
+	@DisplayName("artifactory: with serverId")
 	@Test
-	public void uploadToArtifactoryWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws Exception {
-		Server server = new Server();
-		server.setId("my-artifactory");
-		server.setUsername("foo");
-		server.setPassword("{GGhJc6qP+v0Hg2l+dei1MQFZt/55PzyFXY0MUMxcQdQ=}");
-		List<Server> servers = new ArrayList<>();
-		servers.add(server);
-		mojo.getSettings().setServers(servers);
-
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.ARTIFACTORY);
-		helmRepo.setName("my-artifactory");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		mojo.setUploadRepoStable(helmRepo);
-
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(this.getClass().getResource("settings-security.xml").getFile()).when(mojo).getHelmSecurity();
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-
-		assertNotNull(mojo.getConnectionForUploadToArtifactory(fileToUpload, false));
-
-		PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443,
-				"https", "", "basicauth");
-		assertEquals("foo", pwd.getUserName());
-		assertEquals("bar", String.valueOf(pwd.getPassword()));
+	void urlArtifactoryWithServerId(UploadMojo mojo) {
+		mojo.getSettings().addServer(getServer("my-artifactory", "foo", "secret"));
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("my-artifactory")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/artifactory"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.PUT, "/artifactory/" + packaged.getFileName(), BASIC_FOO_SECRET);
 	}
 
+	@DisplayName("artifactory: with serverId and encrypted password")
 	@Test
-	public void verifyHttpConnectionForArtifactoryUpload(UploadMojo uploadMojo) throws Exception {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.ARTIFACTORY);
-		helmRepo.setName("my-artifactory");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		helmRepo.setUsername("foo");
-		helmRepo.setPassword("bar");
-		uploadMojo.setUploadRepoStable(helmRepo);
-
-		// Call
-		HttpURLConnection httpURLConnection = uploadMojo.getConnectionForUploadToArtifactory(fileToUpload, false);
-
-		// Verify
-		assertEquals("PUT", httpURLConnection.getRequestMethod());
-		String expectedUploadUrl = helmRepo.getUrl() + "/" + fileToUpload.getName();
-		assertEquals(expectedUploadUrl, httpURLConnection.getURL().toString());
-
-		String contentTypeHeader = httpURLConnection.getRequestProperty("Content-Type");
-		assertNotNull(contentTypeHeader);
-		assertEquals("application/gzip", contentTypeHeader);
+	void urlArtifactoryWithServerIdEncrypted(UploadMojo mojo) {
+		mojo.getSettings().addServer(getServer("my-artifactory", "foo", SECRET_ENCRYPTED));
+		mojo.setHelmSecurity(SETTINGS_SECURITY_XML);
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("my-artifactory")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/artifactory"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.PUT, "/artifactory/" + packaged.getFileName(), BASIC_FOO_SECRET);
 	}
 
+	@DisplayName("input: repository type missing")
 	@Test
-	public void uploadToArtifactoryByGroupId(UploadMojo mojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.ARTIFACTORY);
-		helmRepo.setName("my-artifactory");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		helmRepo.setUsername("foo");
-		helmRepo.setPassword("bar");
-		helmRepo.setUseGroupId(true);
-		mojo.setUploadRepoStable(helmRepo);
-		String projectGroupId = "example.foo.bar";
-		String projectVersion = "0.1.0";
-		String chartFileName = "app-0.1.0.tgz";
-		URL resource = this.getClass().getResource(chartFileName);
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-		mojo.setProjectGroupId(projectGroupId);
-		mojo.setProjectVersion(projectVersion);
-
-		HttpURLConnection connection = mojo.getConnectionForUploadToArtifactory(fileToUpload, helmRepo.isUseGroupId());
-		assertEquals(
-				helmRepo.getUrl() + "/"
-						+ projectGroupId.replace(".", "/") + "/"
-						+ projectVersion + "/"
-						+ chartFileName,
-				connection.getURL().toString());
+	void inputRepositoryTypeRequired(UploadMojo mojo) throws Exception {
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setName("unknown-repo")
+				.setUrl("http://example.org/repo"));
+		copyPackagedHelmChartToOutputdirectory(mojo);
+		assertThrows(IllegalArgumentException.class, mojo::execute, "Missing repo type must fail.");
 	}
 
-	@Test
-	public void uploadToArtifactoryWithoutByGroupId(UploadMojo mojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.ARTIFACTORY);
-		helmRepo.setName("my-artifactory");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		helmRepo.setUsername("foo");
-		helmRepo.setPassword("bar");
-		helmRepo.setUseGroupId(false);
-		mojo.setUploadRepoStable(helmRepo);
-		String projectGroupId = "example.foo.bar";
-		String projectVersion = "0.1.0";
-		String chartFileName = "app-0.1.0.tgz";
-		URL resource = this.getClass().getResource(chartFileName);
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
+	private void assertUpload(UploadMojo mojo, RequestMethod method, String path, String authorization) {
 
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-		mojo.setProjectGroupId(projectGroupId);
-		mojo.setProjectVersion(projectVersion);
-
-		HttpURLConnection connection = mojo.getConnectionForUploadToArtifactory(fileToUpload, helmRepo.isUseGroupId());
-		assertEquals(helmRepo.getUrl() + "/" + chartFileName, connection.getURL().toString());
-	}
-
-	@Test
-	public void verifyHttpConnectionForChartmuseumUpload(UploadMojo uploadMojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.CHARTMUSEUM);
-		helmRepo.setName("my-chartmuseum");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		uploadMojo.setUploadRepoStable(helmRepo);
-
-		// Call
-		HttpURLConnection httpURLConnection = uploadMojo.getConnectionForUploadToChartmuseum();
-
-		// Verify
-		assertEquals("POST", httpURLConnection.getRequestMethod());
-		assertEquals(helmRepo.getUrl(), httpURLConnection.getURL().toString());
-
-		String contentTypeHeader = httpURLConnection.getRequestProperty("Content-Type");
-		assertNotNull(contentTypeHeader);
-		assertEquals("application/gzip", contentTypeHeader);
-	}
-
-	@Test
-	public void verifyUploadToArtifactory(UploadMojo uploadMojo) throws Exception, IOException {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.ARTIFACTORY);
-		helmRepo.setName("my-artifactory");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		helmRepo.setUsername("foo");
-		helmRepo.setPassword("bar");
-		uploadMojo.setUploadRepoStable(helmRepo);
-
-		doReturn(helmRepo).when(uploadMojo).getHelmUploadRepo();
-		doReturn(tgzs).when(uploadMojo).getChartFiles(anyString());
-
-		HttpURLConnection urlConnectionMock = Mockito.mock(HttpURLConnection.class);
-		doReturn(new NullOutputStream()).when(urlConnectionMock).getOutputStream();
-		doReturn(new ByteArrayInputStream("ok".getBytes(StandardCharsets.UTF_8))).when(urlConnectionMock)
-				.getInputStream();
-		doNothing().when(urlConnectionMock).connect();
-		doReturn(urlConnectionMock).when(uploadMojo).getConnectionForUploadToArtifactory(fileToUpload, false);
-
-		// call Mojo
-		uploadMojo.execute();
-
-		verify(uploadMojo).getConnectionForUploadToArtifactory(fileToUpload, false);
-	}
-
-	@Test
-	public void repositoryTypeRequired(UploadMojo uploadMojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setName("unknown-repo");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		uploadMojo.setUploadRepoStable(helmRepo);
-
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(helmRepo).when(uploadMojo).getHelmUploadRepo();
-		doReturn(tgzs).when(uploadMojo).getChartFiles(anyString());
-
-		assertThrows(IllegalArgumentException.class, uploadMojo::execute, "Missing repo type must fail.");
-	}
-
-	@Test
-	public void verfifyNullErrorStreamOnFailedUpload(UploadMojo uploadMojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.CHARTMUSEUM);
-		helmRepo.setName("my-chartmuseum");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		uploadMojo.setUploadRepoStable(helmRepo);
-
-		URL testChart = this.getClass().getResource("app-0.1.0.tgz");
-
-		HttpURLConnection urlConnectionMock = Mockito.mock(HttpURLConnection.class);
-		doReturn(new NullOutputStream()).when(urlConnectionMock).getOutputStream();
-		doReturn(301).when(urlConnectionMock).getResponseCode();
-		doReturn(null).when(urlConnectionMock).getErrorStream();
-		doReturn(null).when(urlConnectionMock).getInputStream();
-		doNothing().when(urlConnectionMock).connect();
-		doReturn(urlConnectionMock).when(uploadMojo).getConnectionForUploadToChartmuseum();
-
-		try {
-			uploadMojo.uploadSingle(testChart.getFile());
-		} catch (BadUploadException e) {
-			assertNotNull(e.getMessage(), "Exception must provide a message");
-			return;
+		RequestPatternBuilder requestPattern;
+		if (authorization == null) {
+			mock.stubFor(WireMock.any(WireMock.anyUrl()).willReturn(WireMock.ok()));
+			requestPattern = RequestPatternBuilder.allRequests();
+		} else {
+			mock.stubFor(WireMock.any(WireMock.anyUrl())
+					.withHeader(HttpHeaders.AUTHORIZATION, WireMock.absent())
+					.willReturn(WireMock.unauthorized().withHeader(HttpHeaders.WWW_AUTHENTICATE, "Basic")));
+			mock.stubFor(WireMock.any(WireMock.anyUrl())
+					.withHeader(HttpHeaders.AUTHORIZATION, WireMock.matching(".*"))
+					.willReturn(WireMock.ok()));
+			requestPattern = RequestPatternBuilder.newRequestPattern()
+					.withHeader(HttpHeaders.AUTHORIZATION, WireMock.matching(".*"));
 		}
-		fail("BadUploadException expected on failed upload");
-	}
 
-	@Test
-	public void uploadToNexusWithRepositoryCredentials(UploadMojo mojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.NEXUS);
-		helmRepo.setName("my-nexus");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		helmRepo.setUsername("foo");
-		helmRepo.setPassword("bar");
-		mojo.setUploadRepoStable(helmRepo);
-
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-
-		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
-	}
-
-	@Test
-	public void uploadToNexusWithPlainCredentialsFromSettings(UploadMojo mojo) throws Exception {
-		Server server = new Server();
-		server.setId("my-nexus");
-		server.setUsername("foo");
-		server.setPassword("bar");
-		List<Server> servers = new ArrayList<>();
-		servers.add(server);
-		mojo.getSettings().setServers(servers);
-
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.NEXUS);
-		helmRepo.setName("my-nexus");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		mojo.setUploadRepoStable(helmRepo);
-
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-
-		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
-	}
-
-	@Test
-	public void uploadToNexusWithEncryptedCredentialsFromSettings(UploadMojo mojo) throws Exception {
-		Server server = new Server();
-		server.setId("my-nexus");
-		server.setUsername("foo");
-		server.setPassword("{GGhJc6qP+v0Hg2l+dei1MQFZt/55PzyFXY0MUMxcQdQ=}");
-		List<Server> servers = new ArrayList<>();
-		servers.add(server);
-		mojo.getSettings().setServers(servers);
-
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.NEXUS);
-		helmRepo.setName("my-nexus");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		mojo.setUploadRepoStable(helmRepo);
-
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(this.getClass().getResource("settings-security.xml").getFile()).when(mojo).getHelmSecurity();
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-
-		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
-
-		PasswordAuthentication pwd = Authenticator.requestPasswordAuthentication(InetAddress.getLocalHost(), 443,
-				"https", "", "basicauth");
-		assertEquals("foo", pwd.getUserName());
-		assertEquals("bar", String.valueOf(pwd.getPassword()));
-	}
-
-	@Test
-	public void uploadToNexusWithoutCredentials(UploadMojo mojo) throws Exception {
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.NEXUS);
-		helmRepo.setName("my-nexus");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		mojo.setUploadRepoStable(helmRepo);
-
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-		List<String> tgzs = new ArrayList<>();
-		tgzs.add(resource.getFile());
-
-		doReturn(helmRepo).when(mojo).getHelmUploadRepo();
-		doReturn(tgzs).when(mojo).getChartFiles(anyString());
-
-		assertNotNull(mojo.getConnectionForUploadToNexus(fileToUpload));
-	}
-
-	@Test
-	public void verifyHttpConnectionForNexusUpload(UploadMojo uploadMojo) throws Exception {
-		URL resource = this.getClass().getResource("app-0.1.0.tgz");
-		File fileToUpload = new File(resource.getFile());
-
-		HelmRepository helmRepo = new HelmRepository();
-		helmRepo.setType(RepoType.NEXUS);
-		helmRepo.setName("my-nexus");
-		helmRepo.setUrl("https://somwhere.com/repo");
-		helmRepo.setUsername("foo");
-		helmRepo.setPassword("bar");
-		uploadMojo.setUploadRepoStable(helmRepo);
-
-		// Call
-		HttpURLConnection httpURLConnection = uploadMojo.getConnectionForUploadToNexus(fileToUpload);
-
-		// Verify
-		assertEquals("PUT", httpURLConnection.getRequestMethod());
-		String expectedUploadUrl = helmRepo.getUrl() + "/" + fileToUpload.getName();
-		assertEquals(expectedUploadUrl, httpURLConnection.getURL().toString());
-
-		String contentTypeHeader = httpURLConnection.getRequestProperty("Content-Type");
-		assertNotNull(contentTypeHeader);
-		assertEquals("application/gzip", contentTypeHeader);
-	}
-
-	/** Writes to nowhere */
-	public class NullOutputStream extends OutputStream {
-		@Override
-		public void write(int b) throws IOException {}
+		assertTrue(path.startsWith("/"), "path should start with slash");
+		assertDoesNotThrow(() -> mojo.execute(), "upload failed");
+		List<LoggedRequest> requests = mock.findAll(requestPattern);
+		assertEquals(1, requests.size(), "expected only one request");
+		LoggedRequest request = requests.get(0);
+		assertEquals(method, request.getMethod(), "method");
+		assertEquals("http://127.0.0.1:" + mock.getPort() + path, request.getAbsoluteUrl(), "url");
+		assertEquals("application/gzip", request.getHeader(HttpHeaders.CONTENT_TYPE), "content-type");
+		assertEquals(authorization, request.getHeader(HttpHeaders.AUTHORIZATION), "authorization");
 	}
 }
