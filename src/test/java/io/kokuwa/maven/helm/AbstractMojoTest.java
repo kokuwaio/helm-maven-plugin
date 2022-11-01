@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.settings.Server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -31,7 +30,7 @@ import io.kokuwa.maven.helm.junit.MojoExtension;
 public abstract class AbstractMojoTest {
 
 	/** Path of helm executeable. */
-	static final Path HELM = Paths.get(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm");
+	static final Path HELM = new LintMojo().getHelmExecuteableName();
 	/** Basic auth for foo:secret. */
 	static final String BASIC_FOO_SECRET = "Basic Zm9vOnNlY3JldA==";
 	/** Encrypted string "secret" using {@link #SETTINGS_SECURITY_XML} */

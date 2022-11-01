@@ -105,6 +105,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		Path helmExecutable = helmExecutableDirectory.resolve("helm");
 		mojo.setHelmExecutableDirectory(helmExecutableDirectory.toString());
 		mojo.setHelmDownloadUrl(new URL("https://get.helm.sh/helm-v3.10.1-linux-amd64.tar.gz"));
+		mojo.setUseLocalHelmBinary(false);
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
 		assertTrue(Files.isRegularFile(helmExecutable), "executable not found");
 		assertTrue(Files.isExecutable(helmExecutable), "executable not executable");

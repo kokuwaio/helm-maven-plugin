@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,12 +51,15 @@ import lombok.Setter;
 @Setter
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
+	/** Path of helm executeable. */
+	private final Path helmExecuteableName = Paths.get(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm");
+
 	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
 
 	/**
-	 * Controls whether a local binary should be used instead of downloading it.
-	 * If set to <code>true</code> path has to be set with property "helm.executableDirectory".
+	 * Controls whether a local binary should be used instead of downloading it. If set to <code>true</code> path has to
+	 * be set with property "helm.executableDirectory".
 	 *
 	 * @since 4.0
 	 */
@@ -65,9 +67,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private boolean useLocalHelmBinary;
 
 	/**
-	 * Controls whether the local binary should be auto-detected from PATH environment variable.
-	 * If set to <code>false</code> the binary in "helm.executableDirectory" is used.
-	 * This property has no effect unless "helm.useLocalHelmBinary" is set to <code>true</code>.
+	 * Controls whether the local binary should be auto-detected from PATH environment variable. If set to
+	 * <code>false</code> the binary in "helm.executableDirectory" is used. This property has no effect unless
+	 * "helm.useLocalHelmBinary" is set to <code>true</code>.
 	 *
 	 * @since 4.1
 	 */
@@ -270,38 +272,19 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
-		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
-		Optional<Path> path;
+		Stream<Path> optional;
 		if (isUseLocalHelmBinary() && isAutoDetectLocalHelmBinary()) {
-			path = findInPath(helmExecutable);
+			optional = Stream.of(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))).map(Paths::get);
 		} else {
-			path = Optional.of(Paths.get(helmExecutableDirectory, helmExecutable))
-					.map(Path::toAbsolutePath)
-					.filter(Files::exists);
+			optional = Stream.of(Paths.get(helmExecutableDirectory));
 		}
-
-		return path.orElseThrow(() -> new MojoExecutionException("Helm executable is not found."));
-	}
-
-	/**
-	 * Finds the absolute path to a given {@code executable} in {@code PATH} environment variable.
-	 *
-	 * @param executable the name of the executable to search for
-	 * @return the absolute path to the executable if found, otherwise an empty optional.
-	 */
-	private Optional<Path> findInPath(String executable) {
-
-		String[] paths = getPathsFromEnvironmentVariables();
-		return Stream.of(paths)
-				.map(Paths::get)
-				.map(path -> path.resolve(executable))
-				.filter(Files::exists)
+		return optional
+				.map(directory -> directory.resolve(helmExecuteableName))
 				.map(Path::toAbsolutePath)
-				.findFirst();
-	}
-
-	String[] getPathsFromEnvironmentVariables() {
-		return System.getenv("PATH").split(Pattern.quote(File.pathSeparator));
+				.filter(Files::isRegularFile)
+				.filter(Files::isExecutable)
+				.findFirst()
+				.orElseThrow(() -> new MojoExecutionException("Helm executable not found."));
 	}
 
 	void helm(String arguments, String errorMessage, String stdin) throws MojoExecutionException {
@@ -391,31 +374,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		if (exitValue != 0) {
 			throw new MojoExecutionException(errorMessage);
 		}
-	}
-
-	String getK8SArgs() {
-		StringBuilder k8sConfigArgs = new StringBuilder();
-		if (k8sCluster != null) {
-			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
-				k8sConfigArgs.append(" --kube-apiserver=").append(k8sCluster.getApiUrl());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				k8sConfigArgs.append(" --namespace=").append(k8sCluster.getNamespace());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
-				k8sConfigArgs.append(" --kube-as-user=").append(k8sCluster.getAsUser());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
-				k8sConfigArgs.append(" --kube-as-group=").append(k8sCluster.getAsGroup());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
-				k8sConfigArgs.append(" --kube-token=").append(k8sCluster.getToken());
-			}
-			if (k8sConfigArgs.length() > 0) {
-				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
-			}
-		}
-		return k8sConfigArgs.toString();
 	}
 
 	List<String> getChartDirectories() throws MojoExecutionException {
@@ -516,11 +474,29 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		}
 	}
 
-	String getHelmVersion() throws MojoExecutionException {
-		if (helmVersion == null) {
-			helmVersion = new Github(getLog(), Paths.get(tmpDir), githubUserAgent).getHelmVersion();
+	String getK8SArgs() {
+		StringBuilder k8sConfigArgs = new StringBuilder();
+		if (k8sCluster != null) {
+			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
+				k8sConfigArgs.append(" --kube-apiserver=").append(k8sCluster.getApiUrl());
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
+				k8sConfigArgs.append(" --namespace=").append(k8sCluster.getNamespace());
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
+				k8sConfigArgs.append(" --kube-as-user=").append(k8sCluster.getAsUser());
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
+				k8sConfigArgs.append(" --kube-as-group=").append(k8sCluster.getAsGroup());
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
+				k8sConfigArgs.append(" --kube-token=").append(k8sCluster.getToken());
+			}
+			if (k8sConfigArgs.length() > 0) {
+				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
+			}
 		}
-		return helmVersion;
+		return k8sConfigArgs.toString();
 	}
 
 	private void warnOnMixOfK8sClusterAndGlobalFlags() {
@@ -551,5 +527,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			warnMessage.append("NOTE: <k8sCluster> option will be removed in future major release.");
 			getLog().warn(warnMessage.toString());
 		}
+	}
+
+	// getter
+
+	public String getHelmVersion() throws MojoExecutionException {
+		if (helmVersion == null) {
+			helmVersion = new Github(getLog(), Paths.get(tmpDir), githubUserAgent).getHelmVersion();
+		}
+		return helmVersion;
 	}
 }
