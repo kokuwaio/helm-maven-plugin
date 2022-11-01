@@ -27,6 +27,10 @@
 
 	<developers>
 		<developer>
+			<name>Stephan Schnabel</name>
+			<email>stephan.schnabel@grayc.de</email>
+		</developer>
+		<developer>
 			<name>Fabian Schlegel</name>
 			<email>fabian.schlegel@grayc.de</email>
 		</developer>
@@ -84,19 +88,6 @@
 		<!-- ============================= Versions ============================== -->
 		<!-- ===================================================================== -->
 
-		<!-- dependencies -->
-
-		<version.org.apache.commons.compress>1.22</version.org.apache.commons.compress>
-		<version.org.apache.commons.io>2.11.0</version.org.apache.commons.io>
-		<version.org.apache.commons.lang3>3.12.0</version.org.apache.commons.lang3>
-		<version.org.apache.maven.plugin.tools>3.6.4</version.org.apache.maven.plugin.tools>
-		<version.org.codehaus.plexus.dispatcher>2.0</version.org.codehaus.plexus.dispatcher>
-		<version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
-		<version.org.mockito>4.8.1</version.org.mockito>
-		<version.org.projectlombok>1.18.24</version.org.projectlombok>
-		<version.com.fasterxml.jackson>2.13.4.2</version.com.fasterxml.jackson>
-		<version.com.github.tomakehurst.wiremock>2.34.0</version.com.github.tomakehurst.wiremock>
-
 		<!-- plugins -->
 
 		<version.org.apache.maven.plugins.checkstyle>3.2.0</version.org.apache.maven.plugins.checkstyle>
@@ -117,6 +108,18 @@
 		<version.com.puppycrawl.tools.checkstyle>9.3</version.com.puppycrawl.tools.checkstyle>
 		<version.io.kokuwa.checkstyle>0.5.6</version.io.kokuwa.checkstyle>
 
+		<!-- dependencies -->
+
+		<version.org.apache.commons.compress>1.22</version.org.apache.commons.compress>
+		<version.org.apache.commons.lang3>3.12.0</version.org.apache.commons.lang3>
+		<version.org.apache.maven.plugin.tools>3.6.4</version.org.apache.maven.plugin.tools>
+		<version.org.codehaus.plexus.dispatcher>2.0</version.org.codehaus.plexus.dispatcher>
+		<version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
+		<version.org.mockito>4.8.1</version.org.mockito>
+		<version.org.projectlombok>1.18.24</version.org.projectlombok>
+		<version.com.fasterxml.jackson>2.13.4.2</version.com.fasterxml.jackson>
+		<version.com.github.tomakehurst.wiremock>2.34.0</version.com.github.tomakehurst.wiremock>
+
 	</properties>
 
 	<dependencies>
@@ -127,12 +130,46 @@
 			<artifactId>maven-plugin-api</artifactId>
 			<version>${project.prerequisites.maven}</version>
 			<scope>provided</scope>
+			<exclusions>
+				<!-- do not pollute compile classpath with transitive dependencies -->
+				<exclusion>
+					<groupId>javax.enterprise</groupId>
+					<artifactId>cdi-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-cipher</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-classworlds</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-component-annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-utils</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-settings</artifactId>
 			<version>${project.prerequisites.maven}</version>
 			<scope>provided</scope>
+			<exclusions>
+				<!-- do not pollute compile classpath with transitive dependencies -->
+				<exclusion>
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-utils</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
@@ -144,6 +181,13 @@
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-sec-dispatcher</artifactId>
 			<version>${version.org.codehaus.plexus.dispatcher}</version>
+			<exclusions>
+				<!-- do not pollute compile classpath with transitive dependencies -->
+				<exclusion>
+					<groupId>javax.inject</groupId>
+					<artifactId>javax.inject</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -248,18 +292,21 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>${version.org.apache.maven.plugins.javadoc}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>${version.org.apache.maven.plugins.jar}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${version.org.apache.maven.plugins.javadoc}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
 					<version>${version.org.apache.maven.plugin.tools}</version>
+					<configuration>
+						<extractors>java-annotations</extractors>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
