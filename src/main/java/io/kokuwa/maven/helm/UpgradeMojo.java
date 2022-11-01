@@ -56,13 +56,13 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
+		for (String chartDirectory : getChartDirectories()) {
 			getLog().info("installing the chart " +
 					(upgradeWithInstall ? "with install " : "") +
 					(upgradeDryRun ? "as dry run " : "") +
-					inputDirectory);
+					chartDirectory);
 			String arguments = "upgrade " + releaseName + " "
-					+ inputDirectory + " "
+					+ chartDirectory + " "
 					+ (upgradeWithInstall ? "--install " : "")
 					+ (upgradeDryRun ? "--dry-run " : "")
 					+ getValuesOptions();

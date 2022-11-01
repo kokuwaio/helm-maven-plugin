@@ -42,9 +42,9 @@ public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			getLog().info("\n\nTesting chart " + inputDirectory + "...");
-			String arguments = "lint " + inputDirectory + (lintStrict ? " --strict" : "") + getValuesOptions();
+		for (String chartDirectory : getChartDirectories()) {
+			getLog().info("\n\nTesting chart " + chartDirectory + "...");
+			String arguments = "lint " + chartDirectory + (lintStrict ? " --strict" : "") + getValuesOptions();
 			helm(arguments, "There are test failures", null);
 		}
 	}

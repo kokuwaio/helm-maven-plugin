@@ -34,9 +34,9 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		for (String inputDirectory : getChartDirectories(getChartDirectory())) {
-			getLog().info("Build chart dependencies for " + inputDirectory + "...");
-			helm("dependency build " + inputDirectory, "Failed to resolve dependencies", null);
+		for (String chartDirectory : getChartDirectories()) {
+			getLog().info("Build chart dependencies for " + chartDirectory + " ...");
+			helm("dependency build " + chartDirectory, "Failed to resolve dependencies", null);
 		}
 	}
 }
