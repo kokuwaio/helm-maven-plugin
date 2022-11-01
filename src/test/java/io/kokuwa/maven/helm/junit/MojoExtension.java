@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.spy;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -77,7 +78,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 			mojo.setSettings(new Settings());
 			mojo.setSecurityDispatcher(new DefaultSecDispatcher(new DefaultPlexusCipher()));
 			mojo.setLog(new SystemStreamLog());
-			mojo.setChartDirectory("src/test/resources/simple"); // set some sane defaults for tests
+			mojo.setChartDirectory(new File("src/test/resources/simple")); // set some sane defaults for tests
 			mojo.setHelmVersion("3.10.0"); // avoid github api
 
 			// set parameter
@@ -88,12 +89,15 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 				field.setAccessible(true);
 
 				if (parameter.isEditable() && parameter.getDefaultValue() != null) {
+					String defaultValue = parameter.getDefaultValue()
+							.replace("${project.build.directory}", "target")
+							.replace("${java.io.tmpdir}", System.getProperty("java.io.tmpdir"));
 					if (parameter.getType().equals("boolean")) {
-						field.set(mojo, Boolean.parseBoolean(parameter.getDefaultValue()));
+						field.set(mojo, Boolean.parseBoolean(defaultValue));
+					} else if (parameter.getType().equals(File.class.getName())) {
+						field.set(mojo, new File(defaultValue));
 					} else if (parameter.getType().equals(String.class.getName())) {
-						field.set(mojo, parameter.getDefaultValue()
-								.replace("${project.build.directory}", "target")
-								.replace("${java.io.tmpdir}", System.getProperty("java.io.tmpdir")));
+						field.set(mojo, defaultValue);
 					} else {
 						fail("unsupported type: " + parameter.getType());
 					}

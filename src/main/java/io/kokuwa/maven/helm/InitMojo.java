@@ -12,7 +12,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.AclEntry;
 import java.nio.file.attribute.AclEntryPermission;
 import java.nio.file.attribute.AclEntryType;
@@ -137,7 +136,7 @@ public class InitMojo extends AbstractHelmMojo {
 		}
 
 		getLog().info("Initializing Helm...");
-		Path outputDirectory = Paths.get(getOutputDirectory()).toAbsolutePath();
+		Path outputDirectory = getOutputDirectory();
 		if (!outputDirectory.toFile().exists()) {
 			getLog().info("Creating output directory...");
 			try {
@@ -212,7 +211,7 @@ public class InitMojo extends AbstractHelmMojo {
 	@SneakyThrows(MalformedURLException.class)
 	private void downloadAndUnpackHelm() throws MojoExecutionException {
 
-		Path directory = Paths.get(getHelmExecutableDirectory());
+		Path directory = getHelmExecutableDirectory();
 		if (Files.exists(directory.resolve(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm"))) {
 			getLog().info("Found helm executable, skip init.");
 			return;

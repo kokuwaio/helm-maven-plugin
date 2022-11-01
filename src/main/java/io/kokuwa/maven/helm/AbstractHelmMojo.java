@@ -80,7 +80,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 1.3
 	 */
 	@Parameter(property = "helm.executableDirectory", defaultValue = "${project.build.directory}/helm")
-	private String helmExecutableDirectory;
+	private File helmExecutableDirectory;
 
 	/**
 	 * Chart output directory.
@@ -88,7 +88,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 1.0
 	 */
 	@Parameter(property = "helm.outputDirectory", defaultValue = "${project.build.directory}/helm/repo")
-	private String outputDirectory;
+	private File outputDirectory;
 
 	/**
 	 * List of chart directories to exclude.
@@ -104,7 +104,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 1.0
 	 */
 	@Parameter(property = "helm.chartDirectory", required = true)
-	private String chartDirectory;
+	private File chartDirectory;
 
 	/**
 	 * Version of the charts. The version have to be in the SEMVER-Format (https://semver.org/), required by helm.
@@ -152,7 +152,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 6.1.0
 	 */
 	@Parameter(property = "helm.tmpDir", defaultValue = "${java.io.tmpdir}/helm-maven-plugin")
-	private String tmpDir;
+	private File tmpDir;
 
 	/**
 	 * Enable verbose output.
@@ -168,7 +168,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 5.0
 	 */
 	@Parameter(property = "helm.registryConfig")
-	private String registryConfig;
+	private File registryConfig;
 
 	/**
 	 * Path to the file containing cached repository indexes (default ~/.cache/helm/repository).
@@ -176,7 +176,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 5.0
 	 */
 	@Parameter(property = "helm.repositoryCache")
-	private String repositoryCache;
+	private File repositoryCache;
 
 	/**
 	 * Path to the file containing repository names and URLs (default ~/.config/helm/repositories.yaml).
@@ -184,7 +184,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 5.0
 	 */
 	@Parameter(property = "helm.repositoryConfig")
-	private String repositoryConfig;
+	private File repositoryConfig;
 
 	/**
 	 * Path to security settings.
@@ -262,7 +262,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 6.4.0
 	 */
 	@Parameter(property = "helm.kubeCaFile")
-	private String kubeCaFile;
+	private File kubeCaFile;
 
 	@Override
 	public void setLog(Log log) {
@@ -275,7 +275,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		if (isUseLocalHelmBinary() && isAutoDetectLocalHelmBinary()) {
 			path = findInPath(helmExecutable);
 		} else {
-			path = Optional.of(Paths.get(helmExecutableDirectory, helmExecutable))
+			path = Optional.of(Paths.get(helmExecutableDirectory.toString(), helmExecutable))
 					.map(Path::toAbsolutePath)
 					.filter(Files::exists);
 		}
@@ -312,13 +312,13 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		if (debug) {
 			command.append(" --debug");
 		}
-		if (StringUtils.isNotEmpty(registryConfig)) {
+		if (registryConfig != null) {
 			command.append(" --registry-config=").append(registryConfig);
 		}
-		if (StringUtils.isNotEmpty(repositoryConfig)) {
+		if (repositoryConfig != null) {
 			command.append(" --repository-config=").append(repositoryConfig);
 		}
-		if (StringUtils.isNotEmpty(repositoryCache)) {
+		if (repositoryCache != null) {
 			command.append(" --repository-cache=").append(repositoryCache);
 		}
 		if (StringUtils.isNotEmpty(namespace)) {
@@ -336,7 +336,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		if (StringUtils.isNotEmpty(kubeToken)) {
 			command.append(" --kube-token=").append(kubeToken);
 		}
-		if (StringUtils.isNotEmpty(kubeCaFile)) {
+		if (kubeCaFile != null) {
 			command.append(" --kube-ca-file=").append(kubeCaFile);
 		}
 
@@ -419,7 +419,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	List<String> getChartDirectories() throws MojoExecutionException {
-		String path = chartDirectory;
+		String path = chartDirectory.toString();
 		List<String> exclusions = new ArrayList<>();
 
 		if (getExcludes() != null) {
@@ -516,13 +516,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		}
 	}
 
-	String getHelmVersion() throws MojoExecutionException {
-		if (helmVersion == null) {
-			helmVersion = new Github(getLog(), Paths.get(tmpDir), githubUserAgent).getHelmVersion();
-		}
-		return helmVersion;
-	}
-
 	private void warnOnMixOfK8sClusterAndGlobalFlags() {
 
 		if (k8sCluster == null) {
@@ -551,5 +544,22 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			warnMessage.append("NOTE: <k8sCluster> option will be removed in future major release.");
 			getLog().warn(warnMessage.toString());
 		}
+	}
+
+	// getter
+
+	public String getHelmVersion() throws MojoExecutionException {
+		if (helmVersion == null) {
+			helmVersion = new Github(getLog(), tmpDir.toPath(), githubUserAgent).getHelmVersion();
+		}
+		return helmVersion;
+	}
+
+	public Path getOutputDirectory() {
+		return outputDirectory.toPath();
+	}
+
+	public Path getHelmExecutableDirectory() {
+		return helmExecutableDirectory.toPath();
 	}
 }

@@ -37,7 +37,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		void fixed(LintMojo mojo) {
 			mojo.setUseLocalHelmBinary(true);
 			mojo.setAutoDetectLocalHelmBinary(false);
-			mojo.setHelmExecutableDirectory("src/it");
+			mojo.setHelmExecutableDirectory(new File("src/it"));
 			Path expected = Paths.get("src/it").resolve(HELM).toAbsolutePath();
 			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecuteablePath());
 			assertEquals(expected, actual);
@@ -48,7 +48,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		void fixedNotFound(LintMojo mojo) {
 			mojo.setUseLocalHelmBinary(true);
 			mojo.setAutoDetectLocalHelmBinary(false);
-			mojo.setHelmExecutableDirectory("src/nope");
+			mojo.setHelmExecutableDirectory(new File("src/nope"));
 			MojoExecutionException exception = assertThrows(MojoExecutionException.class,
 					() -> mojo.getHelmExecuteablePath());
 			assertEquals("Helm executable is not found.", exception.getMessage());
@@ -87,7 +87,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@Test
 		void empty(LintMojo mojo) {
 			mojo.setExcludes(new String[] {});
-			mojo.setChartDirectory("src/test/resources/dependencies");
+			mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 			assertHelm(mojo,
 					"lint src/test/resources/dependencies/b",
 					"lint src/test/resources/dependencies/a2",
@@ -99,7 +99,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@Test
 		void single(LintMojo mojo) {
 			mojo.setExcludes(new String[] { "src/test/resources/dependencies/a1" });
-			mojo.setChartDirectory("src/test/resources/dependencies");
+			mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 			assertHelm(mojo,
 					"lint src/test/resources/dependencies/b",
 					"lint src/test/resources/dependencies/a2",
@@ -112,7 +112,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 			mojo.setExcludes(
 					new String[]
 					{ "src/test/resources/dependencies/a1", "src/test/resources/dependencies/b" });
-			mojo.setChartDirectory("src/test/resources/dependencies");
+			mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 			assertHelm(mojo,
 					"lint src/test/resources/dependencies/a2",
 					"lint src/test/resources/dependencies");
@@ -122,7 +122,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@Test
 		void gobbling(LintMojo mojo) {
 			mojo.setExcludes(new String[] { "**/a*" });
-			mojo.setChartDirectory("src/test/resources/dependencies");
+			mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 			assertHelm(mojo,
 					"lint src/test/resources/dependencies/b",
 					"lint src/test/resources/dependencies");

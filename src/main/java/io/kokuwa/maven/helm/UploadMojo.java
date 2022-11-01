@@ -10,7 +10,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,8 +87,8 @@ public class UploadMojo extends AbstractHelmMojo {
 		return filename.endsWith(".tgz") || filename.endsWith("tgz.prov");
 	}
 
-	List<String> getChartFiles(String path) throws MojoExecutionException {
-		try (Stream<Path> files = Files.walk(Paths.get(path))) {
+	List<String> getChartFiles(Path path) throws MojoExecutionException {
+		try (Stream<Path> files = Files.walk(path)) {
 			return files.filter(this::isChartFile)
 					.map(Path::toString)
 					.collect(Collectors.toList());
