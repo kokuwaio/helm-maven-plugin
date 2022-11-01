@@ -13,6 +13,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 import io.kokuwa.maven.helm.pojo.HelmRepository;
+import io.kokuwa.maven.helm.pojo.RepoType;
 
 @DisplayName("helm:init")
 public class InitMojoTest extends AbstractMojoTest {
@@ -29,6 +30,44 @@ public class InitMojoTest extends AbstractMojoTest {
 		assertHelm(mojo.setSkipInit(false).setSkip(true));
 		assertHelm(mojo.setSkipInit(true).setSkip(false));
 		assertHelm(mojo.setSkipInit(true).setSkip(true));
+	}
+
+	@DisplayName("with flag --force-update")
+	@Test
+	void withForceUpdateForAll(InitMojo mojo) {
+		mojo.setAddDefaultRepo(true);
+		mojo.setAddUploadRepos(true);
+		mojo.setRepositoryAddForceUpdate(true);
+		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
+				.setName("example")
+				.setUrl("https://example.org/repo/example")
+				.setForceUpdate(true) });
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("example-stable")
+				.setUrl("https://example.org/repo/stable"));
+		mojo.setUploadRepoSnapshot(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("example-snapshot")
+				.setUrl("https://example.org/repo/snapshot"));
+		assertHelm(mojo,
+				"repo add stable " + InitMojo.STABLE_HELM_REPO + " --force-update",
+				"repo add example-stable https://example.org/repo/stable --force-update",
+				"repo add example-snapshot https://example.org/repo/snapshot --force-update",
+				"repo add example https://example.org/repo/example --force-update");
+	}
+
+	@DisplayName("with flag --force-update for single repository")
+	@Test
+	void withForceUpdateForSingleRepository(InitMojo mojo) {
+		mojo.setAddDefaultRepo(true);
+		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
+				.setName("example")
+				.setUrl("https://example.org/repo/example")
+				.setForceUpdate(true) });
+		assertHelm(mojo,
+				"repo add stable " + InitMojo.STABLE_HELM_REPO,
+				"repo add example https://example.org/repo/example --force-update");
 	}
 
 	@DisplayName("without flag addDefaultRepo")

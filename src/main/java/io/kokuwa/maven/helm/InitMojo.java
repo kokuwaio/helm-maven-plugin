@@ -88,6 +88,15 @@ public class InitMojo extends AbstractHelmMojo {
 	private HelmRepository[] helmExtraRepos;
 
 	/**
+	 * If <code>true</code>, replaces (overwrite) the repo if they already exists. Can be also specified on repository
+	 * level in "helmExtraRepos".
+	 *
+	 * @since 6.6.0
+	 */
+	@Parameter(property = "helm.repo.add.force-update", defaultValue = "false")
+	private boolean repositoryAddForceUpdate;
+
+	/**
 	 * Download url of helm.
 	 *
 	 * @since 1.0
@@ -193,6 +202,9 @@ public class InitMojo extends AbstractHelmMojo {
 		String arguments = "repo add " + repository.getName() + " " + repository.getUrl();
 		if (auth != null) {
 			arguments += " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword());
+		}
+		if (repositoryAddForceUpdate || repository.isForceUpdate()) {
+			arguments += " --force-update";
 		}
 		helm(arguments, "Unable add repo", null);
 	}

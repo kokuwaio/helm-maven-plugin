@@ -277,6 +277,7 @@ Parameter | Type | User Property | Required | Description
 `<registryConfig>` | string | helm.registryConfig | false | path to the registry config file
 `<repositoryCache>` | string | helm.repositoryCache | false | path to the file containing cached repository indexes
 `<repositoryConfig>` | string | helm.repositoryConfig | false | path to the file containing repository names and URLs
+`<repositoryAddForceUpdate>`| boolean | helm.repo.add.force-update | false | If `true`, replaces (overwrite) the repo if they already exists.
 `<helmExtraRepos>` | list of [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | | false | adds extra repositories while init
 `<uploadRepoStable>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | | false | Upload repository for stable charts
 `<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
