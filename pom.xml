@@ -156,11 +156,6 @@
 			<version>${version.org.apache.commons.lang3}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${version.org.apache.commons.io}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>${version.org.projectlombok}</version>
