@@ -4,7 +4,7 @@
 
 	<groupId>io.kokuwa.maven</groupId>
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>6.5.1-SNAPSHOT</version>
+	<version>6.6.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>Helm Maven Plugin</name>
@@ -94,7 +94,7 @@
 		<version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
 		<version.org.mockito>4.8.1</version.org.mockito>
 		<version.org.projectlombok>1.18.24</version.org.projectlombok>
-		<version.com.fasterxml.jackson>2.13.4.1</version.com.fasterxml.jackson>
+		<version.com.fasterxml.jackson>2.13.4.2</version.com.fasterxml.jackson>
 		<version.com.github.tomakehurst.wiremock>2.34.0</version.com.github.tomakehurst.wiremock>
 
 		<!-- plugins -->
