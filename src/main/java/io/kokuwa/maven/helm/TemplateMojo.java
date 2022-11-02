@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import java.nio.file.Path;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -56,7 +58,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (String chartDirectory : getChartDirectories()) {
+		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info(String.format("\n\nPerform template for chart %s...", chartDirectory));
 			helm(String.format("%s %s %s %s",
 					action,

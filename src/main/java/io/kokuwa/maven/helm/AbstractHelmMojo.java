@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,6 +49,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class AbstractHelmMojo extends AbstractMojo {
+
+	/** Path of helm executeable. */
+	private final Path helmExecuteableName = Paths.get(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm");
 
 	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
@@ -270,38 +271,19 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	Path getHelmExecuteablePath() throws MojoExecutionException {
-		String helmExecutable = SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm";
-		Optional<Path> path;
-		if (isUseLocalHelmBinary() && isAutoDetectLocalHelmBinary()) {
-			path = findInPath(helmExecutable);
+		Stream<Path> optional;
+		if (useLocalHelmBinary && autoDetectLocalHelmBinary) {
+			optional = Stream.of(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))).map(Paths::get);
 		} else {
-			path = Optional.of(Paths.get(helmExecutableDirectory.toString(), helmExecutable))
-					.map(Path::toAbsolutePath)
-					.filter(Files::exists);
+			optional = Stream.of(helmExecutableDirectory.toPath());
 		}
-
-		return path.orElseThrow(() -> new MojoExecutionException("Helm executable is not found."));
-	}
-
-	/**
-	 * Finds the absolute path to a given {@code executable} in {@code PATH} environment variable.
-	 *
-	 * @param executable the name of the executable to search for
-	 * @return the absolute path to the executable if found, otherwise an empty optional.
-	 */
-	private Optional<Path> findInPath(String executable) {
-
-		String[] paths = getPathsFromEnvironmentVariables();
-		return Stream.of(paths)
-				.map(Paths::get)
-				.map(path -> path.resolve(executable))
-				.filter(Files::exists)
+		return optional
+				.map(directory -> directory.resolve(helmExecuteableName))
 				.map(Path::toAbsolutePath)
-				.findFirst();
-	}
-
-	String[] getPathsFromEnvironmentVariables() {
-		return System.getenv("PATH").split(Pattern.quote(File.pathSeparator));
+				.filter(Files::isRegularFile)
+				.filter(Files::isExecutable)
+				.findFirst()
+				.orElseThrow(() -> new MojoExecutionException("Helm executable not found."));
 	}
 
 	void helm(String arguments, String errorMessage, String stdin) throws MojoExecutionException {
@@ -393,73 +375,40 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		}
 	}
 
-	String getK8SArgs() {
-		StringBuilder k8sConfigArgs = new StringBuilder();
-		if (k8sCluster != null) {
-			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
-				k8sConfigArgs.append(" --kube-apiserver=").append(k8sCluster.getApiUrl());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				k8sConfigArgs.append(" --namespace=").append(k8sCluster.getNamespace());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
-				k8sConfigArgs.append(" --kube-as-user=").append(k8sCluster.getAsUser());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
-				k8sConfigArgs.append(" --kube-as-group=").append(k8sCluster.getAsGroup());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
-				k8sConfigArgs.append(" --kube-token=").append(k8sCluster.getToken());
-			}
-			if (k8sConfigArgs.length() > 0) {
-				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
-			}
-		}
-		return k8sConfigArgs.toString();
-	}
+	List<Path> getChartDirectories() throws MojoExecutionException {
 
-	List<String> getChartDirectories() throws MojoExecutionException {
-		String path = chartDirectory.toString();
 		List<String> exclusions = new ArrayList<>();
-
-		if (getExcludes() != null) {
-			exclusions.addAll(Arrays.asList(getExcludes()));
+		if (excludes != null) {
+			exclusions.addAll(Arrays.asList(excludes));
 		}
-
 		exclusions.addAll(FileUtils.getDefaultExcludesAsList());
-
 		MatchPatterns exclusionPatterns = MatchPatterns.from(exclusions);
 
-		try (Stream<Path> files = Files.walk(Paths.get(path), FileVisitOption.FOLLOW_LINKS)) {
-			List<String> chartDirs = files.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
-					.map(p -> p.getParent().toString())
-					.filter(shouldIncludeDirectory(exclusionPatterns))
+		try (Stream<Path> files = Files.walk(chartDirectory.toPath(), FileVisitOption.FOLLOW_LINKS)) {
+			List<Path> chartDirectories = files
+					.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
+					.map(Path::getParent)
+					.filter(p -> !exclusionPatterns.matches(p.toString(), false))
 					.sorted(Comparator.reverseOrder())
 					.collect(Collectors.toList());
-
-			if (chartDirs.isEmpty()) {
-				getLog().warn("No Charts detected - no Chart.yaml files found below " + path);
+			if (chartDirectories.isEmpty()) {
+				getLog().warn("No Charts detected - no Chart.yaml files found below " + chartDirectory);
 			}
-
-			return chartDirs;
+			return chartDirectories;
 		} catch (IOException e) {
-			throw new MojoExecutionException("Unable to scan chart directory at " + path, e);
+			throw new MojoExecutionException("Unable to scan chart directory at " + chartDirectory, e);
 		}
 	}
 
-	private Predicate<String> shouldIncludeDirectory(MatchPatterns exclusionPatterns) {
-		return inputDirectory -> {
-
-			boolean isCaseSensitive = false;
-			boolean matches = exclusionPatterns.matches(inputDirectory, isCaseSensitive);
-
-			if (matches) {
-				getLog().debug("Skip excluded directory " + inputDirectory);
-				return false;
-			}
-
-			return true;
-		};
+	List<Path> getChartArchives() throws MojoExecutionException {
+		try (Stream<Path> files = Files.walk(getOutputDirectory())) {
+			return files
+					.filter(s -> Stream.of(".tgz", "tgz.prov").anyMatch(e -> s.getFileName().toString().endsWith(e)))
+					.peek(p -> getLog().debug("Found chart file for upload: " + p))
+					.collect(Collectors.toList());
+		} catch (IOException e) {
+			throw new MojoExecutionException("Unable to scan repo directory at " + outputDirectory, e);
+		}
 	}
 
 	HelmRepository getHelmUploadRepo() {
@@ -507,13 +456,38 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		try {
 			if (securityDispatcher instanceof DefaultSecDispatcher) {
-				((DefaultSecDispatcher) securityDispatcher).setConfigurationFile(getHelmSecurity());
+				((DefaultSecDispatcher) securityDispatcher).setConfigurationFile(helmSecurity);
 			}
 			return new PasswordAuthentication(server.getUsername(),
 					securityDispatcher.decrypt(server.getPassword()).toCharArray());
 		} catch (SecDispatcherException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
+	}
+
+	String getK8SArgs() {
+		StringBuilder k8sConfigArgs = new StringBuilder();
+		if (k8sCluster != null) {
+			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
+				k8sConfigArgs.append(" --kube-apiserver=").append(k8sCluster.getApiUrl());
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
+				k8sConfigArgs.append(" --namespace=").append(k8sCluster.getNamespace());
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
+				k8sConfigArgs.append(" --kube-as-user=").append(k8sCluster.getAsUser());
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
+				k8sConfigArgs.append(" --kube-as-group=").append(k8sCluster.getAsGroup());
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
+				k8sConfigArgs.append(" --kube-token=").append(k8sCluster.getToken());
+			}
+			if (k8sConfigArgs.length() > 0) {
+				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
+			}
+		}
+		return k8sConfigArgs.toString();
 	}
 
 	private void warnOnMixOfK8sClusterAndGlobalFlags() {

@@ -1,6 +1,6 @@
 package io.kokuwa.maven.helm;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -47,9 +47,9 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (String chartDirectory : getChartDirectories()) {
+		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info(String.format("\n\nPerform install for chart %s...", chartDirectory));
-			String clusterName = new File(chartDirectory).getName();
+			String clusterName = chartDirectory.getFileName().toString();
 			String arguments = String.format("%s %s %s %s", action, clusterName, chartDirectory, getValuesOptions());
 			helm(arguments, "Failed to deploy helm chart", null);
 		}

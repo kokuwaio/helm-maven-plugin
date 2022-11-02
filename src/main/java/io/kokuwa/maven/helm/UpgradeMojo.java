@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import java.nio.file.Path;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -51,12 +53,13 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException {
+
 		if (skip || skipUpgrade) {
 			getLog().info("Skip upgrade");
 			return;
 		}
 
-		for (String chartDirectory : getChartDirectories()) {
+		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("installing the chart " +
 					(upgradeWithInstall ? "with install " : "") +
 					(upgradeDryRun ? "as dry run " : "") +

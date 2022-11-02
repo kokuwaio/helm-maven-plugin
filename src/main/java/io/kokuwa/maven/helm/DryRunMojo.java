@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import java.nio.file.Path;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -43,7 +45,7 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (String chartDirectory : getChartDirectories()) {
+		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("\n\nPerform dry-run for chart " + chartDirectory + "...");
 			String arguments = action + " " + chartDirectory + " --dry-run --generate-name" + getValuesOptions();
 			helm(arguments, "There are test failures", null);
