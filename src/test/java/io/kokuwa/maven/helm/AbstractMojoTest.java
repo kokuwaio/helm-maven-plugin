@@ -2,19 +2,25 @@ package io.kokuwa.maven.helm;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Authenticator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.apache.maven.settings.Server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -22,6 +28,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import io.kokuwa.maven.helm.junit.MojoExtension;
@@ -47,17 +54,61 @@ public abstract class AbstractMojoTest {
 
 	static void assertHelm(AbstractHelmMojo mojo, String... commands) {
 
-		ArgumentCaptor<String> commandCaptor = ArgumentCaptor.forClass(String.class);
-		assertDoesNotThrow(() -> Mockito.doNothing()
-				.when(mojo)
-				.helm(commandCaptor.capture(), ArgumentMatchers.anyString(), ArgumentMatchers.any()), "mockito failed");
-		assertDoesNotThrow(() -> mojo.execute(), "failed to execute mojo");
+		// setup log
 
-		List<String> actual = commandCaptor.getAllValues().stream()
-				// do some sanitizing on spaces
-				.map(command -> command.trim().replaceAll(" ( )+", " "))
+		ArgumentCaptor<CharSequence> messages = ArgumentCaptor.forClass(CharSequence.class);
+		Log log = Mockito.spy(SystemStreamLog.class);
+		Mockito.doReturn(true).when(log).isDebugEnabled();
+		Mockito.doReturn(true).when(log).isInfoEnabled();
+		Mockito.doReturn(true).when(log).isWarnEnabled();
+		Mockito.doReturn(true).when(log).isErrorEnabled();
+		Mockito.doNothing().when(log).debug(messages.capture());
+		Mockito.doNothing().when(log).info(messages.capture());
+		Mockito.doNothing().when(log).warn(messages.capture());
+		Mockito.doNothing().when(log).error(messages.capture());
+		Mockito.doNothing().when(log).debug(messages.capture(), ArgumentMatchers.any(Throwable.class));
+		Mockito.doNothing().when(log).info(messages.capture(), ArgumentMatchers.any(Throwable.class));
+		Mockito.doNothing().when(log).warn(messages.capture(), ArgumentMatchers.any(Throwable.class));
+		Mockito.doNothing().when(log).error(messages.capture(), ArgumentMatchers.any(Throwable.class));
+
+		// setup runtime
+
+		ArgumentCaptor<String> actualCommands = ArgumentCaptor.forClass(String.class);
+		Runtime runtime = Mockito.mock(Runtime.class);
+		Process process = Mockito.mock(Process.class);
+		Mockito.doReturn(new ByteArrayInputStream(new byte[0])).when(process).getInputStream();
+		Mockito.doReturn(new ByteArrayInputStream(new byte[0])).when(process).getErrorStream();
+		Mockito.doReturn(new ByteArrayOutputStream()).when(process).getOutputStream();
+		assertDoesNotThrow(() -> Mockito.doReturn(process).when(runtime).exec(actualCommands.capture()));
+		assertDoesNotThrow(() -> Mockito.doReturn(0).when(process).waitFor());
+
+		// execute mojo
+
+		try (MockedStatic<Runtime> mockedRuntime = Mockito.mockStatic(Runtime.class)) {
+			mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
+			mojo.setLog(log);
+			mojo.execute();
+		} catch (Exception e) {
+			fail("Failed to execute mojo", e);
+		}
+
+		// check logs for secrets and passwords
+
+		assertEquals(Collections.emptySet(), messages.getAllValues().stream()
+				.map(String::valueOf).map(String::toLowerCase)
+				.filter(message -> message.contains("secret"))
+				.collect(Collectors.toSet()),
+				"found secrets in log statements");
+
+		// check commands
+
+		List<String> actual = actualCommands.getAllValues().stream()
 				// replace windows path
 				.map(command -> command.replaceAll(Pattern.quote("\\"), "/"))
+				// remove helm executeable
+				.map(command -> command.substring(assertDoesNotThrow(mojo::getHelmExecuteablePath).toString().length()))
+				// do some sanitizing on spaces
+				.map(command -> command.trim().replaceAll(" ( )+", " "))
 				.collect(Collectors.toList());
 		List<String> expected = Stream.of(commands)
 				// replace windows path

@@ -79,7 +79,6 @@ public class InitMojoTest extends AbstractMojoTest {
 
 	@DisplayName("executeable: local")
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	void localHelm(InitMojo mojo) {
 		mojo.setUseLocalHelmBinary(true);
 		mojo.setHelmVersion(null);
@@ -101,6 +100,7 @@ public class InitMojoTest extends AbstractMojoTest {
 	}
 
 	@DisplayName("executable: download with url")
+	@DisabledOnOs(OS.WINDOWS)
 	@Test
 	void downloadHelmWithUrl(InitMojo mojo) throws IOException {
 		Path helmExecutableDirectory = Files.createTempDirectory("helm-maven-plugin-test");
