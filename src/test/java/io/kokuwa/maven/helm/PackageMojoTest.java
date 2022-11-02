@@ -2,6 +2,7 @@ package io.kokuwa.maven.helm;
 
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +28,7 @@ public class PackageMojoTest extends AbstractMojoTest {
 	@DisplayName("with dependencies")
 	@Test
 	void dependencies(PackageMojo mojo) {
-		mojo.setChartDirectory("src/test/resources/dependencies");
+		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 		assertHelm(mojo,
 				"package src/test/resources/dependencies/b -d target/helm/repo",
 				"package src/test/resources/dependencies/a2 -d target/helm/repo",

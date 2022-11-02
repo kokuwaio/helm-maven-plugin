@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import java.io.File;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +34,7 @@ public class DryRunMojoTest extends AbstractMojoTest {
 	@DisplayName("with dependencies")
 	@Test
 	void dependencies(DryRunMojo mojo) {
-		mojo.setChartDirectory("src/test/resources/dependencies");
+		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 		assertHelm(mojo,
 				"install src/test/resources/dependencies/b --dry-run --generate-name",
 				"install src/test/resources/dependencies/a2 --dry-run --generate-name",

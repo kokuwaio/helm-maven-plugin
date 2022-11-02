@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import java.io.File;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +37,7 @@ public class TemplateMojoTest extends AbstractMojoTest {
 	@Test
 	void dependencies(TemplateMojo mojo) {
 		mojo.setSkipTemplate(false);
-		mojo.setChartDirectory("src/test/resources/dependencies");
+		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 		assertHelm(mojo,
 				"template src/test/resources/dependencies/b",
 				"template src/test/resources/dependencies/a2",

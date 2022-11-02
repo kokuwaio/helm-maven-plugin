@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import java.io.File;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +37,7 @@ public class InstallMojoTest extends AbstractMojoTest {
 	@Test
 	void dependencies(InstallMojo mojo) {
 		mojo.setSkipInstall(false);
-		mojo.setChartDirectory("src/test/resources/dependencies");
+		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 		assertHelm(mojo,
 				"install b src/test/resources/dependencies/b",
 				"install a2 src/test/resources/dependencies/a2",

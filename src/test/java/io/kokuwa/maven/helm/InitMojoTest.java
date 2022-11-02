@@ -2,6 +2,7 @@ package io.kokuwa.maven.helm;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -81,7 +82,7 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisabledOnOs(OS.WINDOWS)
 	void localHelm(InitMojo mojo) {
 		mojo.setUseLocalHelmBinary(true);
-		mojo.setHelmExecutableDirectory("src/it");
+		mojo.setHelmExecutableDirectory(new File("src/it"));
 		assertHelm(mojo, "version", "repo add stable " + InitMojo.STABLE_HELM_REPO);
 	}
 
@@ -90,7 +91,7 @@ public class InitMojoTest extends AbstractMojoTest {
 	void downloadHelmWithVersion(InitMojo mojo) throws IOException {
 		Path helmExecutableDirectory = Files.createTempDirectory("helm-maven-plugin-test");
 		Path helmExecutable = helmExecutableDirectory.resolve(HELM);
-		mojo.setHelmExecutableDirectory(helmExecutableDirectory.toString());
+		mojo.setHelmExecutableDirectory(helmExecutableDirectory.toFile());
 		mojo.setHelmVersion("3.10.1");
 		mojo.setUseLocalHelmBinary(false);
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
@@ -103,7 +104,7 @@ public class InitMojoTest extends AbstractMojoTest {
 	void downloadHelmWithUrl(InitMojo mojo) throws IOException {
 		Path helmExecutableDirectory = Files.createTempDirectory("helm-maven-plugin-test");
 		Path helmExecutable = helmExecutableDirectory.resolve("helm");
-		mojo.setHelmExecutableDirectory(helmExecutableDirectory.toString());
+		mojo.setHelmExecutableDirectory(helmExecutableDirectory.toFile());
 		mojo.setHelmDownloadUrl(new URL("https://get.helm.sh/helm-v3.10.1-linux-amd64.tar.gz"));
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
 		assertTrue(Files.isRegularFile(helmExecutable), "executable not found");

@@ -92,9 +92,9 @@ public class PushMojo extends AbstractHelmMojo {
 		helm(String.format(CHART_PUSH_TEMPLATE, tgz, registry.getUrl()), "Upload failed", null);
 	}
 
-	List<String> getChartTgzs(String path) throws MojoExecutionException {
+	List<String> getChartTgzs(Path path) throws MojoExecutionException {
 
-		try (Stream<Path> files = Files.walk(Paths.get(path))) {
+		try (Stream<Path> files = Files.walk(path)) {
 			return files
 					.filter(p -> FileNameUtils.getExtension(p.toFile().getName()).equals("tgz"))
 					.map(Path::toString)
