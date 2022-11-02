@@ -82,6 +82,7 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisabledOnOs(OS.WINDOWS)
 	void localHelm(InitMojo mojo) {
 		mojo.setUseLocalHelmBinary(true);
+		mojo.setHelmVersion(null);
 		mojo.setHelmExecutableDirectory(new File("src/it"));
 		assertHelm(mojo, "version", "repo add stable " + InitMojo.STABLE_HELM_REPO);
 	}
@@ -105,6 +106,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		Path helmExecutableDirectory = Files.createTempDirectory("helm-maven-plugin-test");
 		Path helmExecutable = helmExecutableDirectory.resolve("helm");
 		mojo.setHelmExecutableDirectory(helmExecutableDirectory.toFile());
+		mojo.setHelmVersion(null);
 		mojo.setHelmDownloadUrl(new URL("https://get.helm.sh/helm-v3.10.1-linux-amd64.tar.gz"));
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
 		assertTrue(Files.isRegularFile(helmExecutable), "executable not found");

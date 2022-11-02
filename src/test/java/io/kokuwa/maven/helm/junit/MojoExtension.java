@@ -78,8 +78,6 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 			mojo.setSettings(new Settings());
 			mojo.setSecurityDispatcher(new DefaultSecDispatcher(new DefaultPlexusCipher()));
 			mojo.setLog(new SystemStreamLog());
-			mojo.setChartDirectory(new File("src/test/resources/simple")); // set some sane defaults for tests
-			mojo.setHelmVersion("3.10.0"); // avoid github api
 
 			// set parameter
 
@@ -102,12 +100,13 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 						fail("unsupported type: " + parameter.getType());
 					}
 				}
-
-				if (parameter.isRequired()) {
-					assertNotNull(field.get(mojo), "Parameter '" + parameter.getName() + "' not set for mojo '"
-							+ mojoType.getSimpleName() + "'.");
-				}
 			}
+
+			// preconfigure
+
+			mojo.setChartDirectory(new File("src/test/resources/simple")); // set some sane defaults for tests
+			mojo.setHelmExecutableDirectory(new File("src/it")); // avoid download helm
+			mojo.setHelmVersion("3.10.0"); // avoid github api
 
 			return mojo;
 		} catch (ReflectiveOperationException e) {
