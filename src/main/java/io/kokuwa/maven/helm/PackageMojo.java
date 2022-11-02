@@ -1,5 +1,6 @@
 package io.kokuwa.maven.helm;
 
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -87,7 +88,7 @@ public class PackageMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		for (String chartDirectory : getChartDirectories()) {
+		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("Packaging chart " + chartDirectory + "...");
 
 			String arguments = "package " + chartDirectory + " -d " + getOutputDirectory();

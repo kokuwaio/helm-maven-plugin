@@ -29,7 +29,6 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -162,43 +161,28 @@ public class InitMojo extends AbstractHelmMojo {
 
 		if (addUploadRepos) {
 			if (getUploadRepoStable() != null) {
-				addRepository(getUploadRepoStable());
+				addRepository(getUploadRepoStable(), true);
 			}
 
 			// add the upload snapshot repo only if it's name differs to the upload repo stable name
 			if (getUploadRepoSnapshot() != null && (getUploadRepoStable() == null
 					|| !getUploadRepoStable().getName().equals(getUploadRepoSnapshot().getName()))) {
-				addRepository(getUploadRepoSnapshot());
+				addRepository(getUploadRepoSnapshot(), true);
 			}
 		}
 
 		if (helmExtraRepos != null) {
 			for (HelmRepository repository : helmExtraRepos) {
-				addRepository(repository);
+				addRepository(repository, true);
 			}
 		}
 	}
 
-	/**
-	 * Adds the helm repository to the helm, with repo authentication
-	 *
-	 * @param repository - helm repository to be added
-	 */
-	private void addRepository(HelmRepository repository) throws MojoExecutionException {
-		addRepository(repository, true);
-	}
-
-	/**
-	 * Adds the helm repository to the helm
-	 *
-	 * @param repository             - helm repository to be added
-	 * @param authenticationRequired - defines whether the authentication is required
-	 */
 	private void addRepository(HelmRepository repository, boolean authenticationRequired)
 			throws MojoExecutionException {
 		getLog().info("Adding repo [" + repository + "]");
-		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
 		String arguments = "repo add " + repository.getName() + " " + repository.getUrl();
+		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
 		if (auth != null) {
 			arguments += " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword());
 		}
@@ -212,7 +196,7 @@ public class InitMojo extends AbstractHelmMojo {
 	private void downloadAndUnpackHelm() throws MojoExecutionException {
 
 		Path directory = getHelmExecutableDirectory();
-		if (Files.exists(directory.resolve(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm"))) {
+		if (Files.exists(getHelmExecuteableName())) {
 			getLog().info("Found helm executable, skip init.");
 			return;
 		}

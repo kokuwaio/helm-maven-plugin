@@ -51,7 +51,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 			mojo.setHelmExecutableDirectory(new File("src/nope"));
 			MojoExecutionException exception = assertThrows(MojoExecutionException.class,
 					() -> mojo.getHelmExecuteablePath());
-			assertEquals("Helm executable is not found.", exception.getMessage());
+			assertEquals("Helm executable not found.", exception.getMessage());
 		}
 
 		@DisplayName("from path")

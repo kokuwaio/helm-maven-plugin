@@ -8,12 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +18,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import io.kokuwa.maven.helm.exception.BadUploadException;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 import lombok.Setter;
@@ -70,30 +65,13 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 
 		getLog().info("Uploading to " + getHelmUploadUrl() + "\n");
-		for (String chartPackageFile : getChartFiles(getOutputDirectory())) {
-			getLog().info("Uploading " + chartPackageFile + "...");
+		for (Path chart : getChartArchives()) {
+			getLog().info("Uploading " + chart + "...");
 			try {
-				uploadSingle(chartPackageFile);
-			} catch (BadUploadException | IOException e) {
-				getLog().error(e.getMessage());
-				throw new MojoExecutionException("Error uploading " + chartPackageFile + " to " + getHelmUploadUrl(),
-						e);
+				uploadSingle(chart);
+			} catch (IOException e) {
+				throw new MojoExecutionException("Upload failed.", e);
 			}
-		}
-	}
-
-	private boolean isChartFile(Path p) {
-		String filename = p.getFileName().toString();
-		return filename.endsWith(".tgz") || filename.endsWith("tgz.prov");
-	}
-
-	List<String> getChartFiles(Path path) throws MojoExecutionException {
-		try (Stream<Path> files = Files.walk(path)) {
-			return files.filter(this::isChartFile)
-					.map(Path::toString)
-					.collect(Collectors.toList());
-		} catch (IOException e) {
-			throw new MojoExecutionException("Unable to scan repo directory at " + path, e);
 		}
 	}
 
@@ -117,8 +95,8 @@ public class UploadMojo extends AbstractHelmMojo {
 		return uploadUrl;
 	}
 
-	protected void uploadSingle(String file) throws IOException, BadUploadException, MojoExecutionException {
-		File fileToUpload = new File(file);
+	private void uploadSingle(Path chart) throws MojoExecutionException, IOException {
+		File fileToUpload = chart.toFile();
 		HelmRepository uploadRepo = getHelmUploadRepo();
 
 		HttpURLConnection connection;
@@ -153,7 +131,7 @@ public class UploadMojo extends AbstractHelmMojo {
 			} else {
 				response = "No details provided";
 			}
-			throw new BadUploadException(response);
+			throw new MojoExecutionException("Failed to upload: " + response);
 		} else {
 			String message = Integer.toString(connection.getResponseCode());
 			if (connection.getInputStream() != null) {
@@ -164,7 +142,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		connection.disconnect();
 	}
 
-	protected HttpURLConnection getConnectionForUploadToChartmuseum() throws IOException, MojoExecutionException {
+	private HttpURLConnection getConnectionForUploadToChartmuseum() throws IOException, MojoExecutionException {
 		HttpURLConnection connection = (HttpURLConnection) new URL(getHelmUploadUrl()).openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
@@ -185,7 +163,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 	}
 
-	protected HttpURLConnection getConnectionForUploadToArtifactory(File file, boolean useGroupId)
+	private HttpURLConnection getConnectionForUploadToArtifactory(File file, boolean useGroupId)
 			throws IOException, MojoExecutionException {
 		String uploadUrl = getHelmUploadUrl();
 		// Append slash if not already in place
@@ -208,7 +186,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		return connection;
 	}
 
-	protected HttpURLConnection getConnectionForUploadToNexus(File file) throws IOException, MojoExecutionException {
+	private HttpURLConnection getConnectionForUploadToNexus(File file) throws IOException, MojoExecutionException {
 		String uploadUrl = getHelmUploadUrl();
 		// Append slash if not already in place
 		if (!uploadUrl.endsWith("/")) {

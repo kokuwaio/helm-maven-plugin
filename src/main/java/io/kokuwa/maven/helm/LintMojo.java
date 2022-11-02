@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import java.nio.file.Path;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -42,7 +44,7 @@ public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (String chartDirectory : getChartDirectories()) {
+		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("\n\nTesting chart " + chartDirectory + "...");
 			String arguments = "lint " + chartDirectory + (lintStrict ? " --strict" : "") + getValuesOptions();
 			helm(arguments, "There are test failures", null);

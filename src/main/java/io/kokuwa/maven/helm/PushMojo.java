@@ -1,16 +1,9 @@
 package io.kokuwa.maven.helm;
 
-import java.io.IOException;
 import java.net.PasswordAuthentication;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -75,32 +68,11 @@ public class PushMojo extends AbstractHelmMojo {
 			helm(arguments, "can't login to registry", new String(authentication.getPassword()));
 		}
 
-		getLog().info("Uploading to " + registry.getUrl());
-		getChartTgzs(getOutputDirectory())
-				.forEach(
-						chartTgzFile -> {
-							getLog().info("Uploading " + chartTgzFile);
-							try {
-								uploadSingle(Paths.get(chartTgzFile), registry);
-							} catch (MojoExecutionException e) {
-								throw new RuntimeException(e);
-							}
-						});
-	}
+		// upload chart files
 
-	private void uploadSingle(Path tgz, HelmRepository registry) throws MojoExecutionException {
-		helm(String.format(CHART_PUSH_TEMPLATE, tgz, registry.getUrl()), "Upload failed", null);
-	}
-
-	List<String> getChartTgzs(Path path) throws MojoExecutionException {
-
-		try (Stream<Path> files = Files.walk(path)) {
-			return files
-					.filter(p -> FileNameUtils.getExtension(p.toFile().getName()).equals("tgz"))
-					.map(Path::toString)
-					.collect(Collectors.toList());
-		} catch (IOException e) {
-			throw new MojoExecutionException("Unable to scan repo directory at " + path, e);
+		for (Path chart : getChartArchives()) {
+			getLog().info("Uploading " + chart + "...");
+			helm(String.format(CHART_PUSH_TEMPLATE, chart, registry.getUrl()), "Upload failed", null);
 		}
 	}
 }

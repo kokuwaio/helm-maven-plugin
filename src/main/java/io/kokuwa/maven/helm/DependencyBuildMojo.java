@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import java.nio.file.Path;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -34,7 +36,7 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		for (String chartDirectory : getChartDirectories()) {
+		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("Build chart dependencies for " + chartDirectory + " ...");
 			helm("dependency build " + chartDirectory, "Failed to resolve dependencies", null);
 		}
