@@ -2,8 +2,8 @@ package io.kokuwa.maven.helm;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.StringUtils;
 
 import io.kokuwa.maven.helm.pojo.ValueOverride;
 import lombok.Setter;

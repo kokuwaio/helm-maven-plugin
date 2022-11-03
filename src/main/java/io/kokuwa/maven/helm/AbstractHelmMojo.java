@@ -20,8 +20,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -31,6 +29,8 @@ import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.MatchPatterns;
+import org.codehaus.plexus.util.Os;
+import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
@@ -52,7 +52,7 @@ import lombok.Setter;
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	/** Path of helm executeable. */
-	private final Path helmExecuteableName = Paths.get(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm");
+	private final Path helmExecuteableName = Paths.get(Os.isFamily(Os.FAMILY_WINDOWS) ? "helm.exe" : "helm");
 
 	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
