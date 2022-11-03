@@ -196,7 +196,7 @@ public class InitMojo extends AbstractHelmMojo {
 	private void downloadAndUnpackHelm() throws MojoExecutionException {
 
 		Path directory = getHelmExecutableDirectory();
-		if (Files.exists(getHelmExecuteableName())) {
+		if (Files.exists(directory.resolve(getHelmExecuteableName()))) {
 			getLog().info("Found helm executable, skip init.");
 			return;
 		}
