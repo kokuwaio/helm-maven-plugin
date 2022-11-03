@@ -33,6 +33,14 @@ public class TemplateMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "template src/test/resources/simple --values values.yaml");
 	}
 
+	@DisplayName("with additional arguments")
+	@Test
+	void additionalArguments(TemplateMojo mojo) {
+		mojo.setSkipTemplate(false);
+		mojo.setAdditionalArguments("--foo --bar");
+		assertHelm(mojo, "template src/test/resources/simple --foo --bar");
+	}
+
 	@DisplayName("with dependencies")
 	@Test
 	void dependencies(TemplateMojo mojo) {

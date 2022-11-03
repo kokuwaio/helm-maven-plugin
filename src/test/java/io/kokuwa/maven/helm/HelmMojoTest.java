@@ -242,38 +242,39 @@ public class HelmMojoTest extends AbstractMojoTest {
 	class K8SClusterArgs {
 
 		@Test
-		void empty(LintMojo mojo) {
-			assertEquals("", mojo.getK8SArgs());
+		void empy(LintMojo mojo) {
+			mojo.setK8sCluster(null);
+			assertHelm(mojo, "lint src/test/resources/simple");
 		}
 
 		@Test
 		void notConfigured(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster());
-			assertEquals("", mojo.getK8SArgs());
+			assertHelm(mojo, "lint src/test/resources/simple");
 		}
 
 		@Test
 		void apiUrl(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setApiUrl("custom-api-url"));
-			assertEquals(" --kube-apiserver=custom-api-url", mojo.getK8SArgs());
+			assertHelm(mojo, "lint src/test/resources/simple --kube-apiserver=custom-api-url");
 		}
 
 		@Test
 		void asUser(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setAsUser("custom-user"));
-			assertEquals(" --kube-as-user=custom-user", mojo.getK8SArgs());
+			assertHelm(mojo, "lint src/test/resources/simple --kube-as-user=custom-user");
 		}
 
 		@Test
 		void asGroup(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setAsGroup("custom-group"));
-			assertEquals(" --kube-as-group=custom-group", mojo.getK8SArgs());
+			assertHelm(mojo, "lint src/test/resources/simple --kube-as-group=custom-group");
 		}
 
 		@Test
 		void token(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setToken("custom-token"));
-			assertEquals(" --kube-token=custom-token", mojo.getK8SArgs());
+			assertHelm(mojo, "lint src/test/resources/simple --kube-token=custom-token");
 		}
 
 		@Test
@@ -283,11 +284,11 @@ public class HelmMojoTest extends AbstractMojoTest {
 					.setAsUser("custom-user")
 					.setAsGroup("custom-group")
 					.setToken("custom-token"));
-			assertEquals(" --kube-apiserver=custom-api-url"
+			assertHelm(mojo, "lint src/test/resources/simple"
+					+ " --kube-apiserver=custom-api-url"
 					+ " --kube-as-user=custom-user"
 					+ " --kube-as-group=custom-group"
-					+ " --kube-token=custom-token", mojo.getK8SArgs());
+					+ " --kube-token=custom-token");
 		}
 	}
-
 }
