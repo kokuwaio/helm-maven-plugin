@@ -3,6 +3,7 @@ package io.kokuwa.maven.helm;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.PasswordAuthentication;
@@ -333,39 +334,46 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		int exitValue;
 		try {
 			Process p = Runtime.getRuntime().exec(commandWithK8sArgs);
-			new Thread(() -> {
-				if (StringUtils.isNotEmpty(stdin)) {
-					try (OutputStream outputStream = p.getOutputStream()) {
-						outputStream.write(stdin.getBytes(StandardCharsets.UTF_8));
-					} catch (IOException ex) {
-						getLog().error("failed to write to stdin of helm", ex);
-					}
-				}
 
-				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				String inputLine;
-				try {
-					while ((inputLine = input.readLine()) != null) {
-						getLog().info(inputLine);
+			// write to stdin
+
+			if (StringUtils.isNotEmpty(stdin)) {
+				try (OutputStream output = p.getOutputStream()) {
+					output.write(stdin.getBytes(StandardCharsets.UTF_8));
+				} catch (IOException e) {
+					getLog().error("failed to write to stdin of helm", e);
+				}
+			}
+
+			// redirect helm output to maven log
+
+			new Thread(() -> {
+				try (InputStream input = p.getInputStream()) {
+					BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+					String line;
+					while ((line = reader.readLine()) != null) {
+						getLog().info(line);
 					}
 				} catch (IOException e) {
-					getLog().error(e);
+					getLog().error("Failed to redirect input", e);
 				}
 			}).start();
 			new Thread(() -> {
-				BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-				String errorLine;
-				try {
-					while ((errorLine = error.readLine()) != null) {
-						getLog().error(errorLine);
+				try (InputStream error = p.getErrorStream()) {
+					BufferedReader reader = new BufferedReader(new InputStreamReader(error));
+					String line;
+					while ((line = reader.readLine()) != null) {
+						getLog().error(line);
 					}
 				} catch (IOException e) {
-					getLog().error(e);
+					getLog().error("Failed to redirect errors", e);
 				}
 			}).start();
-			p.waitFor();
-			exitValue = p.exitValue();
-		} catch (Exception e) {
+
+			// wait for process to finish
+
+			exitValue = p.waitFor();
+		} catch (IOException | InterruptedException e) {
 			getLog().error("Error processing command [" + commandWithK8sArgs + "]", e);
 			throw new MojoExecutionException("Error processing command", e);
 		}
