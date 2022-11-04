@@ -36,6 +36,14 @@ public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 	@Parameter(property = "helm.lint.strict", defaultValue = "false")
 	private boolean lintStrict;
 
+	/**
+	 * Set this to <code>true</code> to print only warnings and errors.
+	 *
+	 * @since 6.6
+	 */
+	@Parameter(property = "helm.lint.quiet", defaultValue = "false")
+	private boolean lintQuiet;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -49,6 +57,7 @@ public class LintMojo extends AbstractHelmWithValueOverrideMojo {
 			helm()
 					.arguments("lint", chartDirectory)
 					.flag("strict", lintStrict)
+					.flag("quiet", lintQuiet)
 					.execute("There are linting issues");
 		}
 	}
