@@ -47,7 +47,7 @@ public class PushMojoTest extends AbstractMojoTest {
 				.setUsername("foo")
 				.setPassword("secret"));
 		assertHelm(mojo,
-				"registry login -u foo docker.example.org --password-stdin",
+				"registry login docker.example.org --username foo --password-stdin",
 				"push " + packaged + " oci://docker.example.org");
 	}
 
@@ -61,7 +61,7 @@ public class PushMojoTest extends AbstractMojoTest {
 				.setName("oci")
 				.setUrl("docker.example.org"));
 		assertHelm(mojo,
-				"registry login -u foo docker.example.org --password-stdin",
+				"registry login docker.example.org --username foo --password-stdin",
 				"push " + packaged + " oci://docker.example.org");
 	}
 
@@ -76,7 +76,7 @@ public class PushMojoTest extends AbstractMojoTest {
 				.setName("oci")
 				.setUrl("docker.example.org"));
 		assertHelm(mojo,
-				"registry login -u foo docker.example.org --password-stdin",
+				"registry login docker.example.org --username foo --password-stdin",
 				"push " + packaged + " oci://docker.example.org");
 	}
 }

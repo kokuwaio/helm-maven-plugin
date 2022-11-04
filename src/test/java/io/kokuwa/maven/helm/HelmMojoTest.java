@@ -256,25 +256,25 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@Test
 		void apiUrl(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setApiUrl("custom-api-url"));
-			assertHelm(mojo, "lint src/test/resources/simple --kube-apiserver=custom-api-url");
+			assertHelm(mojo, "lint src/test/resources/simple --kube-apiserver custom-api-url");
 		}
 
 		@Test
 		void asUser(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setAsUser("custom-user"));
-			assertHelm(mojo, "lint src/test/resources/simple --kube-as-user=custom-user");
+			assertHelm(mojo, "lint src/test/resources/simple --kube-as-user custom-user");
 		}
 
 		@Test
 		void asGroup(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setAsGroup("custom-group"));
-			assertHelm(mojo, "lint src/test/resources/simple --kube-as-group=custom-group");
+			assertHelm(mojo, "lint src/test/resources/simple --kube-as-group custom-group");
 		}
 
 		@Test
 		void token(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setToken("custom-token"));
-			assertHelm(mojo, "lint src/test/resources/simple --kube-token=custom-token");
+			assertHelm(mojo, "lint src/test/resources/simple --kube-token custom-token");
 		}
 
 		@Test
@@ -285,10 +285,10 @@ public class HelmMojoTest extends AbstractMojoTest {
 					.setAsGroup("custom-group")
 					.setToken("custom-token"));
 			assertHelm(mojo, "lint src/test/resources/simple"
-					+ " --kube-apiserver=custom-api-url"
-					+ " --kube-as-user=custom-user"
-					+ " --kube-as-group=custom-group"
-					+ " --kube-token=custom-token");
+					+ " --kube-apiserver custom-api-url"
+					+ " --kube-as-user custom-user"
+					+ " --kube-as-group custom-group"
+					+ " --kube-token custom-token");
 		}
 	}
 }

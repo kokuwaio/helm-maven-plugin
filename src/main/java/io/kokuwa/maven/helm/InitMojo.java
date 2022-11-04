@@ -184,7 +184,7 @@ public class InitMojo extends AbstractHelmMojo {
 		String arguments = "repo add " + repository.getName() + " " + repository.getUrl();
 		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
 		if (auth != null) {
-			arguments += " --username=" + auth.getUserName() + " --password=" + String.valueOf(auth.getPassword());
+			arguments += " --username " + auth.getUserName() + " --password " + String.valueOf(auth.getPassword());
 		}
 		if (repositoryAddForceUpdate || repository.isForceUpdate()) {
 			arguments += " --force-update";

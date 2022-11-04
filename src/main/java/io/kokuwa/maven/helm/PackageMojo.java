@@ -91,7 +91,7 @@ public class PackageMojo extends AbstractHelmMojo {
 		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("Packaging chart " + chartDirectory + "...");
 
-			String arguments = "package " + chartDirectory + " -d " + getOutputDirectory();
+			String arguments = "package " + chartDirectory + " --destination " + getOutputDirectory();
 
 			String chartVersion = getChartVersion();
 			if (chartVersion != null) {

@@ -296,31 +296,31 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			command.append(" --debug");
 		}
 		if (registryConfig != null) {
-			command.append(" --registry-config=").append(registryConfig);
+			command.append(" --registry-config ").append(registryConfig);
 		}
 		if (repositoryConfig != null) {
-			command.append(" --repository-config=").append(repositoryConfig);
+			command.append(" --repository-config ").append(repositoryConfig);
 		}
 		if (repositoryCache != null) {
-			command.append(" --repository-cache=").append(repositoryCache);
+			command.append(" --repository-cache ").append(repositoryCache);
 		}
 		if (StringUtils.isNotEmpty(namespace)) {
 			command.append(" --namespace=").append(namespace);
 		}
 		if (StringUtils.isNotEmpty(kubeApiServer)) {
-			command.append(" --kube-apiserver=").append(kubeApiServer);
+			command.append(" --kube-apiserver ").append(kubeApiServer);
 		}
 		if (StringUtils.isNotEmpty(kubeAsUser)) {
-			command.append(" --kube-as-user=").append(kubeAsUser);
+			command.append(" --kube-as-user ").append(kubeAsUser);
 		}
 		if (StringUtils.isNotEmpty(kubeAsGroup)) {
-			command.append(" --kube-as-group=").append(kubeAsGroup);
+			command.append(" --kube-as-group ").append(kubeAsGroup);
 		}
 		if (StringUtils.isNotEmpty(kubeToken)) {
-			command.append(" --kube-token=").append(kubeToken);
+			command.append(" --kube-token ").append(kubeToken);
 		}
 		if (kubeCaFile != null) {
-			command.append(" --kube-ca-file=").append(kubeCaFile);
+			command.append(" --kube-ca-file ").append(kubeCaFile);
 		}
 
 		// execute helm
@@ -477,19 +477,19 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		StringBuilder k8sConfigArgs = new StringBuilder();
 		if (k8sCluster != null) {
 			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
-				k8sConfigArgs.append(" --kube-apiserver=").append(k8sCluster.getApiUrl());
+				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				k8sConfigArgs.append(" --namespace=").append(k8sCluster.getNamespace());
+				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
-				k8sConfigArgs.append(" --kube-as-user=").append(k8sCluster.getAsUser());
+				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
-				k8sConfigArgs.append(" --kube-as-group=").append(k8sCluster.getAsGroup());
+				k8sConfigArgs.append(" --kube-as-group ").append(k8sCluster.getAsGroup());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
-				k8sConfigArgs.append(" --kube-token=").append(k8sCluster.getToken());
+				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
 			}
 			if (k8sConfigArgs.length() > 0) {
 				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
