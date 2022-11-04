@@ -473,7 +473,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		}
 	}
 
-	String getK8SArgs() {
+	private String getK8SArgs() {
 		StringBuilder k8sConfigArgs = new StringBuilder();
 		if (k8sCluster != null) {
 			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
