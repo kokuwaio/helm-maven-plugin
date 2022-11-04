@@ -37,7 +37,7 @@ import io.kokuwa.maven.helm.junit.MojoExtension;
 @ExtendWith(MojoExtension.class)
 public abstract class AbstractMojoTest {
 
-	/** Path of helm executeable. */
+	/** Path of helm executable. */
 	static final Path HELM = Paths.get(SystemUtils.IS_OS_WINDOWS ? "helm.exe" : "helm");
 	/** Basic auth for foo:secret. */
 	static final String BASIC_FOO_SECRET = "Basic Zm9vOnNlY3JldA==";
@@ -105,8 +105,8 @@ public abstract class AbstractMojoTest {
 		List<String> actual = actualCommands.getAllValues().stream()
 				// replace windows path
 				.map(command -> command.replaceAll(Pattern.quote("\\"), "/"))
-				// remove helm executeable
-				.map(command -> command.substring(assertDoesNotThrow(mojo::getHelmExecuteablePath).toString().length()))
+				// remove helm executable
+				.map(command -> command.substring(assertDoesNotThrow(mojo::getHelmExecutablePath).toString().length()))
 				// do some sanitizing on spaces
 				.map(command -> command.trim().replaceAll(" ( )+", " "))
 				.collect(Collectors.toList());

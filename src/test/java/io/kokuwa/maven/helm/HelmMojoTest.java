@@ -27,11 +27,11 @@ import io.kokuwa.maven.helm.pojo.ValueOverride;
 @DisplayName("helm:abstract")
 public class HelmMojoTest extends AbstractMojoTest {
 
-	@DisplayName("finding helm executeable")
+	@DisplayName("finding helm executable")
 	@Nested
-	class Executeable {
+	class Executable {
 
-		@DisplayName("fixed local executeable")
+		@DisplayName("fixed local executable")
 		@Test
 		@DisabledOnOs(OS.WINDOWS)
 		void fixed(LintMojo mojo) {
@@ -39,7 +39,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 			mojo.setAutoDetectLocalHelmBinary(false);
 			mojo.setHelmExecutableDirectory(new File("src/it"));
 			Path expected = Paths.get("src/it").resolve(HELM).toAbsolutePath();
-			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecuteablePath());
+			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecutablePath());
 			assertEquals(expected, actual);
 		}
 
@@ -50,7 +50,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 			mojo.setAutoDetectLocalHelmBinary(false);
 			mojo.setHelmExecutableDirectory(new File("src/nope"));
 			MojoExecutionException exception = assertThrows(MojoExecutionException.class,
-					() -> mojo.getHelmExecuteablePath());
+					() -> mojo.getHelmExecutablePath());
 			assertEquals("Helm executable not found.", exception.getMessage());
 		}
 
@@ -61,7 +61,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 			mojo.setUseLocalHelmBinary(true);
 			mojo.setAutoDetectLocalHelmBinary(true);
 			Path expected = helmFromPath();
-			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecuteablePath());
+			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecutablePath());
 			assertEquals(expected, actual);
 		}
 

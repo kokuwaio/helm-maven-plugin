@@ -147,7 +147,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		if (isUseLocalHelmBinary()) {
 			verifyLocalHelmBinary();
-			getLog().info("Using local HELM binary [" + getHelmExecuteablePath() + "]");
+			getLog().info("Using local HELM binary [" + getHelmExecutablePath() + "]");
 		} else {
 			downloadAndUnpackHelm();
 		}
@@ -196,7 +196,7 @@ public class InitMojo extends AbstractHelmMojo {
 	private void downloadAndUnpackHelm() throws MojoExecutionException {
 
 		Path directory = getHelmExecutableDirectory();
-		if (Files.exists(directory.resolve(getHelmExecuteableName()))) {
+		if (Files.exists(directory.resolve(getHelmExecutableName()))) {
 			getLog().info("Found helm executable, skip init.");
 			return;
 		}

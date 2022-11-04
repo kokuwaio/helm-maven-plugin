@@ -77,7 +77,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		assertHelm(mojo.setAddDefaultRepo(false));
 	}
 
-	@DisplayName("executeable: local")
+	@DisplayName("executable: local")
 	@Test
 	void localHelm(InitMojo mojo) {
 		mojo.setUseLocalHelmBinary(true);
