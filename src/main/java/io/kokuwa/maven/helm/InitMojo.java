@@ -37,6 +37,7 @@ import org.apache.maven.settings.Server;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 
+import io.kokuwa.maven.helm.pojo.HelmExecutable;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -181,15 +182,14 @@ public class InitMojo extends AbstractHelmMojo {
 	private void addRepository(HelmRepository repository, boolean authenticationRequired)
 			throws MojoExecutionException {
 		getLog().info("Adding repo [" + repository + "]");
-		String arguments = "repo add " + repository.getName() + " " + repository.getUrl();
+		HelmExecutable helm = helm()
+				.arguments("repo", "add", repository.getName(), repository.getUrl())
+				.flag("force-update", repositoryAddForceUpdate || repository.isForceUpdate());
 		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
 		if (auth != null) {
-			arguments += " --username " + auth.getUserName() + " --password " + String.valueOf(auth.getPassword());
+			helm.flag("username", auth.getUserName()).flag("password", String.valueOf(auth.getPassword()));
 		}
-		if (repositoryAddForceUpdate || repository.isForceUpdate()) {
-			arguments += " --force-update";
-		}
-		helm(arguments, "Unable add repo", null);
+		helm.execute("Unable add repo");
 	}
 
 	@SneakyThrows(MalformedURLException.class)
@@ -223,6 +223,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		if (StringUtils.isNotBlank(helmDownloadUser) && StringUtils.isNotBlank(helmDownloadPassword)) {
 			Authenticator.setDefault(new Authenticator() {
+				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(helmDownloadUser, helmDownloadPassword.toCharArray());
 				}
@@ -231,6 +232,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		if (downloadServer != null) {
 			Authenticator.setDefault(new Authenticator() {
+				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(
 							downloadServer.getUsername(),
@@ -307,7 +309,7 @@ public class InitMojo extends AbstractHelmMojo {
 	}
 
 	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		helm("version", "Unable to verify local HELM binary", null);
+		helm().arguments("version").execute("Unable to verify local HELM binary");
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {

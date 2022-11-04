@@ -24,9 +24,6 @@ import lombok.Setter;
 @Setter
 public class PushMojo extends AbstractHelmMojo {
 
-	private static final String LOGIN_COMMAND_TEMPLATE = "registry login %s --username %s --password-stdin";
-	private static final String CHART_PUSH_TEMPLATE = "push %s oci://%s";
-
 	/**
 	 * Set this to <code>true</code> to skip invoking push goal.
 	 *
@@ -55,7 +52,7 @@ public class PushMojo extends AbstractHelmMojo {
 			ComparableVersion helmVersion = new ComparableVersion(getHelmVersion());
 			ComparableVersion minimumHelmVersion = new ComparableVersion("3.8.0");
 			if (helmVersion.compareTo(minimumHelmVersion) < 0) {
-				getLog().error("your helm version is " + helmVersion.toString() + ", it's required to be >=3.8.0");
+				getLog().error("your helm version is " + helmVersion + ", it's required to be >=3.8.0");
 				throw new IllegalStateException();
 			} else {
 				getLog().debug("helm version minimum satisfied. the version is: " + helmVersion);
@@ -64,15 +61,21 @@ public class PushMojo extends AbstractHelmMojo {
 
 		PasswordAuthentication authentication = getAuthentication(registry);
 		if (authentication != null) {
-			String arguments = String.format(LOGIN_COMMAND_TEMPLATE, registry.getUrl(), authentication.getUserName());
-			helm(arguments, "can't login to registry", new String(authentication.getPassword()));
+			helm()
+					.arguments("registry", "login", registry.getUrl())
+					.flag("username", authentication.getUserName())
+					.flag("password-stdin")
+					.setStdin(new String(authentication.getPassword()))
+					.execute("can't login to registry");
 		}
 
 		// upload chart files
 
-		for (Path chart : getChartArchives()) {
-			getLog().info("Uploading " + chart + "...");
-			helm(String.format(CHART_PUSH_TEMPLATE, chart, registry.getUrl()), "Upload failed", null);
+		for (Path chartArchive : getChartArchives()) {
+			getLog().info("Uploading " + chartArchive + "...");
+			helm()
+					.arguments("push", chartArchive, "oci://" + registry.getUrl())
+					.execute("Upload failed");
 		}
 	}
 }

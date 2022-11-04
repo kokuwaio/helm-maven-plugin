@@ -1,10 +1,12 @@
 package io.kokuwa.maven.helm;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.StringUtils;
 
+import io.kokuwa.maven.helm.pojo.HelmExecutable;
 import io.kokuwa.maven.helm.pojo.ValueOverride;
 import lombok.Setter;
 
@@ -19,45 +21,33 @@ public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo
 	@Parameter
 	private ValueOverride values;
 
-	protected String getValuesOptions() {
-		StringBuilder setValuesOptions = new StringBuilder();
+	@Override
+	HelmExecutable helm() throws MojoExecutionException {
+		HelmExecutable command = super.helm();
 		if (values != null) {
 			if (isNotEmpty(values.getOverrides())) {
-				setValuesOptions.append(" --set ");
-				appendOverrideMap(setValuesOptions, values.getOverrides());
+				command.flag("set", values.getOverrides()
+						.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue())
+						.collect(Collectors.joining(",")));
 			}
 			if (isNotEmpty(values.getStringOverrides())) {
-				setValuesOptions.append(" --set-string ");
-				appendOverrideMap(setValuesOptions, values.getStringOverrides());
+				command.flag("set-string", values.getStringOverrides()
+						.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue())
+						.collect(Collectors.joining(",")));
 			}
 			if (isNotEmpty(values.getFileOverrides())) {
-				setValuesOptions.append(" --set-file ");
-				appendOverrideMap(setValuesOptions, values.getFileOverrides());
+				command.flag("set-file", values.getFileOverrides()
+						.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue())
+						.collect(Collectors.joining(",")));
 			}
-			if (StringUtils.isNotBlank(values.getYamlFile())) {
-				setValuesOptions.append(" --values ").append(values.getYamlFile());
+			if (values.getYamlFile() != null) {
+				command.flag("values", values.getYamlFile());
 			}
 			if (values.getYamlFiles() != null) {
-				for (String yamlFile : values.getYamlFiles()) {
-					if (StringUtils.isNotBlank(yamlFile)) {
-						setValuesOptions.append(" --values ").append(yamlFile);
-					}
-				}
+				values.getYamlFiles().forEach(yamlFile -> command.flag("values", yamlFile));
 			}
 		}
-		return setValuesOptions.toString();
-	}
-
-	private void appendOverrideMap(StringBuilder setValues, Map<String, String> overrides) {
-		boolean first = true;
-		for (Map.Entry<String, String> valueEntry : overrides.entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				setValues.append(',');
-			}
-			setValues.append(valueEntry.getKey()).append('=').append(valueEntry.getValue());
-		}
+		return command;
 	}
 
 	private static <K, V> boolean isNotEmpty(Map<K, V> map) {
