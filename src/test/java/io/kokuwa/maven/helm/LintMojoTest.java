@@ -31,6 +31,13 @@ public class LintMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "lint src/test/resources/simple --strict");
 	}
 
+	@DisplayName("with flag quiet")
+	@Test
+	void quiet(LintMojo mojo) {
+		mojo.setLintQuiet(true);
+		assertHelm(mojo, "lint src/test/resources/simple --quiet");
+	}
+
 	@DisplayName("with values file")
 	@Test
 	void overrideFile(LintMojo mojo) {
