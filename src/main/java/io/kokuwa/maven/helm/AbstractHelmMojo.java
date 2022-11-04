@@ -51,8 +51,8 @@ import lombok.Setter;
 @Setter
 public abstract class AbstractHelmMojo extends AbstractMojo {
 
-	/** Path of helm executeable. */
-	private final Path helmExecuteableName = Paths.get(Os.isFamily(Os.FAMILY_WINDOWS) ? "helm.exe" : "helm");
+	/** Path of helm executable. */
+	private final Path helmExecutableName = Paths.get(Os.isFamily(Os.FAMILY_WINDOWS) ? "helm.exe" : "helm");
 
 	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
@@ -271,7 +271,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		super.setLog(new StripSensitiveDataLog(log));
 	}
 
-	Path getHelmExecuteablePath() throws MojoExecutionException {
+	Path getHelmExecutablePath() throws MojoExecutionException {
 		Stream<Path> optional;
 		if (useLocalHelmBinary && autoDetectLocalHelmBinary) {
 			optional = Stream.of(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))).map(Paths::get);
@@ -279,7 +279,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			optional = Stream.of(helmExecutableDirectory.toPath());
 		}
 		return optional
-				.map(directory -> directory.resolve(helmExecuteableName))
+				.map(directory -> directory.resolve(helmExecutableName))
 				.map(Path::toAbsolutePath)
 				.filter(Files::isRegularFile)
 				.filter(Files::isExecutable)
@@ -291,36 +291,36 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		// get command
 
-		StringBuilder command = new StringBuilder().append(getHelmExecuteablePath()).append(" ").append(arguments);
+		StringBuilder command = new StringBuilder().append(getHelmExecutablePath()).append(" ").append(arguments);
 		if (debug) {
 			command.append(" --debug");
 		}
 		if (registryConfig != null) {
-			command.append(" --registry-config=").append(registryConfig);
+			command.append(" --registry-config ").append(registryConfig);
 		}
 		if (repositoryConfig != null) {
-			command.append(" --repository-config=").append(repositoryConfig);
+			command.append(" --repository-config ").append(repositoryConfig);
 		}
 		if (repositoryCache != null) {
-			command.append(" --repository-cache=").append(repositoryCache);
+			command.append(" --repository-cache ").append(repositoryCache);
 		}
 		if (StringUtils.isNotEmpty(namespace)) {
 			command.append(" --namespace=").append(namespace);
 		}
 		if (StringUtils.isNotEmpty(kubeApiServer)) {
-			command.append(" --kube-apiserver=").append(kubeApiServer);
+			command.append(" --kube-apiserver ").append(kubeApiServer);
 		}
 		if (StringUtils.isNotEmpty(kubeAsUser)) {
-			command.append(" --kube-as-user=").append(kubeAsUser);
+			command.append(" --kube-as-user ").append(kubeAsUser);
 		}
 		if (StringUtils.isNotEmpty(kubeAsGroup)) {
-			command.append(" --kube-as-group=").append(kubeAsGroup);
+			command.append(" --kube-as-group ").append(kubeAsGroup);
 		}
 		if (StringUtils.isNotEmpty(kubeToken)) {
-			command.append(" --kube-token=").append(kubeToken);
+			command.append(" --kube-token ").append(kubeToken);
 		}
 		if (kubeCaFile != null) {
-			command.append(" --kube-ca-file=").append(kubeCaFile);
+			command.append(" --kube-ca-file ").append(kubeCaFile);
 		}
 
 		// execute helm
@@ -477,19 +477,19 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		StringBuilder k8sConfigArgs = new StringBuilder();
 		if (k8sCluster != null) {
 			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
-				k8sConfigArgs.append(" --kube-apiserver=").append(k8sCluster.getApiUrl());
+				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				k8sConfigArgs.append(" --namespace=").append(k8sCluster.getNamespace());
+				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
-				k8sConfigArgs.append(" --kube-as-user=").append(k8sCluster.getAsUser());
+				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
-				k8sConfigArgs.append(" --kube-as-group=").append(k8sCluster.getAsGroup());
+				k8sConfigArgs.append(" --kube-as-group ").append(k8sCluster.getAsGroup());
 			}
 			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
-				k8sConfigArgs.append(" --kube-token=").append(k8sCluster.getToken());
+				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
 			}
 			if (k8sConfigArgs.length() > 0) {
 				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");

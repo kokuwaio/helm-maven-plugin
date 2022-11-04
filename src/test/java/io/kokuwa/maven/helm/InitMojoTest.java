@@ -77,7 +77,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		assertHelm(mojo.setAddDefaultRepo(false));
 	}
 
-	@DisplayName("executeable: local")
+	@DisplayName("executable: local")
 	@Test
 	void localHelm(InitMojo mojo) {
 		mojo.setUseLocalHelmBinary(true);
@@ -132,7 +132,7 @@ public class InitMojoTest extends AbstractMojoTest {
 				.setUrl("https://example.org/extra")
 				.setUsername("foo")
 				.setPassword("secret") });
-		assertHelm(mojo, "repo add extra https://example.org/extra --username=foo --password=secret");
+		assertHelm(mojo, "repo add extra https://example.org/extra --username foo --password secret");
 	}
 
 	@DisplayName("repository: extra repo with serverId")
@@ -143,7 +143,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
 				.setName("extra")
 				.setUrl("https://example.org/extra") });
-		assertHelm(mojo, "repo add extra https://example.org/extra --username=foo --password=secret");
+		assertHelm(mojo, "repo add extra https://example.org/extra --username foo --password secret");
 	}
 
 	@DisplayName("repository: stable repo without authentication")
@@ -165,7 +165,7 @@ public class InitMojoTest extends AbstractMojoTest {
 				.setUrl("https://example.org/stable")
 				.setUsername("foo")
 				.setPassword("secret"));
-		assertHelm(mojo, "repo add stable https://example.org/stable --username=foo --password=secret");
+		assertHelm(mojo, "repo add stable https://example.org/stable --username foo --password secret");
 	}
 
 	@DisplayName("repository: stable repo with serverId")
@@ -175,7 +175,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setAddUploadRepos(true);
 		mojo.getSettings().getServers().add(getServer("stable", "foo", "secret"));
 		mojo.setUploadRepoStable(new HelmRepository().setName("stable").setUrl("https://example.org/stable"));
-		assertHelm(mojo, "repo add stable https://example.org/stable --username=foo --password=secret");
+		assertHelm(mojo, "repo add stable https://example.org/stable --username foo --password secret");
 	}
 
 	@DisplayName("repository: snapshot repo without authentication")
@@ -199,7 +199,7 @@ public class InitMojoTest extends AbstractMojoTest {
 				.setUrl("https://example.org/stable")
 				.setUsername("foo")
 				.setPassword("secret"));
-		assertHelm(mojo, "repo add snapshot https://example.org/stable --username=foo --password=secret");
+		assertHelm(mojo, "repo add snapshot https://example.org/stable --username foo --password secret");
 	}
 
 	@DisplayName("repository: snapshot repo with serverId")
@@ -209,7 +209,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setAddUploadRepos(true);
 		mojo.getSettings().getServers().add(getServer("snapshot", "foo", "secret"));
 		mojo.setUploadRepoSnapshot(new HelmRepository().setName("snapshot").setUrl("https://example.org/stable"));
-		assertHelm(mojo, "repo add snapshot https://example.org/stable --username=foo --password=secret");
+		assertHelm(mojo, "repo add snapshot https://example.org/stable --username foo --password secret");
 	}
 
 	@DisplayName("repository: same stable & snapshot repo")
@@ -257,8 +257,8 @@ public class InitMojoTest extends AbstractMojoTest {
 				"repo add stable " + InitMojo.STABLE_HELM_REPO,
 				"repo add my-stable https://example.org/stable",
 				"repo add my-snapshot https://example.org/snapshot",
-				"repo add extra1 https://example.org/extra1 --username=user-extra1 --password=secret-extra1",
-				"repo add extra2 https://example.org/extra2 --username=user-extra2 --password=secret-extra2",
+				"repo add extra1 https://example.org/extra1 --username user-extra1 --password secret-extra1",
+				"repo add extra2 https://example.org/extra2 --username user-extra2 --password secret-extra2",
 				"repo add extra3 https://example.org/extra3");
 	}
 }

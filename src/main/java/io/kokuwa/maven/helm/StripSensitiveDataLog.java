@@ -14,8 +14,8 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class StripSensitiveDataLog implements Log {
 
-	private static final Pattern HELM_PASSWORD = Pattern.compile("^.*--password=(?<secret>[^-\\s]+).*$");
-	private static final Pattern KUBE_TOKEN = Pattern.compile("^.*--kube-token=(?<secret>[^-\\s]+).*$");
+	private static final Pattern HELM_PASSWORD = Pattern.compile("^.*--password (?<secret>[^-\\s]+).*$");
+	private static final Pattern KUBE_TOKEN = Pattern.compile("^.*--kube-token (?<secret>[^-\\s]+).*$");
 	private static final List<Pattern> PATTERNS = Arrays.asList(HELM_PASSWORD, KUBE_TOKEN);
 	private static final String REPLACEMENT = "*****";
 

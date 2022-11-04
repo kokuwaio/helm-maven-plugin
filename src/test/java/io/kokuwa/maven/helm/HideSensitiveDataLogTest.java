@@ -21,16 +21,16 @@ public class HideSensitiveDataLogTest {
 
 	@Test
 	void hideHelmPassword() {
-		String content = "abcd --password=ABCDEF";
-		String expected = "abcd --password=*****";
+		String content = "abcd --password ABCDEF";
+		String expected = "abcd --password *****";
 		String actual = StripSensitiveDataLog.strip(content);
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	void hideKubeToken() {
-		String content = "abcd --kube-token=ABCDEF";
-		String expected = "abcd --kube-token=*****";
+		String content = "abcd --kube-token ABCDEF";
+		String expected = "abcd --kube-token *****";
 		String actual = StripSensitiveDataLog.strip(content);
 		assertEquals(expected, actual);
 	}

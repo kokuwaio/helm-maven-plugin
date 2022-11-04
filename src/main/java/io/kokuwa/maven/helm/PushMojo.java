@@ -24,7 +24,7 @@ import lombok.Setter;
 @Setter
 public class PushMojo extends AbstractHelmMojo {
 
-	private static final String LOGIN_COMMAND_TEMPLATE = "registry login -u %s %s --password-stdin";
+	private static final String LOGIN_COMMAND_TEMPLATE = "registry login %s --username %s --password-stdin";
 	private static final String CHART_PUSH_TEMPLATE = "push %s oci://%s";
 
 	/**
@@ -64,7 +64,7 @@ public class PushMojo extends AbstractHelmMojo {
 
 		PasswordAuthentication authentication = getAuthentication(registry);
 		if (authentication != null) {
-			String arguments = String.format(LOGIN_COMMAND_TEMPLATE, authentication.getUserName(), registry.getUrl());
+			String arguments = String.format(LOGIN_COMMAND_TEMPLATE, registry.getUrl(), authentication.getUserName());
 			helm(arguments, "can't login to registry", new String(authentication.getPassword()));
 		}
 

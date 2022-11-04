@@ -27,11 +27,11 @@ import io.kokuwa.maven.helm.pojo.ValueOverride;
 @DisplayName("helm:abstract")
 public class HelmMojoTest extends AbstractMojoTest {
 
-	@DisplayName("finding helm executeable")
+	@DisplayName("finding helm executable")
 	@Nested
-	class Executeable {
+	class Executable {
 
-		@DisplayName("fixed local executeable")
+		@DisplayName("fixed local executable")
 		@Test
 		@DisabledOnOs(OS.WINDOWS)
 		void fixed(LintMojo mojo) {
@@ -39,7 +39,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 			mojo.setAutoDetectLocalHelmBinary(false);
 			mojo.setHelmExecutableDirectory(new File("src/it"));
 			Path expected = Paths.get("src/it").resolve(HELM).toAbsolutePath();
-			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecuteablePath());
+			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecutablePath());
 			assertEquals(expected, actual);
 		}
 
@@ -50,7 +50,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 			mojo.setAutoDetectLocalHelmBinary(false);
 			mojo.setHelmExecutableDirectory(new File("src/nope"));
 			MojoExecutionException exception = assertThrows(MojoExecutionException.class,
-					() -> mojo.getHelmExecuteablePath());
+					() -> mojo.getHelmExecutablePath());
 			assertEquals("Helm executable not found.", exception.getMessage());
 		}
 
@@ -61,7 +61,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 			mojo.setUseLocalHelmBinary(true);
 			mojo.setAutoDetectLocalHelmBinary(true);
 			Path expected = helmFromPath();
-			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecuteablePath());
+			Path actual = assertDoesNotThrow(() -> mojo.getHelmExecutablePath());
 			assertEquals(expected, actual);
 		}
 
@@ -256,25 +256,25 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@Test
 		void apiUrl(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setApiUrl("custom-api-url"));
-			assertHelm(mojo, "lint src/test/resources/simple --kube-apiserver=custom-api-url");
+			assertHelm(mojo, "lint src/test/resources/simple --kube-apiserver custom-api-url");
 		}
 
 		@Test
 		void asUser(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setAsUser("custom-user"));
-			assertHelm(mojo, "lint src/test/resources/simple --kube-as-user=custom-user");
+			assertHelm(mojo, "lint src/test/resources/simple --kube-as-user custom-user");
 		}
 
 		@Test
 		void asGroup(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setAsGroup("custom-group"));
-			assertHelm(mojo, "lint src/test/resources/simple --kube-as-group=custom-group");
+			assertHelm(mojo, "lint src/test/resources/simple --kube-as-group custom-group");
 		}
 
 		@Test
 		void token(LintMojo mojo) {
 			mojo.setK8sCluster(new K8SCluster().setToken("custom-token"));
-			assertHelm(mojo, "lint src/test/resources/simple --kube-token=custom-token");
+			assertHelm(mojo, "lint src/test/resources/simple --kube-token custom-token");
 		}
 
 		@Test
@@ -285,10 +285,10 @@ public class HelmMojoTest extends AbstractMojoTest {
 					.setAsGroup("custom-group")
 					.setToken("custom-token"));
 			assertHelm(mojo, "lint src/test/resources/simple"
-					+ " --kube-apiserver=custom-api-url"
-					+ " --kube-as-user=custom-user"
-					+ " --kube-as-group=custom-group"
-					+ " --kube-token=custom-token");
+					+ " --kube-apiserver custom-api-url"
+					+ " --kube-as-user custom-user"
+					+ " --kube-as-group custom-group"
+					+ " --kube-token custom-token");
 		}
 	}
 }
