@@ -1,4 +1,4 @@
-// verify that push is correct
+// verify that registry login was tried
 
 return org.codehaus.plexus.util.FileUtils
 	.fileRead(basedir + "/build.log")

@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -104,7 +103,6 @@ public abstract class AbstractMojoTest {
 		// check commands
 
 		List<String> actual = actualCommands.getAllValues().stream()
-				.peek(command -> System.out.println(Arrays.toString(command)))
 				.map(command -> Stream.of(command)
 						// remove helm executable as first entry
 						.skip(1)
