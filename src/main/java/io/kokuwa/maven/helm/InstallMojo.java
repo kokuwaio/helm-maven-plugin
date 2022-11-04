@@ -49,9 +49,9 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 
 		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info(String.format("\n\nPerform install for chart %s...", chartDirectory));
-			String clusterName = chartDirectory.getFileName().toString();
-			String arguments = String.format("%s %s %s %s", action, clusterName, chartDirectory, getValuesOptions());
-			helm(arguments, "Failed to deploy helm chart", null);
+			helm()
+					.arguments(action, chartDirectory.getFileName().toString(), chartDirectory)
+					.execute("Failed to deploy helm chart");
 		}
 	}
 }

@@ -48,6 +48,6 @@ public class UpgradeMojoTest extends AbstractMojoTest {
 		mojo.setSkipUpgrade(false);
 		mojo.setReleaseName("foo");
 		mojo.setValues(new ValueOverride().setYamlFile("bar.yaml"));
-		assertHelm(mojo, "upgrade foo src/test/resources/simple --install --values bar.yaml");
+		assertHelm(mojo, "upgrade foo src/test/resources/simple --values bar.yaml --install");
 	}
 }

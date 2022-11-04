@@ -28,7 +28,7 @@ public class DryRunMojoTest extends AbstractMojoTest {
 	@Test
 	void valuesFile(DryRunMojo mojo) {
 		mojo.setValues(new ValueOverride().setYamlFile("values.yaml"));
-		assertHelm(mojo, "install src/test/resources/simple --dry-run --generate-name --values values.yaml");
+		assertHelm(mojo, "install src/test/resources/simple --values values.yaml --dry-run --generate-name");
 	}
 
 	@DisplayName("with dependencies")

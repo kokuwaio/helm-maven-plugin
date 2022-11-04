@@ -47,8 +47,11 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 
 		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("\n\nPerform dry-run for chart " + chartDirectory + "...");
-			String arguments = action + " " + chartDirectory + " --dry-run --generate-name" + getValuesOptions();
-			helm(arguments, "There are test failures", null);
+			helm()
+					.arguments(action, chartDirectory)
+					.flag("dry-run")
+					.flag("generate-name")
+					.execute("There are test failures");
 		}
 	}
 }

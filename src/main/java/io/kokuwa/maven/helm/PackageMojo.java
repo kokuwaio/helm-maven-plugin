@@ -11,6 +11,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
+import io.kokuwa.maven.helm.pojo.HelmExecutable;
 import lombok.Setter;
 
 /**
@@ -88,37 +89,33 @@ public class PackageMojo extends AbstractHelmMojo {
 			return;
 		}
 
+		String chartVersion = getChartVersion();
+		if (chartVersion != null) {
+			if (timestampOnSnapshot && chartVersion.endsWith("-SNAPSHOT")) {
+				String suffix = DateTimeFormatter.ofPattern(timestampFormat).format(getTimestamp());
+				chartVersion = chartVersion.replace("SNAPSHOT", suffix);
+			}
+			getLog().info("Setting chart version to " + chartVersion);
+		}
+
 		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("Packaging chart " + chartDirectory + "...");
 
-			String arguments = "package " + chartDirectory + " --destination " + getOutputDirectory();
+			HelmExecutable helm = helm()
+					.arguments("package", chartDirectory)
+					.flag("destination", getOutputDirectory())
+					.flag("version", chartVersion)
+					.flag("app-version", appVersion);
 
-			String chartVersion = getChartVersion();
-			if (chartVersion != null) {
-				if (timestampOnSnapshot && chartVersion.endsWith("-SNAPSHOT")) {
-					String suffix = DateTimeFormatter.ofPattern(timestampFormat).format(getTimestamp());
-					chartVersion = chartVersion.replace("SNAPSHOT", suffix);
-				}
-				getLog().info("Setting chart version to " + chartVersion);
-				arguments += " --version " + chartVersion;
-			}
-
-			if (appVersion != null) {
-				getLog().info(String.format("Setting App version to %s", appVersion));
-				arguments += " --app-version " + appVersion;
-			}
-
-			String stdin = null;
 			if (StringUtils.isNotEmpty(keyring) && StringUtils.isNotEmpty(key)) {
 				getLog().info("Enable signing");
-				arguments += " --sign --keyring " + keyring + " --key " + key;
+				helm.flag("sign").flag("keyring", keyring).flag("key", key);
 				if (StringUtils.isNotEmpty(passphrase)) {
-					arguments += " --passphrase-file -";
-					stdin = passphrase;
+					helm.flag("passphrase-file", "-").setStdin(passphrase);
 				}
 			}
 
-			helm(arguments, "Unable to package chart at " + chartDirectory, stdin);
+			helm.execute("Unable to package chart at " + chartDirectory);
 		}
 	}
 

@@ -1,13 +1,8 @@
 package io.kokuwa.maven.helm;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.PasswordAuthentication;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +31,7 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 import io.kokuwa.maven.helm.github.Github;
+import io.kokuwa.maven.helm.pojo.HelmExecutable;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.K8SCluster;
 import lombok.Getter;
@@ -287,100 +283,45 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 				.orElseThrow(() -> new MojoExecutionException("Helm executable not found."));
 	}
 
-	void helm(String arguments, String errorMessage, String stdin) throws MojoExecutionException {
-
-		// get command
-
-		StringBuilder command = new StringBuilder().append(getHelmExecutablePath()).append(" ").append(arguments);
-		if (debug) {
-			command.append(" --debug");
-		}
-		if (registryConfig != null) {
-			command.append(" --registry-config ").append(registryConfig);
-		}
-		if (repositoryConfig != null) {
-			command.append(" --repository-config ").append(repositoryConfig);
-		}
-		if (repositoryCache != null) {
-			command.append(" --repository-cache ").append(repositoryCache);
-		}
-		if (StringUtils.isNotEmpty(namespace)) {
-			command.append(" --namespace=").append(namespace);
-		}
-		if (StringUtils.isNotEmpty(kubeApiServer)) {
-			command.append(" --kube-apiserver ").append(kubeApiServer);
-		}
-		if (StringUtils.isNotEmpty(kubeAsUser)) {
-			command.append(" --kube-as-user ").append(kubeAsUser);
-		}
-		if (StringUtils.isNotEmpty(kubeAsGroup)) {
-			command.append(" --kube-as-group ").append(kubeAsGroup);
-		}
-		if (StringUtils.isNotEmpty(kubeToken)) {
-			command.append(" --kube-token ").append(kubeToken);
-		}
-		if (kubeCaFile != null) {
-			command.append(" --kube-ca-file ").append(kubeCaFile);
-		}
-
-		// execute helm
-
-		String commandWithK8sArgs = command.append(getK8SArgs()).toString();
-		getLog().debug(commandWithK8sArgs);
-
-		// TODO: Remove in next major release
-		warnOnMixOfK8sClusterAndGlobalFlags();
-
-		int exitValue;
-		try {
-			Process p = Runtime.getRuntime().exec(commandWithK8sArgs);
-
-			// write to stdin
-
-			if (StringUtils.isNotEmpty(stdin)) {
-				try (OutputStream output = p.getOutputStream()) {
-					output.write(stdin.getBytes(StandardCharsets.UTF_8));
-				} catch (IOException e) {
-					getLog().error("failed to write to stdin of helm", e);
-				}
+	HelmExecutable helm() throws MojoExecutionException {
+		HelmExecutable helm = new HelmExecutable(getLog(), getHelmExecutablePath());
+		if (k8sCluster != null) {
+			boolean logDeprecated = false;
+			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
+				helm.flag("kube-apiserver", k8sCluster.getApiUrl());
+				logDeprecated = true;
 			}
-
-			// redirect helm output to maven log
-
-			new Thread(() -> {
-				try (InputStream input = p.getInputStream()) {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-					String line;
-					while ((line = reader.readLine()) != null) {
-						getLog().info(line);
-					}
-				} catch (IOException e) {
-					getLog().error("Failed to redirect input", e);
-				}
-			}).start();
-			new Thread(() -> {
-				try (InputStream error = p.getErrorStream()) {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(error));
-					String line;
-					while ((line = reader.readLine()) != null) {
-						getLog().error(line);
-					}
-				} catch (IOException e) {
-					getLog().error("Failed to redirect errors", e);
-				}
-			}).start();
-
-			// wait for process to finish
-
-			exitValue = p.waitFor();
-		} catch (IOException | InterruptedException e) {
-			getLog().error("Error processing command [" + commandWithK8sArgs + "]", e);
-			throw new MojoExecutionException("Error processing command", e);
+			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
+				helm.flag("namespace", k8sCluster.getNamespace());
+				logDeprecated = true;
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
+				helm.flag("kube-as-user", k8sCluster.getAsUser());
+				logDeprecated = true;
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
+				helm.flag("kube-as-group", k8sCluster.getAsGroup());
+				logDeprecated = true;
+			}
+			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
+				helm.flag("kube-token", k8sCluster.getToken());
+				logDeprecated = true;
+			}
+			if (logDeprecated) {
+				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
+			}
 		}
-
-		if (exitValue != 0) {
-			throw new MojoExecutionException(errorMessage);
-		}
+		return helm
+				.flag("debug", debug)
+				.flag("kube-apiserver", kubeApiServer)
+				.flag("kube-as-group", kubeAsUser)
+				.flag("kube-as-user", kubeAsGroup)
+				.flag("kube-ca-file", kubeCaFile)
+				.flag("kube-token", kubeToken)
+				.flag("namespace", namespace)
+				.flag("registry-config", registryConfig)
+				.flag("repository-cache", repositoryCache)
+				.flag("repository-config", repositoryConfig);
 	}
 
 	List<Path> getChartDirectories() throws MojoExecutionException {
@@ -470,61 +411,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 					securityDispatcher.decrypt(server.getPassword()).toCharArray());
 		} catch (SecDispatcherException e) {
 			throw new MojoExecutionException(e.getMessage());
-		}
-	}
-
-	private String getK8SArgs() {
-		StringBuilder k8sConfigArgs = new StringBuilder();
-		if (k8sCluster != null) {
-			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
-				k8sConfigArgs.append(" --kube-apiserver ").append(k8sCluster.getApiUrl());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				k8sConfigArgs.append(" --namespace ").append(k8sCluster.getNamespace());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
-				k8sConfigArgs.append(" --kube-as-user ").append(k8sCluster.getAsUser());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
-				k8sConfigArgs.append(" --kube-as-group ").append(k8sCluster.getAsGroup());
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
-				k8sConfigArgs.append(" --kube-token ").append(k8sCluster.getToken());
-			}
-			if (k8sConfigArgs.length() > 0) {
-				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
-			}
-		}
-		return k8sConfigArgs.toString();
-	}
-
-	private void warnOnMixOfK8sClusterAndGlobalFlags() {
-
-		if (k8sCluster == null) {
-			return;
-		}
-
-		StringBuilder warnMessage = new StringBuilder();
-		if (StringUtils.isNotEmpty(k8sCluster.getApiUrl()) && StringUtils.isNotEmpty(kubeApiServer)) {
-			warnMessage.append("Both <kubeApiServer> and <k8sCluster><apiUrl/></k8sCluster> are set.\n");
-		}
-		if (StringUtils.isNotEmpty(k8sCluster.getNamespace()) && StringUtils.isNotEmpty(namespace)) {
-			warnMessage.append("Both <namespace> and <k8sCluster><namespace/></k8sCluster> are set.\n");
-		}
-		if (StringUtils.isNotEmpty(k8sCluster.getAsUser()) && StringUtils.isNotEmpty(kubeAsUser)) {
-			warnMessage.append("Both <kubeAsUser> and <k8sCluster><asUser/></k8sCluster> are set.\n");
-		}
-		if (StringUtils.isNotEmpty(k8sCluster.getAsGroup()) && StringUtils.isNotEmpty(kubeAsGroup)) {
-			warnMessage.append("Both <kubeAsGroup> and <k8sCluster><asGroup/></k8sCluster> are set.\n");
-		}
-		if (StringUtils.isNotEmpty(k8sCluster.getToken()) && StringUtils.isNotEmpty(kubeToken)) {
-			warnMessage.append("Both <kubeToken> and <k8sCluster><token/></k8sCluster> are set.\n");
-		}
-
-		if (warnMessage.length() > 0) {
-			warnMessage.append("As per current implementation - <k8sCluster><*></k8sCluster> options win.\n");
-			warnMessage.append("NOTE: <k8sCluster> option will be removed in future major release.");
-			getLog().warn(warnMessage.toString());
 		}
 	}
 

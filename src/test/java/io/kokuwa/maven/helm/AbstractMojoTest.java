@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -73,7 +74,7 @@ public abstract class AbstractMojoTest {
 
 		// setup runtime
 
-		ArgumentCaptor<String> actualCommands = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String[]> actualCommands = ArgumentCaptor.forClass(String[].class);
 		Runtime runtime = Mockito.mock(Runtime.class);
 		Process process = Mockito.mock(Process.class);
 		Mockito.doReturn(new ByteArrayInputStream(new byte[0])).when(process).getInputStream();
@@ -103,18 +104,20 @@ public abstract class AbstractMojoTest {
 		// check commands
 
 		List<String> actual = actualCommands.getAllValues().stream()
-				// replace windows path
-				.map(command -> command.replaceAll(Pattern.quote("\\"), "/"))
-				// remove helm executable
-				.map(command -> command.substring(assertDoesNotThrow(mojo::getHelmExecutablePath).toString().length()))
-				// do some sanitizing on spaces
-				.map(command -> command.trim().replaceAll(" ( )+", " "))
+				.peek(command -> System.out.println(Arrays.toString(command)))
+				.map(command -> Stream.of(command)
+						// remove helm executable as first entry
+						.skip(1)
+						// replace windows path
+						.map(part -> part.replaceAll(Pattern.quote("\\"), "/"))
+						// join to simply test inputs
+						.collect(Collectors.joining(" ")))
 				.collect(Collectors.toList());
 		List<String> expected = Stream.of(commands)
 				// replace windows path
-				.map(command -> command.replaceAll(Pattern.quote("\\"), "/"))
+				.map(part -> part.replaceAll(Pattern.quote("\\"), "/"))
 				.collect(Collectors.toList());
-		assertEquals(expected, actual, "got commands: \n" + actual.stream().collect(Collectors.joining("\n")));
+		assertEquals(expected, actual, "commands differ");
 	}
 
 	static Server getServer(String id, String username, String password) {

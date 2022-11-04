@@ -64,12 +64,11 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 					(upgradeWithInstall ? "with install " : "") +
 					(upgradeDryRun ? "as dry run " : "") +
 					chartDirectory);
-			String arguments = "upgrade " + releaseName + " "
-					+ chartDirectory + " "
-					+ (upgradeWithInstall ? "--install " : "")
-					+ (upgradeDryRun ? "--dry-run " : "")
-					+ getValuesOptions();
-			helm(arguments, "Error occurred while upgrading the chart", null);
+			helm()
+					.arguments("upgrade", releaseName, chartDirectory)
+					.flag("install", upgradeWithInstall)
+					.flag("dry-run", upgradeDryRun)
+					.execute("Error occurred while upgrading the chart");
 		}
 	}
 }
