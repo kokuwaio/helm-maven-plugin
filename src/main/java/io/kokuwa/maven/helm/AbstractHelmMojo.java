@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Server;
@@ -54,8 +53,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private SecDispatcher securityDispatcher;
 
 	/**
-	 * Controls whether a local binary should be used instead of downloading it.
-	 * If set to <code>true</code> path has to be set with property "helm.executableDirectory".
+	 * Controls whether a local binary should be used instead of downloading it. If set to <code>true</code> path has to
+	 * be set with property "helm.executableDirectory".
 	 *
 	 * @since 4.0
 	 */
@@ -63,9 +62,9 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private boolean useLocalHelmBinary;
 
 	/**
-	 * Controls whether the local binary should be auto-detected from PATH environment variable.
-	 * If set to <code>false</code> the binary in "helm.executableDirectory" is used.
-	 * This property has no effect unless "helm.useLocalHelmBinary" is set to <code>true</code>.
+	 * Controls whether the local binary should be auto-detected from PATH environment variable. If set to
+	 * <code>false</code> the binary in "helm.executableDirectory" is used. This property has no effect unless
+	 * "helm.useLocalHelmBinary" is set to <code>true</code>.
 	 *
 	 * @since 4.1
 	 */
@@ -261,11 +260,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 */
 	@Parameter(property = "helm.kubeCaFile")
 	private File kubeCaFile;
-
-	@Override
-	public void setLog(Log log) {
-		super.setLog(new StripSensitiveDataLog(log));
-	}
 
 	Path getHelmExecutablePath() throws MojoExecutionException {
 		Stream<Path> optional;
