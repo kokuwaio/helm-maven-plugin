@@ -1,6 +1,0 @@
-// verify that empty config does not trigger k8s warning
-// see https://github.com/kokuwaio/helm-maven-plugin/issues/219
-
-return !org.codehaus.plexus.util.FileUtils
-	.fileRead(basedir + "/build.log")
-	.contains("k8sCluster")

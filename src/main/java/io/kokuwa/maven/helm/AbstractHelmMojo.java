@@ -32,7 +32,6 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 import io.kokuwa.maven.helm.github.Github;
 import io.kokuwa.maven.helm.pojo.HelmExecutable;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
-import io.kokuwa.maven.helm.pojo.K8SCluster;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -199,16 +198,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.skip", defaultValue = "false")
 	protected boolean skip;
 
-	/**
-	 * Deprecated, use: "helm.kube*"
-	 *
-	 * @since 5.10
-	 * @deprecated Duplicate with flags in {@link AbstractHelmMojo}. Will be removed in 7.x
-	 */
-	@Deprecated // java8 (since = "6.3.0", forRemoval = true)
-	@Parameter
-	private K8SCluster k8sCluster;
-
 	/** The current user system settings for use in Maven. */
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	protected Settings settings;
@@ -290,34 +279,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	HelmExecutable helm() throws MojoExecutionException {
-		HelmExecutable helm = new HelmExecutable(getLog(), getHelmExecutablePath());
-		if (k8sCluster != null) {
-			boolean logDeprecated = false;
-			if (StringUtils.isNotEmpty(k8sCluster.getApiUrl())) {
-				helm.flag("kube-apiserver", k8sCluster.getApiUrl());
-				logDeprecated = true;
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getNamespace())) {
-				helm.flag("namespace", k8sCluster.getNamespace());
-				logDeprecated = true;
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getAsUser())) {
-				helm.flag("kube-as-user", k8sCluster.getAsUser());
-				logDeprecated = true;
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getAsGroup())) {
-				helm.flag("kube-as-group", k8sCluster.getAsGroup());
-				logDeprecated = true;
-			}
-			if (StringUtils.isNotEmpty(k8sCluster.getToken())) {
-				helm.flag("kube-token", k8sCluster.getToken());
-				logDeprecated = true;
-			}
-			if (logDeprecated) {
-				getLog().warn("NOTE: <k8sCluster> option will be removed in future major release.");
-			}
-		}
-		return helm
+		return new HelmExecutable(getLog(), getHelmExecutablePath())
 				.flag("debug", debug)
 				.flag("kube-apiserver", kubeApiServer)
 				.flag("kube-as-group", kubeAsUser)
