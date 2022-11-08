@@ -7,6 +7,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.StringUtils;
 
 import lombok.Setter;
 
@@ -60,8 +61,17 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info(String.format("\n\nPerform template for chart %s...", chartDirectory));
 			helm()
-					.arguments(action, chartDirectory, additionalArguments)
+					.arguments(action, chartDirectory)
+					.arguments(getArguments())
 					.execute("There are test failures");
 		}
+	}
+
+	private Object[] getArguments() {
+		if (StringUtils.isEmpty(additionalArguments)) {
+			return new Object[0];
+		}
+		getLog().warn("NOTE: <additionalArguments> option will be removed in future major release.");
+		return additionalArguments.split(" ");
 	}
 }

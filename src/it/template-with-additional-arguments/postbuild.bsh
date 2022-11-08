@@ -1,0 +1,8 @@
+// verify folder created
+
+boolean outputDirCreated = new java.io.File(basedir, "target/custom-helm-output").isDirectory();
+boolean warningLogged = org.codehaus.plexus.util.FileUtils
+	.fileRead(basedir + "/build.log")
+	.contains("[WARNING] NOTE: <additionalArguments> option will be removed in future major release.");
+System.out.println("Warning logged: " + warningLogged);
+return outputDirCreated && warningLogged;
