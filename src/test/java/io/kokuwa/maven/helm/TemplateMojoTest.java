@@ -41,6 +41,22 @@ public class TemplateMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "template src/test/resources/simple --foo --bar");
 	}
 
+	@DisplayName("with --output-dir")
+	@Test
+	void outputDirectory(TemplateMojo mojo) {
+		mojo.setSkipTemplate(false);
+		mojo.setTemplateOutputDir(new File("."));
+		assertHelm(mojo, "template src/test/resources/simple --output-dir .");
+	}
+
+	@DisplayName("with --generate-name")
+	@Test
+	void genereateName(TemplateMojo mojo) {
+		mojo.setSkipTemplate(false);
+		mojo.setTemplateGenerateName(true);
+		assertHelm(mojo, "template src/test/resources/simple --generate-name");
+	}
+
 	@DisplayName("with dependencies")
 	@Test
 	void dependencies(TemplateMojo mojo) {
