@@ -1,5 +1,6 @@
 package io.kokuwa.maven.helm;
 
+import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,6 +34,22 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	private String action;
 
 	/**
+	 * Writes the executed templates to files in output-dir instead of stdout.
+	 *
+	 * @since 6.6.1
+	 */
+	@Parameter(property = "helm.template.output-dir")
+	private File templateOutputDir;
+
+	/**
+	 * Generate the name (and omit the NAME parameter).
+	 *
+	 * @since 6.6.1
+	 */
+	@Parameter(property = "helm.template.generate-name", defaultValue = "false")
+	private boolean templateGenerateName;
+
+	/**
 	 * Additional arguments.
 	 *
 	 * @since 5.10
@@ -63,6 +80,8 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 			helm()
 					.arguments(action, chartDirectory)
 					.arguments(getArguments())
+					.flag("output-dir", templateOutputDir)
+					.flag("generate-name", templateGenerateName)
 					.execute("There are test failures");
 		}
 	}
