@@ -4,7 +4,7 @@
 
 	<groupId>io.kokuwa.maven</groupId>
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>6.6.1</version>
+	<version>6.6.2-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>Helm Maven Plugin</name>
@@ -48,7 +48,7 @@
 		<url>https://github.com/kokuwaio/helm-maven-plugin</url>
 		<connection>scm:git:https://github.com/kokuwaio/helm-maven-plugin.git</connection>
 		<developerConnection>scm:git:https://github.com/kokuwaio/helm-maven-plugin.git</developerConnection>
-		<tag>6.6.1</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<issueManagement>
 		<system>github</system>
