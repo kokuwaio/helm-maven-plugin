@@ -1,2 +1,0 @@
-# simple usage item from dependency
-{{- include "mysqldump.fullname" . -}}
