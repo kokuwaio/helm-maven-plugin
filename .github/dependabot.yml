@@ -4,13 +4,36 @@ updates:
     directory: /
     schedule:
       interval: monthly
+      day: monday
+      # github parses time without quotes to int
+      # yamllint disable-line rule:quoted-strings
+      time: "09:00"
+      timezone: Europe/Berlin
     ignore:
       # minimal maven version is fixed
       - dependency-name: org.apache.maven:maven-plugin-api
       - dependency-name: org.apache.maven:maven-settings
       # newer checkstyle versions are build with java11
       - dependency-name: com.puppycrawl.tools:checkstyle
+        update-types: [version-update:semver-major]
+      # newer mockito versions are build with java11
+      - dependency-name: org.mockito:mockito-inline
+        update-types: [version-update:semver-major]
+  - package-ecosystem: maven
+    directory: /src/it
+    schedule:
+      interval: monthly
+      day: monday
+      # github parses time without quotes to int
+      # yamllint disable-line rule:quoted-strings
+      time: "09:00"
+      timezone: Europe/Berlin
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+      day: monday
+      # github parses time without quotes to int
+      # yamllint disable-line rule:quoted-strings
+      time: "09:00"
+      timezone: Europe/Berlin

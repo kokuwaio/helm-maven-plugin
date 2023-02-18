@@ -1,2 +1,4 @@
 # https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
-* @sschnabe @rpahli @fabian-schlegel @jschwarze @wistefan @axdotl @nazarovkv
+* @sschnabe @rpahli @fabian-schlegel @wistefan @axdotl @nazarovkv
+.github/workflows/* @kokuwaio-bot @sschnabe @rpahli @fabian-schlegel @wistefan @axdotl @nazarovkv
+pom.xml @sschnabe @rpahli @fabian-schlegel @wistefan @axdotl @nazarovkv
