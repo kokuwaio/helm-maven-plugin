@@ -90,19 +90,19 @@
 
 		<!-- plugins -->
 
-		<version.org.apache.maven.plugins.checkstyle>3.2.0</version.org.apache.maven.plugins.checkstyle>
+		<version.org.apache.maven.plugins.checkstyle>3.2.1</version.org.apache.maven.plugins.checkstyle>
 		<version.org.apache.maven.plugins.clean>3.2.0</version.org.apache.maven.plugins.clean>
 		<version.org.apache.maven.plugins.compiler>3.10.1</version.org.apache.maven.plugins.compiler>
-		<version.org.apache.maven.plugins.deploy>3.0.0</version.org.apache.maven.plugins.deploy>
+		<version.org.apache.maven.plugins.deploy>3.1.0</version.org.apache.maven.plugins.deploy>
 		<version.org.apache.maven.plugins.gpg>3.0.1</version.org.apache.maven.plugins.gpg>
-		<version.org.apache.maven.plugins.install>3.0.1</version.org.apache.maven.plugins.install>
-		<version.org.apache.maven.plugins.invoker>3.3.0</version.org.apache.maven.plugins.invoker>
-		<version.org.apache.maven.plugins.javadoc>3.4.1</version.org.apache.maven.plugins.javadoc>
+		<version.org.apache.maven.plugins.install>3.1.0</version.org.apache.maven.plugins.install>
+		<version.org.apache.maven.plugins.invoker>3.5.0</version.org.apache.maven.plugins.invoker>
+		<version.org.apache.maven.plugins.javadoc>3.5.0</version.org.apache.maven.plugins.javadoc>
 		<version.org.apache.maven.plugins.jar>3.3.0</version.org.apache.maven.plugins.jar>
-		<version.org.apache.maven.plugins.release>3.0.0-M6</version.org.apache.maven.plugins.release>
+		<version.org.apache.maven.plugins.release>3.0.0-M7</version.org.apache.maven.plugins.release>
 		<version.org.apache.maven.plugins.resources>3.3.0</version.org.apache.maven.plugins.resources>
 		<version.org.apache.maven.plugins.source>3.2.1</version.org.apache.maven.plugins.source>
-		<version.org.apache.maven.plugins.surefire>3.0.0-M6</version.org.apache.maven.plugins.surefire>
+		<version.org.apache.maven.plugins.surefire>3.0.0-M9</version.org.apache.maven.plugins.surefire>
 		<version.org.codehaus.mojo.tidy>1.2.0</version.org.codehaus.mojo.tidy>
 		<version.org.sonatype.plugins.nexus-staging>1.6.13</version.org.sonatype.plugins.nexus-staging>
 		<version.com.puppycrawl.tools.checkstyle>9.3</version.com.puppycrawl.tools.checkstyle>
@@ -111,13 +111,13 @@
 		<!-- dependencies -->
 
 		<version.org.apache.commons.compress>1.22</version.org.apache.commons.compress>
-		<version.org.apache.maven.plugin.tools>3.6.4</version.org.apache.maven.plugin.tools>
+		<version.org.apache.maven.plugin.tools>3.7.1</version.org.apache.maven.plugin.tools>
 		<version.org.codehaus.plexus.dispatcher>2.0</version.org.codehaus.plexus.dispatcher>
-		<version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
-		<version.org.mockito>4.8.1</version.org.mockito>
-		<version.org.projectlombok>1.18.24</version.org.projectlombok>
-		<version.com.fasterxml.jackson>2.13.4.2</version.com.fasterxml.jackson>
-		<version.com.github.tomakehurst.wiremock>2.34.0</version.com.github.tomakehurst.wiremock>
+		<version.org.junit.jupiter>5.9.2</version.org.junit.jupiter>
+		<version.org.mockito>4.11.0</version.org.mockito>
+		<version.org.projectlombok>1.18.26</version.org.projectlombok>
+		<version.com.fasterxml.jackson>2.14.2</version.com.fasterxml.jackson>
+		<version.com.github.tomakehurst.wiremock>2.35.0</version.com.github.tomakehurst.wiremock>
 
 	</properties>
 
@@ -378,6 +378,7 @@
 							<streamLogs>false</streamLogs>
 							<streamLogsOnFailures>true</streamLogsOnFailures>
 							<writeJunitReport>true</writeJunitReport>
+							<scope>none</scope>
 						</configuration>
 					</execution>
 				</executions>
