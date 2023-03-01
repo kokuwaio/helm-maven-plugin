@@ -65,7 +65,8 @@ jobs:
           java-version: 8
           cache: maven
       - run: mvn -B -ntp dependency:go-offline
-      - run: mvn -B -ntp verify -Dcheckstyle.skip
+      # windows runner needs quotes
+      - run: mvn -B -ntp verify -D"checkstyle.skip"
 
   deploy:
     if: ${{ github.ref == 'refs/heads/main' }}
