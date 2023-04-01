@@ -76,13 +76,12 @@
 		<!-- ===================================================================== -->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.showDeprecation>false</maven.compiler.showDeprecation>
+		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+		<maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
 		<!-- ===================================================================== -->
 		<!-- ============================= Versions ============================== -->
