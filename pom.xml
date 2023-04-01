@@ -99,7 +99,7 @@
 		<version.org.apache.maven.plugins.invoker>3.5.0</version.org.apache.maven.plugins.invoker>
 		<version.org.apache.maven.plugins.javadoc>3.5.0</version.org.apache.maven.plugins.javadoc>
 		<version.org.apache.maven.plugins.jar>3.3.0</version.org.apache.maven.plugins.jar>
-		<version.org.apache.maven.plugins.release>3.0.0-M7</version.org.apache.maven.plugins.release>
+		<version.org.apache.maven.plugins.release>3.0.0</version.org.apache.maven.plugins.release>
 		<version.org.apache.maven.plugins.resources>3.3.0</version.org.apache.maven.plugins.resources>
 		<version.org.apache.maven.plugins.source>3.2.1</version.org.apache.maven.plugins.source>
 		<version.org.apache.maven.plugins.surefire>3.0.0-M9</version.org.apache.maven.plugins.surefire>
