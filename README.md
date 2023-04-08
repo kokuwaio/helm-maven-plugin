@@ -251,6 +251,8 @@ and disables the auto-detection feature:
 - `helm:template` Locally render templates
 - `helm:dry-run` simulates an install
 - `helm:upload` upload charts via HTTP PUT
+- `helm:registry-login` login into docker registry
+- `helm:registry-logout` login from docker registry
 - `helm:push` push charts to OCI (docker registry)
 - `helm:upgrade` upgrade an already existing installation
 
