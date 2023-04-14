@@ -40,6 +40,14 @@ public class HelmRepository {
 	private boolean useGroupId;
 
 	/**
+	 * Add artifact id to helm upload url (Artifactory only).
+	 *
+	 * @since 6.7.0
+	 */
+	@ToString.Exclude
+	private boolean useArtifactId;
+
+	/**
 	 * If <code>true</code>, replaces (overwrite) the repo if it already exists.
 	 * Will be combined with "helm.repo.add.force-update".
 	 *

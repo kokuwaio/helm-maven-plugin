@@ -49,6 +49,14 @@ public class UploadMojo extends AbstractHelmMojo {
 	private String projectGroupId;
 
 	/**
+	 * Project artifactId.
+	 *
+	 * @since 6.7.0
+	 */
+	@Parameter(defaultValue = "${project.artifactId}", readonly = true)
+	private String projectArtifactId;
+
+	/**
 	 * Project version.
 	 *
 	 * @since 5.10
@@ -107,7 +115,7 @@ public class UploadMojo extends AbstractHelmMojo {
 
 		switch (uploadRepo.getType()) {
 			case ARTIFACTORY:
-				connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo.isUseGroupId());
+				connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo);
 				break;
 			case CHARTMUSEUM:
 				connection = getConnectionForUploadToChartmuseum();
@@ -163,15 +171,21 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 	}
 
-	private HttpURLConnection getConnectionForUploadToArtifactory(File file, boolean useGroupId)
+	private HttpURLConnection getConnectionForUploadToArtifactory(File file, HelmRepository repo)
 			throws IOException, MojoExecutionException {
 		String uploadUrl = getHelmUploadUrl();
 		// Append slash if not already in place
 		if (!uploadUrl.endsWith("/")) {
 			uploadUrl += "/";
 		}
-		if (useGroupId) {
-			uploadUrl += projectGroupId.replace(".", "/") + "/" + projectVersion + "/";
+		if (repo.isUseGroupId()) {
+			uploadUrl += projectGroupId.replace(".", "/") + "/";
+		}
+		if (repo.isUseArtifactId()) {
+			uploadUrl += projectArtifactId.replace(".", "/") + "/";
+		}
+		if (repo.isUseGroupId() || repo.isUseArtifactId()) {
+			uploadUrl += projectVersion + "/";
 		}
 
 		uploadUrl = uploadUrl + file.getName();
