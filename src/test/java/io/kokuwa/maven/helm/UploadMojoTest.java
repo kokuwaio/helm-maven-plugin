@@ -186,6 +186,42 @@ public class UploadMojoTest extends AbstractMojoTest {
 		assertUpload(mojo, RequestMethod.PUT, expectedPath, BASIC_FOO_SECRET);
 	}
 
+	@DisplayName("artifactory: with username/password and artifactId on repository level")
+	@Test
+	void urlArtifactoryWithServerIdEncryptedWithRepositoryArtifactId(UploadMojo mojo) {
+		mojo.setProjectArtifactId("helm-maven-plugin");
+		mojo.setProjectVersion("6.5.0");
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("my-artifactory")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/artifactory")
+				.setUsername("foo")
+				.setPassword("secret")
+				.setUseArtifactId(true));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		String expectedPath = "/artifactory/helm-maven-plugin/6.5.0/" + packaged.getFileName();
+		assertUpload(mojo, RequestMethod.PUT, expectedPath, BASIC_FOO_SECRET);
+	}
+
+	@DisplayName("artifactory: with username/password and groupId/artifactId on repository level")
+	@Test
+	void urlArtifactoryWithServerIdEncryptedWithRepositoryGroupIdAndArtifactId(UploadMojo mojo) {
+		mojo.setProjectGroupId("io.kokuwa.maven.helm");
+		mojo.setProjectArtifactId("helm-maven-plugin");
+		mojo.setProjectVersion("6.5.0");
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("my-artifactory")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/artifactory")
+				.setUsername("foo")
+				.setPassword("secret")
+				.setUseGroupId(true)
+				.setUseArtifactId(true));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		String expectedPath = "/artifactory/io/kokuwa/maven/helm/helm-maven-plugin/6.5.0/" + packaged.getFileName();
+		assertUpload(mojo, RequestMethod.PUT, expectedPath, BASIC_FOO_SECRET);
+	}
+
 	@DisplayName("artifactory: with serverId")
 	@Test
 	void urlArtifactoryWithServerId(UploadMojo mojo) {
