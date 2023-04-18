@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import io.kokuwa.maven.helm.pojo.HelmRepository;
-import io.kokuwa.maven.helm.pojo.RepoType;
 
 @DisplayName("helm:push")
 public class PushMojoTest extends AbstractMojoTest {
@@ -29,26 +28,18 @@ public class PushMojoTest extends AbstractMojoTest {
 	@Test
 	void withoutAuthentication(PushMojo mojo) {
 		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
-		mojo.setUploadRepoStable(new HelmRepository()
-				.setType(RepoType.ARTIFACTORY)
-				.setName("oci")
-				.setUrl("docker.example.org"));
-		assertHelm(mojo, "push " + packaged + " oci://docker.example.org");
+		mojo.setUploadRepoStable(new HelmRepository().setName("oci").setUrl("reg.example.org"));
+		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
 	}
 
 	@DisplayName("push with username/password")
 	@Test
 	void withUsernameAndPassword(PushMojo mojo) {
 		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
-		mojo.setUploadRepoStable(new HelmRepository()
-				.setType(RepoType.ARTIFACTORY)
-				.setName("oci")
-				.setUrl("docker.example.org")
-				.setUsername("foo")
-				.setPassword("secret"));
+		mojo.setUploadRepoStable(new HelmRepository().setUrl("reg.example.org").setUsername("foo").setPassword("bar"));
 		assertHelm(mojo,
-				"registry login docker.example.org --username foo --password-stdin",
-				"push " + packaged + " oci://docker.example.org");
+				"registry login reg.example.org --username foo --password-stdin",
+				"push " + packaged + " oci://reg.example.org");
 	}
 
 	@DisplayName("push with serverId")
@@ -56,13 +47,10 @@ public class PushMojoTest extends AbstractMojoTest {
 	void withServerId(PushMojo mojo) {
 		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
 		mojo.getSettings().getServers().add(getServer("oci", "foo", "secret"));
-		mojo.setUploadRepoStable(new HelmRepository()
-				.setType(RepoType.ARTIFACTORY)
-				.setName("oci")
-				.setUrl("docker.example.org"));
+		mojo.setUploadRepoStable(new HelmRepository().setName("oci").setUrl("reg.example.org"));
 		assertHelm(mojo,
-				"registry login docker.example.org --username foo --password-stdin",
-				"push " + packaged + " oci://docker.example.org");
+				"registry login reg.example.org --username foo --password-stdin",
+				"push " + packaged + " oci://reg.example.org");
 	}
 
 	@DisplayName("push with serverId")
@@ -71,12 +59,9 @@ public class PushMojoTest extends AbstractMojoTest {
 		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
 		mojo.getSettings().addServer(getServer("oci", "foo", SECRET_ENCRYPTED));
 		mojo.setHelmSecurity(SETTINGS_SECURITY_XML);
-		mojo.setUploadRepoStable(new HelmRepository()
-				.setType(RepoType.ARTIFACTORY)
-				.setName("oci")
-				.setUrl("docker.example.org"));
+		mojo.setUploadRepoStable(new HelmRepository().setName("oci").setUrl("reg.example.org"));
 		assertHelm(mojo,
-				"registry login docker.example.org --username foo --password-stdin",
-				"push " + packaged + " oci://docker.example.org");
+				"registry login reg.example.org --username foo --password-stdin",
+				"push " + packaged + " oci://reg.example.org");
 	}
 }

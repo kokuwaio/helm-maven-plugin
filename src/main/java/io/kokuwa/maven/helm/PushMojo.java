@@ -2,7 +2,6 @@ package io.kokuwa.maven.helm;
 
 import java.net.PasswordAuthentication;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -40,8 +39,8 @@ public class PushMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		HelmRepository registry = getHelmUploadRepo();
-		if (Objects.isNull(registry)) {
+		HelmRepository repository = getHelmUploadRepo();
+		if (repository == null) {
 			getLog().info("there is no helm repo. skipping the upload.");
 			return;
 		}
@@ -59,10 +58,10 @@ public class PushMojo extends AbstractHelmMojo {
 			}
 		}
 
-		PasswordAuthentication authentication = getAuthentication(registry);
+		PasswordAuthentication authentication = getAuthentication(repository);
 		if (authentication != null) {
 			helm()
-					.arguments("registry", "login", registry.getUrl())
+					.arguments("registry", "login", repository.getUrl())
 					.flag("username", authentication.getUserName())
 					.flag("password-stdin")
 					.setStdin(new String(authentication.getPassword()))
@@ -74,7 +73,7 @@ public class PushMojo extends AbstractHelmMojo {
 		for (Path chartArchive : getChartArchives()) {
 			getLog().info("Uploading " + chartArchive + "...");
 			helm()
-					.arguments("push", chartArchive, "oci://" + registry.getUrl())
+					.arguments("push", chartArchive, "oci://" + repository.getUrl())
 					.execute("Upload failed");
 		}
 	}
