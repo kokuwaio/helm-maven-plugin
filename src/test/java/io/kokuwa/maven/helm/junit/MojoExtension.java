@@ -30,6 +30,7 @@ import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 
 import io.kokuwa.maven.helm.AbstractHelmMojo;
 
+@SuppressWarnings("unchecked")
 public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 
 	private final Map<Class<AbstractHelmMojo>, MojoDescriptor> mojos = new HashMap<>();
@@ -44,8 +45,11 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 
 			InputStream inputStream = AbstractHelmMojo.class.getResourceAsStream("/META-INF/maven/plugin.xml");
 			assertNotNull(inputStream, "Plugin descriptor for not found, run 'mvn plugin:descriptor'.");
+			HashMap<String, Object> variables = new HashMap<>();
+			variables.put("project.build.directory", "target");
+			variables.put("java.io.tmpdir", System.getProperty("java.io.tmpdir"));
 			PluginDescriptor plugin = new PluginDescriptorBuilder().build(new InterpolationFilterReader(
-					new BufferedReader(new XmlStreamReader(inputStream)), new HashMap<>()));
+					new BufferedReader(new XmlStreamReader(inputStream)), variables));
 
 			// get mojos
 
@@ -87,15 +91,12 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 				field.setAccessible(true);
 
 				if (parameter.isEditable() && parameter.getDefaultValue() != null) {
-					String defaultValue = parameter.getDefaultValue()
-							.replace("${project.build.directory}", "target")
-							.replace("${java.io.tmpdir}", System.getProperty("java.io.tmpdir"));
 					if (parameter.getType().equals("boolean")) {
-						field.set(mojo, Boolean.parseBoolean(defaultValue));
+						field.set(mojo, Boolean.parseBoolean(parameter.getDefaultValue()));
 					} else if (parameter.getType().equals(File.class.getName())) {
-						field.set(mojo, new File(defaultValue));
+						field.set(mojo, new File(parameter.getDefaultValue()));
 					} else if (parameter.getType().equals(String.class.getName())) {
-						field.set(mojo, defaultValue);
+						field.set(mojo, parameter.getDefaultValue());
 					} else {
 						fail("unsupported type: " + parameter.getType());
 					}

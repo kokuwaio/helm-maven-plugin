@@ -2,18 +2,10 @@ version: 2
 updates:
   - package-ecosystem: maven
     directory: /
-    open-pull-requests-limit: 20
     schedule:
       interval: monthly
       day: monday
-      # github parses time without quotes to int
-      # yamllint disable-line rule:quoted-strings
-      time: "09:00"
-      timezone: Europe/Berlin
     ignore:
-      # minimal maven version is fixed
-      - dependency-name: org.apache.maven:maven-plugin-api
-      - dependency-name: org.apache.maven:maven-settings
       # newer checkstyle versions are build with java11
       - dependency-name: com.puppycrawl.tools:checkstyle
         update-types: [version-update:semver-major]
@@ -22,21 +14,11 @@ updates:
         update-types: [version-update:semver-major]
   - package-ecosystem: maven
     directory: /src/it
-    open-pull-requests-limit: 10
     schedule:
       interval: monthly
       day: monday
-      # github parses time without quotes to int
-      # yamllint disable-line rule:quoted-strings
-      time: "09:00"
-      timezone: Europe/Berlin
   - package-ecosystem: github-actions
     directory: /
-    open-pull-requests-limit: 10
     schedule:
       interval: monthly
       day: monday
-      # github parses time without quotes to int
-      # yamllint disable-line rule:quoted-strings
-      time: "09:00"
-      timezone: Europe/Berlin
