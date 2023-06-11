@@ -1,0 +1,46 @@
+name: PullRequest
+
+on: pull_request
+
+jobs:
+
+  yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ibiqlik/action-yamllint@v3
+        with:
+          format: colored
+          strict: true
+
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: avto-dev/markdown-lint@v1
+        with:
+          args: /github/workspace
+
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # removed macos-latest because ip is always blocked and test will fail
+        os: [ubuntu-latest, windows-latest]
+    env:
+      MAVEN_ARGS: --batch-mode --color=always --no-transfer-progress -Dmaven.test.redirectTestOutputToFile=false
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: maven
+      - run: mvn $MAVEN_ARGS dependency:go-offline
+      - run: mvn $MAVEN_ARGS verify
+      - run: mvn $MAVEN_ARGS site
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          path: target/site

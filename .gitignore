@@ -1,6 +1,5 @@
-# Maven build output
-target/
+# do not include developer stuff here, use `git config --global core.excludesFile ~/.gitignore` for your setup
 
-# IntelliJ IDEA local configuration
-.idea/
-*.iml
+target
+pom.xml.releaseBackup
+release.properties
