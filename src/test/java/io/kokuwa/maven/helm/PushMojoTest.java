@@ -32,6 +32,24 @@ public class PushMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
 	}
 
+	@DisplayName("push without authentication and skipped Login")
+	@Test
+	void withoutAuthenticationAndSkippedLogin(PushMojo mojo) {
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		mojo.setSkipPushLogin(true);
+		mojo.setUploadRepoStable(new HelmRepository().setName("oci").setUrl("reg.example.org"));
+		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
+	}
+
+	@DisplayName("push with username/password and skipped Login")
+	@Test
+	void withUsernameAndPasswordAndSkippedLogin(PushMojo mojo) {
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		mojo.setSkipPushLogin(true);
+		mojo.setUploadRepoStable(new HelmRepository().setUrl("reg.example.org").setUsername("foo").setPassword("bar"));
+		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
+	}
+
 	@DisplayName("push with username/password")
 	@Test
 	void withUsernameAndPassword(PushMojo mojo) {
