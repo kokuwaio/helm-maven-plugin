@@ -24,6 +24,14 @@ import lombok.Setter;
 public class PushMojo extends AbstractHelmMojo {
 
 	/**
+	 * Skip login, usefull if already logged via `helm:registry-login`.
+	 *
+	 * @since 6.8.0
+	 */
+	@Parameter(property = "helm.push.skipLogin", defaultValue = "false")
+	private boolean skipPushLogin;
+
+	/**
 	 * Set this to <code>true</code> to skip invoking push goal.
 	 *
 	 * @since 6.1.0
@@ -59,13 +67,16 @@ public class PushMojo extends AbstractHelmMojo {
 		}
 
 		PasswordAuthentication authentication = getAuthentication(repository);
-		if (authentication != null) {
+		if (!skipPushLogin && authentication != null) {
+			getLog().warn("Registry login with `helm:push` is deprecated and will beremoved in next major version."
+					+ " Please use `helm-registry-login` for registry login and set `helm.push.skipLogin` to `true`."
+					+ " For more information see https://github.com/kokuwaio/helm-maven-plugin/issues/302");
 			helm()
 					.arguments("registry", "login", repository.getUrl())
 					.flag("username", authentication.getUserName())
 					.flag("password-stdin")
 					.setStdin(new String(authentication.getPassword()))
-					.execute("can't login to registry");
+					.execute("Failed to login into repository " + repository.getName() + " at " + repository.getUrl());
 		}
 
 		// upload chart files
