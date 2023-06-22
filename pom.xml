@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>io.kokuwa.maven</groupId>
 		<artifactId>maven-parent</artifactId>
-		<version>0.6.6</version>
+		<version>0.6.7</version>
 		<relativePath />
 	</parent>
 
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>6.7.1-SNAPSHOT</version>
+	<version>6.8.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>Helm Maven Plugin</name>
@@ -211,8 +211,14 @@
 					<execution>
 						<goals>
 							<goal>install</goal>
-							<goal>run</goal>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
 						</goals>
+						<configuration>
+							<parallelThreads>0.5C</parallelThreads>
+							<settingsFile>${project.basedir}/src/it/settings.xml</settingsFile>
+							<scope>none</scope>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
