@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 
 @DisplayName("helm:registy-logout")
-public class RepositoryLogoutMojoTest extends AbstractMojoTest {
+public class RegistryLogoutMojoTest extends AbstractMojoTest {
 
 	@DisplayName("default values")
 	@Test

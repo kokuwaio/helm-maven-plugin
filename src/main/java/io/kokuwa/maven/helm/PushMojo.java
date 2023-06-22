@@ -1,5 +1,6 @@
 package io.kokuwa.maven.helm;
 
+import java.io.File;
 import java.net.PasswordAuthentication;
 import java.nio.file.Path;
 
@@ -22,6 +23,22 @@ import lombok.Setter;
 @Mojo(name = "push", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class PushMojo extends AbstractHelmMojo {
+
+	/**
+	 * Verify certificates of HTTPS-enabled servers using this CA bundle.
+	 *
+	 * @since 6.8.0
+	 */
+	@Parameter(property = "helm.push.caFile")
+	private File caFile;
+
+	/**
+	 * Skip tls certificate checks for the chart upload. Also known as `helm push --insecure-skip-tls-verify`.
+	 *
+	 * @since 6.8.0
+	 */
+	@Parameter(property = "helm.push.insecure", defaultValue = "false")
+	private boolean insecure;
 
 	/**
 	 * Skip login, usefull if already logged via `helm:registry-login`.
@@ -85,6 +102,8 @@ public class PushMojo extends AbstractHelmMojo {
 			getLog().info("Uploading " + chartArchive + "...");
 			helm()
 					.arguments("push", chartArchive, "oci://" + repository.getUrl())
+					.flag("ca-file", caFile)
+					.flag("insecure-skip-tls-verify", insecure)
 					.execute("Upload failed");
 		}
 	}

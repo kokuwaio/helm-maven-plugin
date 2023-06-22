@@ -1,12 +1,14 @@
 package io.kokuwa.maven.helm;
 
+import java.io.File;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 
 @DisplayName("helm:registy-login")
-public class RepositoryLoginMojoTest extends AbstractMojoTest {
+public class RegistyLoginMojoTest extends AbstractMojoTest {
 
 	@DisplayName("default values")
 	@Test
@@ -28,6 +30,14 @@ public class RepositoryLoginMojoTest extends AbstractMojoTest {
 		mojo.setUploadRepoStable(new HelmRepository().setUrl("reg.example.org").setUsername("foo").setPassword("bar"));
 		mojo.setInsecure(true);
 		assertHelm(mojo, "registry login reg.example.org --insecure --username foo --password-stdin");
+	}
+
+	@DisplayName("with flag ca-file")
+	@Test
+	void caFile(RegistryLoginMojo mojo) {
+		mojo.setUploadRepoStable(new HelmRepository().setUrl("reg.example.org").setUsername("foo").setPassword("bar"));
+		mojo.setCaFile(new File("registry-ca.pem"));
+		assertHelm(mojo, "registry login reg.example.org --ca-file registry-ca.pem --username foo --password-stdin");
 	}
 
 	@DisplayName("registry login without authentication")

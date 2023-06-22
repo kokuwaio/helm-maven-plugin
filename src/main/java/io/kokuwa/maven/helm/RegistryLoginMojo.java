@@ -1,5 +1,6 @@
 package io.kokuwa.maven.helm;
 
+import java.io.File;
 import java.net.PasswordAuthentication;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -19,6 +20,14 @@ import lombok.Setter;
 @Mojo(name = "registry-login", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true)
 @Setter
 public class RegistryLoginMojo extends AbstractHelmMojo {
+
+	/**
+	 * Verify certificates of HTTPS-enabled servers using this CA bundle.
+	 *
+	 * @since 6.8.0
+	 */
+	@Parameter(property = "helm.registry-login.caFile")
+	private File caFile;
 
 	/**
 	 * Allow connections to TLS registry without certs.
@@ -58,6 +67,7 @@ public class RegistryLoginMojo extends AbstractHelmMojo {
 
 		helm()
 				.arguments("registry", "login", repository.getUrl())
+				.flag("ca-file", caFile)
 				.flag("insecure", insecure)
 				.flag("username", authentication.getUserName())
 				.flag("password-stdin")
