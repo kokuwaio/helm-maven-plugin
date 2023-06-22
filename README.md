@@ -311,6 +311,8 @@ Parameter | Type | User Property | Required | Description
 `<upgradeDryRun>` | boolean | helm.upgrade.dryRun | false | Run upgrade goal only in dry run mode
 `<templateOutputDir>` | file | helm.template.output-dir | false | Writes the executed templates to files in output-dir instead of stdout.
 `<templateGenerateName>` | boolean | helm.template.generate-name | false | Generate the name (and omit the NAME parameter).
+`<caFile>` | boolean | helm.push.caFile | false | Verify certificates of HTTPS-enabled servers using this CA bundle.
+`<insecure>` | boolean | helm.push.insecure | false | Skip tls certificate checks for the chart upload. Also known as `helm push --insecure-skip-tls-verify`
 
 ## Packaging with the Helm Lifecycle
 
