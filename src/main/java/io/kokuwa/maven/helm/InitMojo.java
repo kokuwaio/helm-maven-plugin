@@ -128,8 +128,8 @@ public class InitMojo extends AbstractHelmMojo {
 	private String helmDownloadServerId;
 
 	/**
-	 * Controls whether a download should occur when local helm binary is not found. This property has no effect unless
-	 * "helm.useLocalHelmBinary" is set to <code>true</code>.
+	 * Controls whether a download should occur when local helm binary is not found/verified.
+	 * This property has no effect unless "helm.useLocalHelmBinary" is set to <code>true</code>.
 	 *
 	 * @since 6.8.1
 	 */
