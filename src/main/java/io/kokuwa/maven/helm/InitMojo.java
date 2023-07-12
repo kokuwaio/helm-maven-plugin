@@ -127,6 +127,15 @@ public class InitMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.downloadServerId")
 	private String helmDownloadServerId;
 
+	/**
+	 * Controls whether a download should occur when local helm binary is not found. This property has no effect unless
+	 * "helm.useLocalHelmBinary" is set to <code>true</code>.
+	 *
+	 * @since 6.8.1
+	 */
+	@Parameter(property = "helm.init.fallbackBinaryDownload", defaultValue = "false")
+	private boolean fallbackBinaryDownload;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -146,10 +155,22 @@ public class InitMojo extends AbstractHelmMojo {
 			}
 		}
 
+		boolean performDownload = true;
 		if (isUseLocalHelmBinary()) {
-			verifyLocalHelmBinary();
-			getLog().info("Using local HELM binary [" + getHelmExecutablePath() + "]");
-		} else {
+			try {
+				verifyLocalHelmBinary();
+				getLog().info("Using local HELM binary [" + getHelmExecutablePath() + "]");
+				performDownload = false;
+			} catch (Exception e) {
+				if (fallbackBinaryDownload) {
+					getLog().info("Local HELM not verified => falling back to binary download");
+				} else {
+					getLog().debug("Skipping fallback binary download");
+					throw e;
+				}
+			}
+		}
+		if (performDownload) {
 			downloadAndUnpackHelm();
 		}
 
