@@ -272,8 +272,8 @@ Parameter | Type | User Property | Required | Description
 `<tmpDir>` | string | helm.tmpDir | false | Directory where to store cached Github responses. Defaults to `${java.io.tmpdir}/helm-maven-plugin`
 `<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
 `<useLocalHelmBinary>` | boolean | helm.useLocalHelmBinary | false | Controls whether a local binary should be used instead of downloading it. If set to `true` path has to be set with property `executableDirectory`
-`<autoDetectLocalHelmBinary>` | boolean | helm.autoDetectLocalHelmBinary | true | Controls whether the local binary should be auto-detected from `PATH` environment variable. If set to `false` the binary in `<helmExecutableDirectory>` is used. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
-`<helmExecutableDirectory>` | string | helm.executableDirectory | false | directory of your helm installation (default: `${project.build.directory}/helm`)
+`<autoDetectLocalHelmBinary>` | boolean | helm.autoDetectLocalHelmBinary | true | Controls whether the local binary should be auto-detected from `PATH` environment variable. If set to `false`, the binary in `<helmExecutableDirectory>` is used only. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
+`<helmExecutableDirectory>` | string | helm.executableDirectory | false | directory of your helm installation (default: `${project.build.directory}/helm`). If defined, directory is used also for `<autoDetectLocalHelmBinary>` as a last resort.
 `<outputDirectory>` | string | helm.outputDirectory | false | chart output directory (default: `${project.build.directory}/helm/repo`)
 `<debug>` | boolean | helm.debug | false | add debug to helm
 `<registryConfig>` | string | helm.registryConfig | false | path to the registry config file
@@ -313,6 +313,7 @@ Parameter | Type | User Property | Required | Description
 `<templateGenerateName>` | boolean | helm.template.generate-name | false | Generate the name (and omit the NAME parameter).
 `<caFile>` | boolean | helm.push.caFile | false | Verify certificates of HTTPS-enabled servers using this CA bundle.
 `<insecure>` | boolean | helm.push.insecure | false | Skip tls certificate checks for the chart upload. Also known as `helm push --insecure-skip-tls-verify`
+`<fallbackBinaryDownload>` | boolean | helm.fallbackBinaryDownload | Controls whether a download should occur when local helm binary is not found. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
 
 ## Packaging with the Helm Lifecycle
 

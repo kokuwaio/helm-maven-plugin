@@ -265,6 +265,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		Stream<Path> optional;
 		if (useLocalHelmBinary && autoDetectLocalHelmBinary) {
 			optional = Stream.of(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))).map(Paths::get);
+			if (helmExecutableDirectory != null) {
+				// if defined, search also in helm executable directory (eg. used for fallback binary download)
+				optional = Stream.concat(optional, Stream.of(helmExecutableDirectory.toPath()));
+			}
 		} else {
 			optional = Stream.of(helmExecutableDirectory.toPath());
 		}

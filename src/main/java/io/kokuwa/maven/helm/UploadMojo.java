@@ -9,7 +9,17 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.Base64;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -64,6 +74,14 @@ public class UploadMojo extends AbstractHelmMojo {
 	@Parameter(defaultValue = "${project.version}", readonly = true)
 	private String projectVersion;
 
+	/**
+	 * Skip tls certificate checks for the chart upload.
+	 *
+	 * @since 6.8.1
+	 */
+	@Parameter(property = "helm.upload.insecure", defaultValue = "false")
+	private boolean insecure;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -113,44 +131,59 @@ public class UploadMojo extends AbstractHelmMojo {
 			throw new IllegalArgumentException("Repository type missing. Check your plugin configuration.");
 		}
 
-		switch (uploadRepo.getType()) {
-			case ARTIFACTORY:
-				connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo);
-				break;
-			case CHARTMUSEUM:
-				connection = getConnectionForUploadToChartmuseum();
-				break;
-			case NEXUS:
-				connection = getConnectionForUploadToNexus(fileToUpload);
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported repository type for upload.");
-		}
+		SSLSocketFactory dsf = HttpsURLConnection.getDefaultSSLSocketFactory();
+		HostnameVerifier dhv = HttpsURLConnection.getDefaultHostnameVerifier();
+		try {
+			if (insecure) {
+				setupInsecureTLS();
+			}
 
-		try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
-			IOUtils.copy(fileInputStream, connection.getOutputStream());
-		}
-		if (connection.getResponseCode() >= 300) {
-			String response;
-			if (connection.getErrorStream() != null) {
-				response = new String(IOUtils.toByteArray(connection.getErrorStream()));
-			} else if (connection.getInputStream() != null) {
-				response = new String(IOUtils.toByteArray(connection.getInputStream()));
+			switch (uploadRepo.getType()) {
+				case ARTIFACTORY:
+					connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo);
+					break;
+				case CHARTMUSEUM:
+					connection = getConnectionForUploadToChartMuseum();
+					break;
+				case NEXUS:
+					connection = getConnectionForUploadToNexus(fileToUpload);
+					break;
+				default:
+					throw new IllegalArgumentException("Unsupported repository type for upload.");
+			}
+
+			try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
+				IOUtils.copy(fileInputStream, connection.getOutputStream());
+			}
+			if (connection.getResponseCode() >= 300) {
+				String response;
+				if (connection.getErrorStream() != null) {
+					response = new String(IOUtils.toByteArray(connection.getErrorStream()));
+				} else if (connection.getInputStream() != null) {
+					response = new String(IOUtils.toByteArray(connection.getInputStream()));
+				} else {
+					response = "No details provided";
+				}
+				throw new MojoExecutionException("Failed to upload: " + response);
 			} else {
-				response = "No details provided";
+				String message = Integer.toString(connection.getResponseCode());
+				if (connection.getInputStream() != null) {
+					message += " - " + new String(IOUtils.toByteArray(connection.getInputStream()));
+				}
+				getLog().info(message);
 			}
-			throw new MojoExecutionException("Failed to upload: " + response);
-		} else {
-			String message = Integer.toString(connection.getResponseCode());
-			if (connection.getInputStream() != null) {
-				message += " - " + new String(IOUtils.toByteArray(connection.getInputStream()));
+			connection.disconnect();
+		} finally {
+			if (dsf != null) {
+				HttpsURLConnection.setDefaultSSLSocketFactory(dsf);
 			}
-			getLog().info(message);
+			if (dhv != null) {
+				HttpsURLConnection.setDefaultHostnameVerifier(dhv);
+			}
 		}
-		connection.disconnect();
 	}
 
-	private HttpURLConnection getConnectionForUploadToChartmuseum() throws IOException, MojoExecutionException {
+	private HttpURLConnection getConnectionForUploadToChartMuseum() throws IOException, MojoExecutionException {
 		HttpURLConnection connection = (HttpURLConnection) new URL(getHelmUploadUrl()).openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
@@ -216,6 +249,43 @@ public class UploadMojo extends AbstractHelmMojo {
 		verifyAndSetAuthentication(false);
 
 		return connection;
+	}
+
+	private void setupInsecureTLS() throws MojoExecutionException {
+		// Create a trust manager that does not validate certificate chains
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+				return null; //NOSONAR
+			}
+
+			public void checkClientTrusted(X509Certificate[] certs, String authType) { //NOSONAR
+				// no-op
+			}
+
+			public void checkServerTrusted(X509Certificate[] certs, String authType) { //NOSONAR
+				// no-op
+			}
+		} };
+
+		// Install the all-trusting trust manager
+		SSLContext sc;
+		try {
+			sc = SSLContext.getInstance("TLS");
+		} catch (NoSuchAlgorithmException e) {
+			throw new MojoExecutionException("Cannot create TLS context instance", e);
+		}
+		try {
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+		} catch (KeyManagementException e) {
+			throw new MojoExecutionException("Cannot initialize TLS context instance", e);
+		}
+		HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+		// Create all-trusting host name verifier
+		HostnameVerifier allHostsValid = (hostname, session) -> true; //NOSONAR
+
+		// Install the all-trusting host verifier
+		HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 	}
 
 	/**
