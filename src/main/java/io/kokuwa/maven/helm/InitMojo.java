@@ -128,8 +128,8 @@ public class InitMojo extends AbstractHelmMojo {
 	private String helmDownloadServerId;
 
 	/**
-	 * Controls whether a download should occur when local helm binary is not found/verified.
-	 * This property has no effect unless "helm.useLocalHelmBinary" is set to <code>true</code>.
+	 * Controls whether a download should occur when local helm binary is not found/verified. This property has no
+	 * effect unless "helm.useLocalHelmBinary" is set to <code>true</code>.
 	 *
 	 * @since 6.8.1
 	 */
@@ -155,22 +155,20 @@ public class InitMojo extends AbstractHelmMojo {
 			}
 		}
 
-		boolean performDownload = true;
 		if (isUseLocalHelmBinary()) {
 			try {
-				verifyLocalHelmBinary();
+				helm().arguments("version").execute("Unable to verify local HELM binary");
 				getLog().info("Using local HELM binary [" + getHelmExecutablePath() + "]");
-				performDownload = false;
-			} catch (Exception e) {
+			} catch (MojoExecutionException e) {
 				if (fallbackBinaryDownload) {
-					getLog().info("Local HELM not verified => falling back to binary download");
+					getLog().info("Local HELM binary not found => falling back to binary download");
+					downloadAndUnpackHelm();
 				} else {
-					getLog().debug("Skipping fallback binary download");
+					getLog().error("Local HELM binary not found.");
 					throw e;
 				}
 			}
-		}
-		if (performDownload) {
+		} else {
 			downloadAndUnpackHelm();
 		}
 
@@ -327,10 +325,6 @@ public class InitMojo extends AbstractHelmMojo {
 			aclEntries.add(aclEntry);
 			acl.setAcl(aclEntries);
 		}
-	}
-
-	private void verifyLocalHelmBinary() throws MojoExecutionException {
-		helm().arguments("version").execute("Unable to verify local HELM binary");
 	}
 
 	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {

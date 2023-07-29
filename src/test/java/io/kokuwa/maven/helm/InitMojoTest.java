@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -8,6 +10,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -80,37 +83,55 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("executable: local")
 	@Test
 	void localHelm(InitMojo mojo) {
+		mojo.setAutoDetectLocalHelmBinary(false);
 		mojo.setUseLocalHelmBinary(true);
+		mojo.setFallbackBinaryDownload(false);
 		mojo.setHelmVersion(null);
 		mojo.setHelmExecutableDirectory(new File("src/it"));
 		assertHelm(mojo, "version", "repo add stable " + InitMojo.STABLE_HELM_REPO);
 	}
 
+	@DisplayName("executable: local missing and fallback enabled")
+	@Test
+	void localHelmMissingWithFallbackEnabled(InitMojo mojo) {
+		mojo.setAutoDetectLocalHelmBinary(false);
+		mojo.setUseLocalHelmBinary(true);
+		mojo.setFallbackBinaryDownload(true);
+		mojo.setHelmVersion("3.12.0");
+		mojo.setHelmExecutableDirectory(createTempDirectory());
+		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
+		assertHelmExecuteable(mojo);
+	}
+
+	@DisplayName("executable: local missing and fallback disabled")
+	@Test
+	void localHelmMissingWithFallbackDisabled(InitMojo mojo) {
+		mojo.setAutoDetectLocalHelmBinary(false);
+		mojo.setUseLocalHelmBinary(true);
+		mojo.setFallbackBinaryDownload(false);
+		mojo.setHelmVersion("3.12.0");
+		mojo.setHelmExecutableDirectory(createTempDirectory());
+		assertThrows(MojoExecutionException.class, mojo::execute);
+	}
+
 	@DisplayName("executable: download with version")
 	@Test
-	void downloadHelmWithVersion(InitMojo mojo) throws IOException {
-		Path helmExecutableDirectory = Files.createTempDirectory("helm-maven-plugin-test");
-		Path helmExecutable = helmExecutableDirectory.resolve(HELM);
-		mojo.setHelmExecutableDirectory(helmExecutableDirectory.toFile());
+	void downloadHelmWithVersion(InitMojo mojo) {
+		mojo.setHelmExecutableDirectory(createTempDirectory());
 		mojo.setHelmVersion("3.10.1");
 		mojo.setUseLocalHelmBinary(false);
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
-		assertTrue(Files.isRegularFile(helmExecutable), "executable not found");
-		assertTrue(Files.isExecutable(helmExecutable), "executable not executable");
+		assertHelmExecuteable(mojo);
 	}
 
 	@DisplayName("executable: download with url")
 	@DisabledOnOs(OS.WINDOWS)
 	@Test
 	void downloadHelmWithUrl(InitMojo mojo) throws IOException {
-		Path helmExecutableDirectory = Files.createTempDirectory("helm-maven-plugin-test");
-		Path helmExecutable = helmExecutableDirectory.resolve("helm");
-		mojo.setHelmExecutableDirectory(helmExecutableDirectory.toFile());
+		mojo.setHelmExecutableDirectory(createTempDirectory());
 		mojo.setHelmVersion(null);
 		mojo.setHelmDownloadUrl(new URL("https://get.helm.sh/helm-v3.10.1-linux-amd64.tar.gz"));
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
-		assertTrue(Files.isRegularFile(helmExecutable), "executable not found");
-		assertTrue(Files.isExecutable(helmExecutable), "executable not executable");
 	}
 
 	@DisplayName("repository: extra repo without authentication")
@@ -260,5 +281,15 @@ public class InitMojoTest extends AbstractMojoTest {
 				"repo add extra1 https://example.org/extra1 --username user-extra1 --password secret-extra1",
 				"repo add extra2 https://example.org/extra2 --username user-extra2 --password secret-extra2",
 				"repo add extra3 https://example.org/extra3");
+	}
+
+	private File createTempDirectory() {
+		return assertDoesNotThrow(() -> Files.createTempDirectory("helm-maven-plugin-test")).toFile();
+	}
+
+	private void assertHelmExecuteable(InitMojo mojo) {
+		Path helmExecutable = mojo.getHelmExecutableDirectory().resolve(HELM);
+		assertTrue(Files.isRegularFile(helmExecutable), "executable not found");
+		assertTrue(Files.isExecutable(helmExecutable), "executable not executable");
 	}
 }
