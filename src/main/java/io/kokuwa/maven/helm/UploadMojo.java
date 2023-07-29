@@ -14,10 +14,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -126,61 +124,52 @@ public class UploadMojo extends AbstractHelmMojo {
 		HelmRepository uploadRepo = getHelmUploadRepo();
 
 		HttpURLConnection connection;
-
 		if (uploadRepo.getType() == null) {
 			throw new IllegalArgumentException("Repository type missing. Check your plugin configuration.");
 		}
 
-		SSLSocketFactory dsf = HttpsURLConnection.getDefaultSSLSocketFactory();
-		HostnameVerifier dhv = HttpsURLConnection.getDefaultHostnameVerifier();
-		try {
-			if (insecure) {
-				setupInsecureTLS();
-			}
-
-			switch (uploadRepo.getType()) {
-				case ARTIFACTORY:
-					connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo);
-					break;
-				case CHARTMUSEUM:
-					connection = getConnectionForUploadToChartMuseum();
-					break;
-				case NEXUS:
-					connection = getConnectionForUploadToNexus(fileToUpload);
-					break;
-				default:
-					throw new IllegalArgumentException("Unsupported repository type for upload.");
-			}
-
-			try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
-				IOUtils.copy(fileInputStream, connection.getOutputStream());
-			}
-			if (connection.getResponseCode() >= 300) {
-				String response;
-				if (connection.getErrorStream() != null) {
-					response = new String(IOUtils.toByteArray(connection.getErrorStream()));
-				} else if (connection.getInputStream() != null) {
-					response = new String(IOUtils.toByteArray(connection.getInputStream()));
-				} else {
-					response = "No details provided";
-				}
-				throw new MojoExecutionException("Failed to upload: " + response);
-			} else {
-				String message = Integer.toString(connection.getResponseCode());
-				if (connection.getInputStream() != null) {
-					message += " - " + new String(IOUtils.toByteArray(connection.getInputStream()));
-				}
-				getLog().info(message);
-			}
-			connection.disconnect();
-		} finally {
-			if (dsf != null) {
-				HttpsURLConnection.setDefaultSSLSocketFactory(dsf);
-			}
-			if (dhv != null) {
-				HttpsURLConnection.setDefaultHostnameVerifier(dhv);
-			}
+		switch (uploadRepo.getType()) {
+			case ARTIFACTORY:
+				connection = getConnectionForUploadToArtifactory(fileToUpload, uploadRepo);
+				break;
+			case CHARTMUSEUM:
+				connection = getConnectionForUploadToChartMuseum();
+				break;
+			case NEXUS:
+				connection = getConnectionForUploadToNexus(fileToUpload);
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported repository type for upload.");
 		}
+
+		if (insecure && connection instanceof HttpsURLConnection) {
+			setupInsecureTLS((HttpsURLConnection) connection);
+		}
+
+		try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
+			IOUtils.copy(fileInputStream, connection.getOutputStream());
+		}
+		if (connection.getResponseCode() >= 300) {
+			String response;
+			if (connection.getErrorStream() != null) {
+				response = new String(IOUtils.toByteArray(connection.getErrorStream()));
+			} else if (connection.getInputStream() != null) {
+				response = new String(IOUtils.toByteArray(connection.getInputStream()));
+			} else {
+				response = "No details provided";
+			}
+			throw new MojoExecutionException("Failed to upload: " + response);
+		} else {
+			String message = "Returned: " + connection.getResponseCode();
+			if (connection.getInputStream() != null) {
+				String details = new String(IOUtils.toByteArray(connection.getInputStream()));
+				if (!details.isEmpty()) {
+					message += " - " + details;
+				}
+			}
+			getLog().info(message);
+		}
+		connection.disconnect();
 	}
 
 	private HttpURLConnection getConnectionForUploadToChartMuseum() throws IOException, MojoExecutionException {
@@ -251,41 +240,36 @@ public class UploadMojo extends AbstractHelmMojo {
 		return connection;
 	}
 
-	private void setupInsecureTLS() throws MojoExecutionException {
-		// Create a trust manager that does not validate certificate chains
-		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+	private void setupInsecureTLS(HttpsURLConnection connection) throws MojoExecutionException {
+
+		TrustManager trustManager = new X509TrustManager() {
+
+			@Override
 			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null; //NOSONAR
+				return null;
 			}
 
-			public void checkClientTrusted(X509Certificate[] certs, String authType) { //NOSONAR
-				// no-op
-			}
+			@Override
+			public void checkClientTrusted(X509Certificate[] certs, String authType) {}
 
-			public void checkServerTrusted(X509Certificate[] certs, String authType) { //NOSONAR
-				// no-op
-			}
-		} };
+			@Override
+			public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+		};
 
-		// Install the all-trusting trust manager
 		SSLContext sc;
 		try {
 			sc = SSLContext.getInstance("TLS");
+			sc.init(null, new TrustManager[] { trustManager }, new java.security.SecureRandom());
+		} catch (KeyManagementException e) {
+			throw new MojoExecutionException("Cannot initialize TLS context instance", e);
 		} catch (NoSuchAlgorithmException e) {
 			throw new MojoExecutionException("Cannot create TLS context instance", e);
 		}
-		try {
-			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-		} catch (KeyManagementException e) {
-			throw new MojoExecutionException("Cannot initialize TLS context instance", e);
-		}
-		HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-		// Create all-trusting host name verifier
-		HostnameVerifier allHostsValid = (hostname, session) -> true; //NOSONAR
+		connection.setSSLSocketFactory(sc.getSocketFactory());
+		connection.setHostnameVerifier((hostname, session) -> true);
 
-		// Install the all-trusting host verifier
-		HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+		getLog().info("Use insecure TLS connection for [" + connection.getURL() + "]");
 	}
 
 	/**

@@ -295,6 +295,7 @@ Parameter | Type | User Property | Required | Description
 `<skipDependencyBuild>` | boolean | helm.dependency-build.skip | false | skip dependency-build goal
 `<skipPackage>` | boolean | helm.package.skip | false | skip package goal
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
+`<insecure>` | boolean | helm.upload.insecure | false | Skip tls certificate checks for the chart upload.
 `<skipInstall>` | boolean | helm.install.skip | false | skip install goal
 `<security>` | string | helm.security | false | path to your [settings-security.xml](https://maven.apache.org/guides/mini/guide-encryption.html) (default: `~/.m2/settings-security.xml`)
 `<keyring>` | string | helm.package.keyring | false | path to gpg secret keyring for signing
