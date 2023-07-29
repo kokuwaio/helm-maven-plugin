@@ -107,7 +107,7 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 
 			mojo.setChartDirectory(new File("src/test/resources/simple")); // set some sane defaults for tests
 			mojo.setHelmExecutableDirectory(new File("src/it")); // avoid download helm
-			mojo.setHelmVersion("3.10.0"); // avoid github api
+			mojo.setHelmVersion("3.12.0"); // avoid github api
 
 			return mojo;
 		} catch (ReflectiveOperationException e) {
