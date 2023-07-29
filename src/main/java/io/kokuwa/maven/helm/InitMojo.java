@@ -131,7 +131,7 @@ public class InitMojo extends AbstractHelmMojo {
 	 * Controls whether a download should occur when local helm binary is not found/verified.
 	 * This property has no effect unless "helm.useLocalHelmBinary" is set to <code>true</code>.
 	 *
-	 * @since 6.8.1
+	 * @since 6.9.0
 	 */
 	@Parameter(property = "helm.init.fallbackBinaryDownload", defaultValue = "false")
 	private boolean fallbackBinaryDownload;
