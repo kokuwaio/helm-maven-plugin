@@ -33,7 +33,6 @@
 									<password>ChangeMe</password>
 								</helmExtraRepo>
 							</helmExtraRepos>
-							<addDefaultRepo>false</addDefaultRepo>
 							<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
 							<chartVersion>1.0.0</chartVersion>
 						</configuration>

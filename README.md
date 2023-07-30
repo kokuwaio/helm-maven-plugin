@@ -15,7 +15,6 @@ Currently the upload to [ChartMuseum](https://github.com/kubernetes-helm/chartmu
 
 From version **5.0** Helm v3 is required.
 There is no longer support for Helm v2.
-For convenience reasons the stable repo is added by default.
 
 Helm v2 users can still use plugin version [4.13](https://search.maven.org/artifact/io.kokuwa.maven/helm-maven-plugin/4.13/maven-plugin).
 
@@ -200,8 +199,6 @@ and disables the auto-detection feature:
         <passphrase>SecretPassPhrase</passphrase>
         <!-- Lint with strict mode -->
         <lintStrict>true</lintStrict>
-        <!-- Disable adding of default repo stable https://charts.helm.sh/stable -->
-        <addDefaultRepo>false</addDefaultRepo>
         <!-- Exclude a directory to avoid processing -->
         <excludes>
           <exclude>${project.basedir}/excluded</exclude>
@@ -286,7 +283,6 @@ Parameter | Type | User Property | Required | Description
 `<uploadRepoSnapshot>`| [HelmRepository](./src/main/java/io/kokuwa/maven/helm/pojo/HelmRepository.java) | | false | Upload repository for snapshot charts (determined by version postfix 'SNAPSHOT')
 `<lintStrict>` | boolean | helm.lint.strict | false | run lint command with strict option (fail on lint warnings)
 `<lintQuiet>` | boolean | helm.lint.quiet | false | run lint command with quiet option (print only warnings and errors)
-`<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (<https://charts.helm.sh/stable>) will be added
 `<addUploadRepos>` | boolean | helm.init.add-upload-repos | false | If true, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured
 `<skip>` | boolean | helm.skip | false | skip plugin execution
 `<skipInit>` | boolean | helm.init.skip | false | skip init goal

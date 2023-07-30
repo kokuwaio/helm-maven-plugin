@@ -41,7 +41,7 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("default values")
 	@Test
 	void init(InitMojo mojo) {
-		assertHelm(mojo, "repo add stable https://charts.helm.sh/stable");
+		assertHelm(mojo);
 	}
 
 	@DisplayName("with flag skip")
@@ -55,7 +55,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("with flag --force-update")
 	@Test
 	void withForceUpdateForAll(InitMojo mojo) {
-		mojo.setAddDefaultRepo(true);
 		mojo.setAddUploadRepos(true);
 		mojo.setRepositoryAddForceUpdate(true);
 		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
@@ -71,7 +70,6 @@ public class InitMojoTest extends AbstractMojoTest {
 				.setName("example-snapshot")
 				.setUrl("https://example.org/repo/snapshot"));
 		assertHelm(mojo,
-				"repo add stable " + InitMojo.STABLE_HELM_REPO + " --force-update",
 				"repo add example-stable https://example.org/repo/stable --force-update",
 				"repo add example-snapshot https://example.org/repo/snapshot --force-update",
 				"repo add example https://example.org/repo/example --force-update");
@@ -80,20 +78,11 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("with flag --force-update for single repository")
 	@Test
 	void withForceUpdateForSingleRepository(InitMojo mojo) {
-		mojo.setAddDefaultRepo(true);
 		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
 				.setName("example")
 				.setUrl("https://example.org/repo/example")
 				.setForceUpdate(true) });
-		assertHelm(mojo,
-				"repo add stable " + InitMojo.STABLE_HELM_REPO,
-				"repo add example https://example.org/repo/example --force-update");
-	}
-
-	@DisplayName("without flag addDefaultRepo")
-	@Test
-	void addDefaultRepo(InitMojo mojo) {
-		assertHelm(mojo.setAddDefaultRepo(false));
+		assertHelm(mojo, "repo add example https://example.org/repo/example --force-update");
 	}
 
 	@DisplayName("executable: local")
@@ -104,7 +93,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setFallbackBinaryDownload(false);
 		mojo.setHelmVersion(null);
 		mojo.setHelmExecutableDirectory(new File("src/it"));
-		assertHelm(mojo, "version", "repo add stable " + InitMojo.STABLE_HELM_REPO);
+		assertHelm(mojo, "version");
 	}
 
 	@DisplayName("executable: local missing and fallback enabled")
@@ -115,7 +104,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setFallbackBinaryDownload(true);
 		mojo.setHelmVersion("3.12.0");
 		mojo.setHelmExecutableDirectory(createTempDirectory());
-		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
+		assertHelm(mojo);
 		assertHelmExecuteable(mojo);
 	}
 
@@ -136,7 +125,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setHelmExecutableDirectory(createTempDirectory());
 		mojo.setHelmVersion("3.12.0");
 		mojo.setUseLocalHelmBinary(false);
-		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
+		assertHelm(mojo);
 		assertHelmExecuteable(mojo);
 	}
 
@@ -172,7 +161,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.getSettings().addProxy(proxy1);
 		mojo.getSettings().addProxy(proxy2);
 		mojo.getSettings().addProxy(proxy3);
-		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
+		assertHelm(mojo);
 
 		List<LoggedRequest> requests = mock.findAll(RequestPatternBuilder.allRequests());
 		assertEquals(1, requests.size(), "expected only 1 response, got: " + requests);
@@ -191,13 +180,12 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setHelmExecutableDirectory(createTempDirectory());
 		mojo.setHelmVersion(null);
 		mojo.setHelmDownloadUrl(new URL("https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz"));
-		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
+		assertHelm(mojo);
 	}
 
 	@DisplayName("repository: extra repo without authentication")
 	@Test
 	void extraRepositoryWithoutAuthentication(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
 				.setName("extra")
 				.setUrl("https://example.org/extra") });
@@ -207,7 +195,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: extra repo with username/password")
 	@Test
 	void extraRepositoryWithUsernameAndPassword(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
 				.setName("extra")
 				.setUrl("https://example.org/extra")
@@ -219,7 +206,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: extra repo with serverId")
 	@Test
 	void extraRepositoryServerId(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.getSettings().getServers().add(getServer("extra", "foo", "secret"));
 		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
 				.setName("extra")
@@ -230,7 +216,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: stable repo without authentication")
 	@Test
 	void stableRepositoryWithoutAuthentication(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
 		mojo.setUploadRepoStable(new HelmRepository().setName("stable").setUrl("https://example.org/stable"));
 		assertHelm(mojo, "repo add stable https://example.org/stable");
@@ -239,7 +224,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: stable repo with username/password")
 	@Test
 	void stableRepositoryWithUsernameAndPassword(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
 		mojo.setUploadRepoStable(new HelmRepository()
 				.setName("stable")
@@ -252,7 +236,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: stable repo with serverId")
 	@Test
 	void stableRepositoryServerId(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
 		mojo.getSettings().getServers().add(getServer("stable", "foo", "secret"));
 		mojo.setUploadRepoStable(new HelmRepository().setName("stable").setUrl("https://example.org/stable"));
@@ -262,7 +245,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: snapshot repo without authentication")
 	@Test
 	void snapshotRepositoryWithoutAuthentication(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
 		mojo.setUploadRepoSnapshot(new HelmRepository()
 				.setName("snapshot")
@@ -273,7 +255,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: snapshot repo with username/password")
 	@Test
 	void snapshotRepositoryWithUsernameAndPassword(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
 		mojo.setUploadRepoSnapshot(new HelmRepository()
 				.setName("snapshot")
@@ -286,7 +267,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: snapshot repo with serverId")
 	@Test
 	void snapshotRepositoryServerId(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
 		mojo.getSettings().getServers().add(getServer("snapshot", "foo", "secret"));
 		mojo.setUploadRepoSnapshot(new HelmRepository().setName("snapshot").setUrl("https://example.org/stable"));
@@ -296,7 +276,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: same stable & snapshot repo")
 	@Test
 	void stableAndsnapshotRepository(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
 		mojo.setUploadRepoStable(new HelmRepository().setName("upload").setUrl("https://example.org/upload"));
 		mojo.setUploadRepoSnapshot(new HelmRepository().setName("upload").setUrl("https://example.org/upload"));
@@ -306,7 +285,6 @@ public class InitMojoTest extends AbstractMojoTest {
 	@DisplayName("repository: different stable & snapshot repo")
 	@Test
 	void stableAndsnapshotRepositoryDiffer(InitMojo mojo) {
-		mojo.setAddDefaultRepo(false);
 		mojo.setAddUploadRepos(true);
 		mojo.setUploadRepoStable(new HelmRepository().setName("stable").setUrl("https://example.org/stable"));
 		mojo.setUploadRepoSnapshot(new HelmRepository().setName("snapshot").setUrl("https://example.org/snapshot"));
@@ -335,7 +313,6 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setUploadRepoStable(new HelmRepository().setName("my-stable").setUrl("https://example.org/stable"));
 		mojo.setUploadRepoSnapshot(new HelmRepository().setName("my-snapshot").setUrl("https://example.org/snapshot"));
 		assertHelm(mojo,
-				"repo add stable " + InitMojo.STABLE_HELM_REPO,
 				"repo add my-stable https://example.org/stable",
 				"repo add my-snapshot https://example.org/snapshot",
 				"repo add extra1 https://example.org/extra1 --username user-extra1 --password secret-extra1",
