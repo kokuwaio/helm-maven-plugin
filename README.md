@@ -1,7 +1,10 @@
 # Helm Maven Plugin
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.kokuwa.maven/helm-maven-plugin.svg?label=Maven%20Central)](https://central.sonatype.com/namespace/io.kokuwa.maven)
-[![Build](https://img.shields.io/github/actions/workflow/status/kokuwaio/helm-maven-plugin/build.yaml?label=Build)](https://github.com/kokuwaio/helm-maven-plugin/actions/workflows/build.yaml?label=Build)
+This is version 6.x in maintenance mode, security issues and bugs will be fixed. For now features use [7.x](https://github.com/kokuwaio/helm-maven-plugin/tree/main).
+
+[![MIT License](https://img.shields.io/github/license/kokuwaio/helm-maven-plugin)](https://spdx.org/licenses/MIT.html)
+[![Maven Central](https://img.shields.io/maven-central/v/io.kokuwa.maven/helm-maven-plugin)](https://central.sonatype.com/namespace/io.kokuwa.maven)
+[![Build](https://img.shields.io/github/actions/workflow/status/kokuwaio/helm-maven-plugin/build.yaml?branch=6.x)](https://github.com/kokuwaio/helm-maven-plugin/actions/workflows/build.yaml?query=branch%3A6.x)
 
 This is a Maven plugin for testing, packaging and uploading HELM charts.
 "HELM is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources."
