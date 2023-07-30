@@ -29,6 +29,7 @@ import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 
 import io.kokuwa.maven.helm.AbstractHelmMojo;
+import io.kokuwa.maven.helm.InitMojo;
 
 @SuppressWarnings("unchecked")
 public class MojoExtension implements ParameterResolver, BeforeAllCallback {
@@ -107,7 +108,9 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 
 			mojo.setChartDirectory(new File("src/test/resources/simple")); // set some sane defaults for tests
 			mojo.setHelmExecutableDirectory(new File("src/it")); // avoid download helm
-			mojo.setHelmVersion("3.12.0"); // avoid github api
+			if (mojo instanceof InitMojo) {
+				((InitMojo) mojo).setHelmVersion("3.12.0"); // avoid github api
+			}
 
 			return mojo;
 		} catch (ReflectiveOperationException e) {

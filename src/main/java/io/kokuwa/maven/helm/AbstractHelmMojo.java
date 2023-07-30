@@ -29,7 +29,6 @@ import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
-import io.kokuwa.maven.helm.github.Github;
 import io.kokuwa.maven.helm.pojo.HelmExecutable;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import lombok.Getter;
@@ -125,30 +124,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 */
 	@Parameter
 	private HelmRepository uploadRepoSnapshot;
-
-	/**
-	 * Version of helm to download.
-	 *
-	 * @since 5.5
-	 */
-	@Parameter(property = "helm.version")
-	private String helmVersion;
-
-	/**
-	 * UserAgent to use for accessing Github api to identify latest version.
-	 *
-	 * @since 6.1.0
-	 */
-	@Parameter(property = "helm.githubUserAgent", defaultValue = "kokuwaio/helm-maven-plugin")
-	private String githubUserAgent;
-
-	/**
-	 * Directory where to store Github cache.
-	 *
-	 * @since 6.1.0
-	 */
-	@Parameter(property = "helm.tmpDir", defaultValue = "${java.io.tmpdir}/helm-maven-plugin")
-	private File tmpDir;
 
 	/**
 	 * Enable verbose output.
@@ -384,13 +359,6 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	// getter
-
-	public String getHelmVersion() throws MojoExecutionException {
-		if (helmVersion == null) {
-			helmVersion = new Github(getLog(), tmpDir.toPath(), githubUserAgent).getHelmVersion();
-		}
-		return helmVersion;
-	}
 
 	public Path getOutputDirectory() {
 		return outputDirectory.toPath();

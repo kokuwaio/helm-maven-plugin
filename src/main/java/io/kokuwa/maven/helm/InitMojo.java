@@ -1,6 +1,7 @@
 package io.kokuwa.maven.helm;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +45,7 @@ import org.apache.maven.settings.Server;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 
+import io.kokuwa.maven.helm.github.Github;
 import io.kokuwa.maven.helm.pojo.HelmExecutable;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import lombok.Setter;
@@ -68,6 +70,30 @@ public class InitMojo extends AbstractHelmMojo {
 	 */
 	@Parameter(property = "helm.init.skip", defaultValue = "false")
 	private boolean skipInit;
+
+	/**
+	 * Version of helm to download.
+	 *
+	 * @since 5.5
+	 */
+	@Parameter(property = "helm.version")
+	private String helmVersion;
+
+	/**
+	 * UserAgent to use for accessing Github api to identify latest version.
+	 *
+	 * @since 6.1.0
+	 */
+	@Parameter(property = "helm.githubUserAgent", defaultValue = "kokuwaio/helm-maven-plugin")
+	private String githubUserAgent;
+
+	/**
+	 * Directory where to store Github cache.
+	 *
+	 * @since 6.1.0
+	 */
+	@Parameter(property = "helm.tmpDir", defaultValue = "${java.io.tmpdir}/helm-maven-plugin")
+	private File tmpDir;
 
 	/**
 	 * If <code>true</code>, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured.
@@ -212,9 +238,12 @@ public class InitMojo extends AbstractHelmMojo {
 			return;
 		}
 
+		if (helmVersion == null) {
+			helmVersion = new Github(getLog(), tmpDir.toPath(), githubUserAgent).getHelmVersion();
+		}
 		URL url = helmDownloadUrl == null
 				? new URL(String.format("https://get.helm.sh/helm-v%s-%s-%s.%s",
-						getHelmVersion(),
+						helmVersion,
 						getOperatingSystem(),
 						getArchitecture(),
 						getExtension()))

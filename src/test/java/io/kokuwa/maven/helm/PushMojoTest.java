@@ -43,62 +43,11 @@ public class PushMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "push " + packaged + " oci://reg.example.org --ca-file registry-ca.pem");
 	}
 
-	@DisplayName("push without authentication")
+	@DisplayName("push simple")
 	@Test
-	void withoutAuthentication(PushMojo mojo) {
+	void simple(PushMojo mojo) {
 		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
-		mojo.setUploadRepoStable(new HelmRepository().setName("oci").setUrl("reg.example.org"));
+		mojo.setUploadRepoStable(new HelmRepository().setUrl("reg.example.org"));
 		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
-	}
-
-	@DisplayName("push without authentication and skipped Login")
-	@Test
-	void withoutAuthenticationAndSkippedLogin(PushMojo mojo) {
-		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
-		mojo.setSkipPushLogin(true);
-		mojo.setUploadRepoStable(new HelmRepository().setName("oci").setUrl("reg.example.org"));
-		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
-	}
-
-	@DisplayName("push with username/password and skipped Login")
-	@Test
-	void withUsernameAndPasswordAndSkippedLogin(PushMojo mojo) {
-		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
-		mojo.setSkipPushLogin(true);
-		mojo.setUploadRepoStable(new HelmRepository().setUrl("reg.example.org").setUsername("foo").setPassword("bar"));
-		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
-	}
-
-	@DisplayName("push with username/password")
-	@Test
-	void withUsernameAndPassword(PushMojo mojo) {
-		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
-		mojo.setUploadRepoStable(new HelmRepository().setUrl("reg.example.org").setUsername("foo").setPassword("bar"));
-		assertHelm(mojo,
-				"registry login reg.example.org --username foo --password-stdin",
-				"push " + packaged + " oci://reg.example.org");
-	}
-
-	@DisplayName("push with serverId")
-	@Test
-	void withServerId(PushMojo mojo) {
-		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
-		mojo.getSettings().getServers().add(getServer("oci", "foo", "secret"));
-		mojo.setUploadRepoStable(new HelmRepository().setName("oci").setUrl("reg.example.org"));
-		assertHelm(mojo,
-				"registry login reg.example.org --username foo --password-stdin",
-				"push " + packaged + " oci://reg.example.org");
-	}
-
-	@DisplayName("push with serverId")
-	@Test
-	void withServerIdEncrypted(PushMojo mojo) {
-		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
-		mojo.getSettings().addServer(getServer("oci", "foo", SECRET_ENCRYPTED));
-		mojo.setHelmSecurity(SETTINGS_SECURITY_XML);
-		mojo.setUploadRepoStable(new HelmRepository().setName("oci").setUrl("reg.example.org"));
-		assertHelm(mojo,
-				"registry login reg.example.org --username foo --password-stdin",
-				"push " + packaged + " oci://reg.example.org");
 	}
 }

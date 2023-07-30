@@ -8,7 +8,7 @@
 		<version>LOCAL-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>@project.artifactId@-it-push-with-auth-from-pom</artifactId>
+	<artifactId>@project.artifactId@-it-registry-login-with-auth-from-settings</artifactId>
 	<packaging>pom</packaging>
 
 	<build>
@@ -22,6 +22,7 @@
 							<goal>init</goal>
 							<goal>lint</goal>
 							<goal>package</goal>
+							<goal>registry-login</goal>
 							<goal>push</goal>
 						</goals>
 						<configuration>
@@ -31,10 +32,8 @@
 							<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
 							<chartVersion>1.0.0</chartVersion>
 							<uploadRepoStable>
-								<name>test</name>
+								<name>registry-with-auth</name>
 								<url>127.0.0.1</url>
-								<username>auth-from-pom</username>
-								<password>bar</password>
 							</uploadRepoStable>
 						</configuration>
 					</execution>

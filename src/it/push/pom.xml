@@ -8,7 +8,7 @@
 		<version>LOCAL-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>@project.artifactId@-it-push-without-auth</artifactId>
+	<artifactId>@project.artifactId@-it-push</artifactId>
 	<packaging>pom</packaging>
 
 	<build>
