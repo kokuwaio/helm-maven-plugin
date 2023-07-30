@@ -9,15 +9,9 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.util.Base64;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -143,7 +137,8 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 
 		if (insecure && connection instanceof HttpsURLConnection) {
-			setupInsecureTLS((HttpsURLConnection) connection);
+			getLog().info("Use insecure TLS connection for [" + connection.getURL() + "]");
+			TLSHelper.insecure((HttpsURLConnection) connection);
 		}
 
 		try (FileInputStream fileInputStream = new FileInputStream(fileToUpload)) {
@@ -238,38 +233,6 @@ public class UploadMojo extends AbstractHelmMojo {
 		verifyAndSetAuthentication(false);
 
 		return connection;
-	}
-
-	private void setupInsecureTLS(HttpsURLConnection connection) throws MojoExecutionException {
-
-		TrustManager trustManager = new X509TrustManager() {
-
-			@Override
-			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
-
-			@Override
-			public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-
-			@Override
-			public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-		};
-
-		SSLContext sc;
-		try {
-			sc = SSLContext.getInstance("TLS");
-			sc.init(null, new TrustManager[] { trustManager }, new java.security.SecureRandom());
-		} catch (KeyManagementException e) {
-			throw new MojoExecutionException("Cannot initialize TLS context instance", e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new MojoExecutionException("Cannot create TLS context instance", e);
-		}
-
-		connection.setSSLSocketFactory(sc.getSocketFactory());
-		connection.setHostnameVerifier((hostname, session) -> true);
-
-		getLog().info("Use insecure TLS connection for [" + connection.getURL() + "]");
 	}
 
 	/**
