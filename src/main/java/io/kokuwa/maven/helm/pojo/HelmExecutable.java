@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,7 +41,7 @@ public class HelmExecutable {
 	private String stdin;
 
 	public HelmExecutable arguments(Object... args) {
-		Stream.of(args).filter(Objects::nonNull).map(Object::toString).forEach(arguments::add);
+		Stream.of(args).map(Object::toString).forEach(arguments::add);
 		return this;
 	}
 

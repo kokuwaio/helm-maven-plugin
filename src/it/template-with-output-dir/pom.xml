@@ -8,7 +8,7 @@
 		<version>LOCAL-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>@project.artifactId@-path-with-spaces</artifactId>
+	<artifactId>@project.artifactId@-template-with-output-dir</artifactId>
 	<packaging>pom</packaging>
 
 	<build>
@@ -30,7 +30,7 @@
 					<addDefaultRepo>false</addDefaultRepo>
 					<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
 					<chartVersion>1.0.0</chartVersion>
-					<additionalArguments>--output-dir ${project.build.directory}/custom-helm-output</additionalArguments>
+					<templateOutputDir>${project.build.directory}/custom-helm-output</templateOutputDir>
 					<skipTemplate>false</skipTemplate>
 				</configuration>
 			</plugin>

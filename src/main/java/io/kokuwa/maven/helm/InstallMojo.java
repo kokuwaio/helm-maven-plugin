@@ -22,16 +22,6 @@ import lombok.Setter;
 public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 
 	/**
-	 * Helm command to execute.
-	 *
-	 * @since 5.10
-	 * @deprecated Will be removed in 7.x and set to "install".
-	 */
-	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
-	@Parameter(property = "action", defaultValue = "install")
-	private String action;
-
-	/**
 	 * Set this to <code>true</code> to delete the installation on failure.
 	 *
 	 * @since 6.10.0
@@ -68,7 +58,7 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 					(installAtomic ? " with atomic" : "") +
 					(installTimeout != null ? installTimeout + "s" : ""));
 			helm()
-					.arguments(action, chartDirectory.getFileName().toString(), chartDirectory)
+					.arguments("install", chartDirectory.getFileName().toString(), chartDirectory)
 					.flag("atomic", installAtomic)
 					.flag("timeout", installTimeout != null ? installTimeout + "s" : null)
 					.execute("Failed to deploy helm chart");

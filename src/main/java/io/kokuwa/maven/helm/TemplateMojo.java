@@ -8,7 +8,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.StringUtils;
 
 import lombok.Setter;
 
@@ -22,16 +21,6 @@ import lombok.Setter;
 @Mojo(name = "template", defaultPhase = LifecyclePhase.TEST, threadSafe = true)
 @Setter
 public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
-
-	/**
-	 * Helm command to execute.
-	 *
-	 * @since 5.10
-	 * @deprecated Will be removed in 7.x and set to "template".
-	 */
-	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
-	@Parameter(property = "action", defaultValue = "template")
-	private String action;
 
 	/**
 	 * Writes the executed templates to files in output-dir instead of stdout.
@@ -48,16 +37,6 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	 */
 	@Parameter(property = "helm.template.generate-name", defaultValue = "false")
 	private boolean templateGenerateName;
-
-	/**
-	 * Additional arguments.
-	 *
-	 * @since 5.10
-	 * @deprecated Will be removed in 7.x and use "helm.values".
-	 */
-	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
-	@Parameter(property = "helm.additional.arguments")
-	private String additionalArguments;
 
 	/**
 	 * Set this to <code>true</code> to skip invoking template goal.
@@ -78,19 +57,10 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info(String.format("\n\nPerform template for chart %s...", chartDirectory));
 			helm()
-					.arguments(action, chartDirectory)
-					.arguments(getArguments())
+					.arguments("template", chartDirectory)
 					.flag("output-dir", templateOutputDir)
 					.flag("generate-name", templateGenerateName)
 					.execute("There are test failures");
 		}
-	}
-
-	private Object[] getArguments() {
-		if (StringUtils.isEmpty(additionalArguments)) {
-			return new Object[0];
-		}
-		getLog().warn("NOTE: <additionalArguments> option will be removed in future major release.");
-		return additionalArguments.split(" ");
 	}
 }

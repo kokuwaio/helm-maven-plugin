@@ -20,16 +20,6 @@ import lombok.Setter;
 public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 
 	/**
-	 * Helm command to execute.
-	 *
-	 * @since 1.0
-	 * @deprecated Will be removed in 7.x and set to "template".
-	 */
-	@Deprecated // java8 (since = "6.5.0", forRemoval = true)
-	@Parameter(property = "action", defaultValue = "install")
-	private String action;
-
-	/**
 	 * Set this to <code>true</code> to skip invoking dry-run goal.
 	 *
 	 * @since 3.3
@@ -48,7 +38,7 @@ public class DryRunMojo extends AbstractHelmWithValueOverrideMojo {
 		for (Path chartDirectory : getChartDirectories()) {
 			getLog().info("\n\nPerform dry-run for chart " + chartDirectory + "...");
 			helm()
-					.arguments(action, chartDirectory)
+					.arguments("install", chartDirectory)
 					.flag("dry-run")
 					.flag("generate-name")
 					.execute("There are test failures");

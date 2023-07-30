@@ -1,0 +1,3 @@
+// verify folder created
+
+return new java.io.File(basedir, "target/custom-helm-output").isDirectory();
