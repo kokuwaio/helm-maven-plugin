@@ -1,10 +1,8 @@
 # Helm Maven Plugin
 
-This is version 6.x in maintenance mode, security issues and bugs will be fixed. For now features use [7.x](https://github.com/kokuwaio/helm-maven-plugin/tree/main).
-
 [![MIT License](https://img.shields.io/github/license/kokuwaio/helm-maven-plugin)](https://spdx.org/licenses/MIT.html)
 [![Maven Central](https://img.shields.io/maven-central/v/io.kokuwa.maven/helm-maven-plugin)](https://central.sonatype.com/namespace/io.kokuwa.maven)
-[![Build](https://img.shields.io/github/actions/workflow/status/kokuwaio/helm-maven-plugin/build.yaml?branch=6.x)](https://github.com/kokuwaio/helm-maven-plugin/actions/workflows/build.yaml?query=branch%3A6.x)
+[![Build](https://img.shields.io/github/actions/workflow/status/kokuwaio/helm-maven-plugin/build.yaml?branch=main)](https://github.com/kokuwaio/helm-maven-plugin/actions/workflows/build.yaml?query=branch%3Amain)
 
 This is a Maven plugin for testing, packaging and uploading HELM charts.
 "HELM is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources."
@@ -36,7 +34,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>io.kokuwa.maven</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>6.10.0</version>
+  <version>7.0.0</version>
 </dependency>
 ```
 
@@ -52,7 +50,7 @@ The default setting is to construct the Helm download URL based upon the detecte
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.10.0</version>
+      <version>7.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -73,7 +71,7 @@ If you leave `helmVersion` and `helmDownloadUrl` empty the plugin will determine
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.10.0</version>
+      <version>7.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -97,7 +95,7 @@ When `useLocalHelmBinary` is enabled, the plugin by default will search for the 
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.10.0</version>
+      <version>7.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -120,7 +118,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.10.0</version>
+      <version>7.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -144,7 +142,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.10.0</version>
+      <version>7.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -176,7 +174,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.10.0</version>
+      <version>7.0.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
