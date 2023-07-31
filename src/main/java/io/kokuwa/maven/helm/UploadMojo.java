@@ -77,7 +77,7 @@ public class UploadMojo extends AbstractHelmMojo {
 	/**
 	 * Skip tls certificate checks for the chart upload.
 	 *
-	 * @since 6.8.1
+	 * @since 6.9.0
 	 */
 	@Parameter(property = "helm.upload.insecure", defaultValue = "false")
 	private boolean insecure;
