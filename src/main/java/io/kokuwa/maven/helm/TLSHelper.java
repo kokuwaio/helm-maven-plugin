@@ -1,7 +1,6 @@
 package io.kokuwa.maven.helm;
 
 import java.security.GeneralSecurityException;
-import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -34,7 +33,7 @@ public class TLSHelper {
 
 		try {
 			SSLContext context = SSLContext.getInstance("TLS");
-			context.init(null, new TrustManager[] { trustManager }, new SecureRandom());
+			context.init(null, new TrustManager[] { trustManager }, null);
 			connection.setSSLSocketFactory(context.getSocketFactory());
 			connection.setHostnameVerifier((hostname, session) -> true);
 		} catch (GeneralSecurityException e) {

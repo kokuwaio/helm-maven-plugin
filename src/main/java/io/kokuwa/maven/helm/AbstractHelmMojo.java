@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -272,7 +271,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		List<String> exclusions = new ArrayList<>();
 		if (excludes != null) {
-			exclusions.addAll(Arrays.asList(excludes));
+			exclusions.addAll(List.of(excludes));
 		}
 		exclusions.addAll(FileUtils.getDefaultExcludesAsList());
 		MatchPatterns exclusionPatterns = MatchPatterns.from(exclusions);

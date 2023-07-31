@@ -171,7 +171,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		getLog().info("Initializing Helm...");
 		Path outputDirectory = getOutputDirectory();
-		if (!outputDirectory.toFile().exists()) {
+		if (!Files.exists(outputDirectory)) {
 			getLog().info("Creating output directory...");
 			try {
 				Files.createDirectories(outputDirectory);

@@ -9,8 +9,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +33,7 @@ public class HelmExecutable {
 	@Getter
 	private final Path executable;
 	private final List<String> arguments = new ArrayList<>();
-	private final Set<String> sensitiveFlags = new HashSet<>(Arrays.asList("password", "kube-token"));
+	private final Set<String> sensitiveFlags = Set.of("password", "kube-token");
 	private final Map<String, List<String>> flags = new LinkedHashMap<>();
 	@Setter
 	private String stdin;
@@ -51,7 +49,7 @@ public class HelmExecutable {
 
 	public HelmExecutable flag(String key, boolean value) {
 		if (value) {
-			flags.put(key, Arrays.asList());
+			flags.put(key, List.of());
 		}
 		return this;
 	}

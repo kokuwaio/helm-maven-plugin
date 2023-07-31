@@ -8,8 +8,9 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -135,9 +136,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@DisplayName("with override single set")
 		@Test
 		void overrideSetSingle(LintMojo mojo) {
-			ValueOverride override = new ValueOverride().setOverrides(new LinkedHashMap<>());
-			override.getOverrides().put("foo", "bar");
-			mojo.setValues(override);
+			mojo.setValues(new ValueOverride().setOverrides(Map.of("foo", "bar")));
 			assertHelm(mojo, "lint src/test/resources/simple --set foo=bar");
 		}
 
@@ -154,9 +153,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@DisplayName("with override single string")
 		@Test
 		void overrideStringSingle(LintMojo mojo) {
-			ValueOverride override = new ValueOverride().setStringOverrides(new LinkedHashMap<>());
-			override.getStringOverrides().put("foo", "bar");
-			mojo.setValues(override);
+			mojo.setValues(new ValueOverride().setStringOverrides(Map.of("foo", "bar")));
 			assertHelm(mojo, "lint src/test/resources/simple --set-string foo=bar");
 		}
 
@@ -173,9 +170,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@DisplayName("with override single file")
 		@Test
 		void overrideFileString(LintMojo mojo) {
-			ValueOverride override = new ValueOverride().setFileOverrides(new LinkedHashMap<>());
-			override.getFileOverrides().put("foo", "bar");
-			mojo.setValues(override);
+			mojo.setValues(new ValueOverride().setFileOverrides(Map.of("foo", "bar")));
 			assertHelm(mojo, "lint src/test/resources/simple --set-file foo=bar");
 		}
 
@@ -199,14 +194,14 @@ public class HelmMojoTest extends AbstractMojoTest {
 		@DisplayName("with values single file")
 		@Test
 		void overrideValuesSingle(LintMojo mojo) {
-			mojo.setValues(new ValueOverride().setYamlFiles(Arrays.asList("foo")));
+			mojo.setValues(new ValueOverride().setYamlFiles(List.of("foo")));
 			assertHelm(mojo, "lint src/test/resources/simple --values foo");
 		}
 
 		@DisplayName("with values multiple files")
 		@Test
 		void overrideFileMultiple1(LintMojo mojo) {
-			mojo.setValues(new ValueOverride().setYamlFiles(Arrays.asList("foo", "bar")));
+			mojo.setValues(new ValueOverride().setYamlFiles(List.of("foo", "bar")));
 			assertHelm(mojo, "lint src/test/resources/simple --values foo --values bar");
 		}
 
@@ -215,7 +210,7 @@ public class HelmMojoTest extends AbstractMojoTest {
 		public void overrideAll(LintMojo mojo) {
 			ValueOverride override = new ValueOverride()
 					.setYamlFile("path/to/values.yaml")
-					.setYamlFiles(Arrays.asList("path/to/values-1.yaml", "path/to/values-2.yaml"))
+					.setYamlFiles(List.of("path/to/values-1.yaml", "path/to/values-2.yaml"))
 					.setOverrides(new LinkedHashMap<>())
 					.setFileOverrides(new LinkedHashMap<>())
 					.setStringOverrides(new LinkedHashMap<>());

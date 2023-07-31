@@ -46,11 +46,10 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 
 			InputStream inputStream = AbstractHelmMojo.class.getResourceAsStream("/META-INF/maven/plugin.xml");
 			assertNotNull(inputStream, "Plugin descriptor for not found, run 'mvn plugin:descriptor'.");
-			HashMap<String, Object> variables = new HashMap<>();
-			variables.put("project.build.directory", "target");
-			variables.put("java.io.tmpdir", System.getProperty("java.io.tmpdir"));
 			PluginDescriptor plugin = new PluginDescriptorBuilder().build(new InterpolationFilterReader(
-					new BufferedReader(new XmlStreamReader(inputStream)), variables));
+					new BufferedReader(new XmlStreamReader(inputStream)), Map.of(
+							"project.build.directory", "target",
+							"java.io.tmpdir", System.getProperty("java.io.tmpdir"))));
 
 			// get mojos
 

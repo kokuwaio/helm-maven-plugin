@@ -12,8 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -94,7 +94,7 @@ public abstract class AbstractMojoTest {
 
 		// check logs for secrets and passwords
 
-		assertEquals(Collections.emptySet(), messages.getAllValues().stream()
+		assertEquals(Set.of(), messages.getAllValues().stream()
 				.map(String::valueOf).map(String::toLowerCase)
 				.filter(message -> message.contains("secret"))
 				.collect(Collectors.toSet()),
