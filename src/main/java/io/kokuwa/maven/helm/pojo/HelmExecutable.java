@@ -107,7 +107,7 @@ public class HelmExecutable {
 
 			new Thread(() -> {
 				try (InputStream input = process.getInputStream()) {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+					BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
 					String line;
 					while ((line = reader.readLine()) != null) {
 						log.info(line);
@@ -118,7 +118,7 @@ public class HelmExecutable {
 			}).start();
 			new Thread(() -> {
 				try (InputStream error = process.getErrorStream()) {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(error));
+					BufferedReader reader = new BufferedReader(new InputStreamReader(error, StandardCharsets.UTF_8));
 					String line;
 					while ((line = reader.readLine()) != null) {
 						log.error(line);
