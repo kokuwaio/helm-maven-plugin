@@ -3,8 +3,3 @@
 target
 pom.xml.releaseBackup
 release.properties
-.checkstyle
-.classpath
-.factorypath
-.project
-.settings/
