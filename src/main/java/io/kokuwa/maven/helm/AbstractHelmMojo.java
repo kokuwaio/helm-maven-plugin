@@ -49,7 +49,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	/** Path of helm executable. */
 	private final Path helmExecutableName = Paths.get(Os.isFamily(Os.FAMILY_WINDOWS) ? "helm.exe" : "helm");
 
-	@Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
+	@Component(role = SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
 
 	/**

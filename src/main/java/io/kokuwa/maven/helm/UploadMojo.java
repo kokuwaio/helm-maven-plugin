@@ -152,9 +152,9 @@ public class UploadMojo extends AbstractHelmMojo {
 		if (connection.getResponseCode() >= 300) {
 			String response;
 			if (connection.getErrorStream() != null) {
-				response = new String(IOUtils.toByteArray(connection.getErrorStream()));
+				response = new String(IOUtils.toByteArray(connection.getErrorStream()), StandardCharsets.UTF_8);
 			} else if (connection.getInputStream() != null) {
-				response = new String(IOUtils.toByteArray(connection.getInputStream()));
+				response = new String(IOUtils.toByteArray(connection.getInputStream()), StandardCharsets.UTF_8);
 			} else {
 				response = "No details provided";
 			}
@@ -162,7 +162,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		} else {
 			String message = "Returned: " + connection.getResponseCode();
 			if (connection.getInputStream() != null) {
-				String details = new String(IOUtils.toByteArray(connection.getInputStream()));
+				String details = new String(IOUtils.toByteArray(connection.getInputStream()), StandardCharsets.UTF_8);
 				if (!details.isEmpty()) {
 					message += " - " + details;
 				}

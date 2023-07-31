@@ -269,7 +269,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 			// get helm executable entry
 			ArchiveEntry entry = null;
-			while ((entry = is.getNextEntry()) != null) {
+			while (!found && (entry = is.getNextEntry()) != null) {
 
 				String name = entry.getName();
 				if (entry.isDirectory() || !name.endsWith("helm.exe") && !name.endsWith("helm")) {
@@ -284,9 +284,7 @@ public class InitMojo extends AbstractHelmMojo {
 				}
 
 				addExecPermission(helm);
-
 				found = true;
-				break;
 			}
 
 		} catch (IOException e) {
