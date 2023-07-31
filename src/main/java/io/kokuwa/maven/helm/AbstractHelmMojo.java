@@ -211,7 +211,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	/** The current user system settings for use in Maven. */
 	@Parameter(defaultValue = "${settings}", readonly = true)
-	private Settings settings;
+	protected Settings settings;
 
 	/**
 	 * Namespace scope for this request.

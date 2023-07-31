@@ -1,6 +1,7 @@
 package io.kokuwa.maven.helm;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -9,18 +10,33 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.settings.Proxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.http.RequestMethod;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 
 @DisplayName("helm:init")
 public class InitMojoTest extends AbstractMojoTest {
+
+	@RegisterExtension
+	static WireMockExtension mock = WireMockExtension.newInstance()
+			.failOnUnmatchedRequests(true)
+			.options(WireMockConfiguration.wireMockConfig().enableBrowserProxying(true))
+			.build();
 
 	@DisplayName("default values")
 	@Test
@@ -121,6 +137,50 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setHelmVersion("3.12.0");
 		mojo.setUseLocalHelmBinary(false);
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
+		assertHelmExecuteable(mojo);
+	}
+
+	@DisplayName("executable: download with proxy")
+	@Test
+	void downloadHelmWithProxyUnauthenticated(InitMojo mojo) {
+
+		Proxy proxy1 = new Proxy();
+		proxy1.setId("test1");
+		proxy1.setActive(false);
+		proxy1.setProtocol("http");
+		proxy1.setHost("proxy1.example.org");
+		proxy1.setPort(8000);
+		proxy1.setNonProxyHosts(null);
+		Proxy proxy2 = new Proxy();
+		proxy2.setId("test2");
+		proxy2.setActive(true);
+		proxy2.setProtocol("http");
+		proxy2.setHost("proxy2.example.org");
+		proxy2.setPort(8000);
+		proxy2.setNonProxyHosts("nope|get.helm.sh");
+		Proxy proxy3 = new Proxy();
+		proxy3.setId("test3");
+		proxy3.setActive(true);
+		proxy3.setProtocol("http");
+		proxy3.setHost("proxy3.127.0.0.1.nip.io");
+		proxy3.setPort(mock.getPort());
+		proxy3.setNonProxyHosts(null);
+
+		mojo.setHelmExecutableDirectory(createTempDirectory());
+		mojo.setHelmVersion("3.12.0");
+		mojo.setUseLocalHelmBinary(false);
+		mojo.getSettings().addProxy(proxy1);
+		mojo.getSettings().addProxy(proxy2);
+		mojo.getSettings().addProxy(proxy3);
+		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
+
+		List<LoggedRequest> requests = mock.findAll(RequestPatternBuilder.allRequests());
+		assertEquals(1, requests.size(), "expected only 1 response, got: " + requests);
+		LoggedRequest request = requests.get(0);
+		assertTrue(request.isBrowserProxyRequest(), "isBrowserProxyRequest(): " + request);
+		assertEquals("get.helm.sh", request.getHost(), "getHost(): " + request);
+		assertEquals(RequestMethod.GET, request.getMethod(), "getMethod(): " + request);
+		assertTrue(request.getUrl().startsWith("/helm-v3.12.0-"), "getUrl(): " + request);
 		assertHelmExecuteable(mojo);
 	}
 

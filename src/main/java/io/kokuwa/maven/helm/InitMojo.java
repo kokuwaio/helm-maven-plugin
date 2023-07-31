@@ -5,9 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Authenticator;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
+import java.net.Proxy;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -20,7 +23,11 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.UserPrincipal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -220,14 +227,13 @@ public class InitMojo extends AbstractHelmMojo {
 			return;
 		}
 
-		URL url = helmDownloadUrl;
-		if (url == null) {
-			url = new URL(String.format("https://get.helm.sh/helm-v%s-%s-%s.%s",
-					getHelmVersion(),
-					getOperatingSystem(),
-					getArchitecture(),
-					getExtension()));
-		}
+		URL url = helmDownloadUrl == null
+				? new URL(String.format("https://get.helm.sh/helm-v%s-%s-%s.%s",
+						getHelmVersion(),
+						getOperatingSystem(),
+						getArchitecture(),
+						getExtension()))
+				: helmDownloadUrl;
 
 		getLog().debug("Downloading Helm: " + url);
 		boolean found = false;
@@ -260,7 +266,7 @@ public class InitMojo extends AbstractHelmMojo {
 			});
 		}
 
-		try (InputStream dis = url.openStream();
+		try (InputStream dis = openConnection(url).getInputStream();
 				InputStream cis = createCompressorInputStream(dis);
 				ArchiveInputStream is = createArchiverInputStream(cis)) {
 
@@ -294,6 +300,34 @@ public class InitMojo extends AbstractHelmMojo {
 		if (!found) {
 			throw new MojoExecutionException("Unable to find helm executable in tar file.");
 		}
+	}
+
+	private URLConnection openConnection(URL url) throws IOException, MojoExecutionException {
+
+		Proxy proxy = settings.getProxies().stream()
+				.filter(p -> p.isActive() && Stream
+						.of(Optional.ofNullable(p.getNonProxyHosts()).orElse("").split("\\|"))
+						.noneMatch(url.getHost()::equals))
+				.findFirst()
+				.map(p -> {
+					getLog().debug("Use proxy [" + p.getId() + "] for [" + url + "]");
+					return new Proxy(
+							Optional.ofNullable(p.getProtocol()).map(String::toUpperCase)
+									.map(Proxy.Type::valueOf).orElse(Proxy.Type.HTTP),
+							new InetSocketAddress(p.getHost(), p.getPort()));
+				})
+				.orElse(null);
+
+		URLConnection connection;
+		if (proxy == null) {
+			connection = url.openConnection();
+		} else {
+			connection = url.openConnection(proxy);
+			if (connection instanceof HttpsURLConnection) {
+				TLSHelper.insecure((HttpsURLConnection) connection);
+			}
+		}
+		return connection;
 	}
 
 	private void addExecPermission(Path helm) throws IOException {
