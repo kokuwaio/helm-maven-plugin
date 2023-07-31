@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>io.kokuwa.maven</groupId>
 		<artifactId>maven-parent</artifactId>
-		<version>0.6.9</version>
+		<version>0.6.10</version>
 		<relativePath />
 	</parent>
 
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>6.8.1-SNAPSHOT</version>
+	<version>6.9.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>Helm Maven Plugin</name>
@@ -88,6 +88,7 @@
 		<!-- we have flaky tests with caching of Authenticator.setDefault() -->
 		<surefire.rerunFailingTestsCount>3</surefire.rerunFailingTestsCount>
 
+		<invoker.debug>true</invoker.debug>
 		<invoker.parallelThreads>0.5C</invoker.parallelThreads>
 		<invoker.settingsFile>${project.basedir}/src/it/settings.xml</invoker.settingsFile>
 
@@ -214,11 +215,6 @@
 							<goal>integration-test</goal>
 							<goal>verify</goal>
 						</goals>
-						<configuration>
-							<parallelThreads>0.5C</parallelThreads>
-							<settingsFile>${project.basedir}/src/it/settings.xml</settingsFile>
-							<scope>none</scope>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

@@ -118,7 +118,7 @@ public class InitMojoTest extends AbstractMojoTest {
 	@Test
 	void downloadHelmWithVersion(InitMojo mojo) {
 		mojo.setHelmExecutableDirectory(createTempDirectory());
-		mojo.setHelmVersion("3.10.1");
+		mojo.setHelmVersion("3.12.0");
 		mojo.setUseLocalHelmBinary(false);
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
 		assertHelmExecuteable(mojo);
@@ -130,7 +130,7 @@ public class InitMojoTest extends AbstractMojoTest {
 	void downloadHelmWithUrl(InitMojo mojo) throws IOException {
 		mojo.setHelmExecutableDirectory(createTempDirectory());
 		mojo.setHelmVersion(null);
-		mojo.setHelmDownloadUrl(new URL("https://get.helm.sh/helm-v3.10.1-linux-amd64.tar.gz"));
+		mojo.setHelmDownloadUrl(new URL("https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz"));
 		assertHelm(mojo, "repo add stable " + InitMojo.STABLE_HELM_REPO);
 	}
 

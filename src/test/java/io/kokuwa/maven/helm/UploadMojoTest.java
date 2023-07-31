@@ -9,11 +9,13 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
@@ -26,7 +28,10 @@ import io.kokuwa.maven.helm.pojo.RepoType;
 public class UploadMojoTest extends AbstractMojoTest {
 
 	@RegisterExtension
-	static WireMockExtension mock = WireMockExtension.newInstance().failOnUnmatchedRequests(true).build();
+	static WireMockExtension mock = WireMockExtension.newInstance()
+			.failOnUnmatchedRequests(true)
+			.options(WireMockConfiguration.wireMockConfig().dynamicPort().dynamicHttpsPort())
+			.build();
 
 	@DisplayName("no tar gz present")
 	@Test
@@ -94,6 +99,30 @@ public class UploadMojoTest extends AbstractMojoTest {
 				.setUrl("http://127.0.0.1:" + mock.getPort() + "/chartmuseum"));
 		copyPackagedHelmChartToOutputdirectory(mojo);
 		assertUpload(mojo, RequestMethod.POST, "/chartmuseum", BASIC_FOO_SECRET);
+	}
+
+	@DisplayName("nexus: tls fail because of selfsigned certificate")
+	@Test
+	void urlNexusTlsFail(UploadMojo mojo) {
+		mojo.setInsecure(false);
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("https://127.0.0.1:" + mock.getHttpsPort() + "/nexus"));
+		copyPackagedHelmChartToOutputdirectory(mojo);
+		assertThrows(MojoExecutionException.class, mojo::execute, "upload failed");
+	}
+
+	@DisplayName("nexus: tls insecure with selfsigned certificate")
+	@Test
+	void urlNexusTlsInsecure(UploadMojo mojo) {
+		mojo.setInsecure(true);
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("https://127.0.0.1:" + mock.getHttpsPort() + "/nexus"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUpload(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName(), null);
 	}
 
 	@DisplayName("nexus: without authentication")
@@ -280,7 +309,9 @@ public class UploadMojoTest extends AbstractMojoTest {
 		assertEquals(1, requests.size(), "expected only one request");
 		LoggedRequest request = requests.get(0);
 		assertEquals(method, request.getMethod(), "method");
-		assertEquals("http://127.0.0.1:" + mock.getPort() + path, request.getAbsoluteUrl(), "url");
+		assertEquals((mojo.getUploadRepoStable().getUrl().startsWith("https")
+				? "https://127.0.0.1:" + mock.getHttpsPort()
+				: "http://127.0.0.1:" + mock.getPort()) + path, request.getAbsoluteUrl(), "url");
 		assertEquals("application/gzip", request.getHeader(HttpHeaders.CONTENT_TYPE), "content-type");
 		assertEquals(authorization, request.getHeader(HttpHeaders.AUTHORIZATION), "authorization");
 	}

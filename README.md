@@ -33,7 +33,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>io.kokuwa.maven</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>6.6.0</version>
+  <version>6.9.0</version>
 </dependency>
 ```
 
@@ -49,7 +49,7 @@ The default setting is to construct the Helm download URL based upon the detecte
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.6.0</version>
+      <version>6.9.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -70,7 +70,7 @@ If you leave `helmVersion` and `helmDownloadUrl` empty the plugin will determine
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.6.0</version>
+      <version>6.9.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -94,7 +94,7 @@ When `useLocalHelmBinary` is enabled, the plugin by default will search for the 
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.6.0</version>
+      <version>6.9.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -117,7 +117,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.6.0</version>
+      <version>6.9.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -141,7 +141,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.6.0</version>
+      <version>6.9.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -173,7 +173,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.6.0</version>
+      <version>6.9.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -295,6 +295,7 @@ Parameter | Type | User Property | Required | Description
 `<skipDependencyBuild>` | boolean | helm.dependency-build.skip | false | skip dependency-build goal
 `<skipPackage>` | boolean | helm.package.skip | false | skip package goal
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
+`<insecure>` | boolean | helm.upload.insecure | false | Skip tls certificate checks for the chart upload.
 `<skipInstall>` | boolean | helm.install.skip | false | skip install goal
 `<security>` | string | helm.security | false | path to your [settings-security.xml](https://maven.apache.org/guides/mini/guide-encryption.html) (default: `~/.m2/settings-security.xml`)
 `<keyring>` | string | helm.package.keyring | false | path to gpg secret keyring for signing
