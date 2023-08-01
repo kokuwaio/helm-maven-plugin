@@ -1,0 +1,17 @@
+apiVersion: v2
+name: app
+version: 0.0.1
+
+dependencies:
+  - repository: https://fake.repo/
+    name: testDependency1
+    version: 1.0.0
+  - version: 3.1.1
+    name: testDependency2
+    repository: https://fake.repo/
+  - name: testDependency3
+    version: 1.0.0
+    repository: https://fake.repo/
+  - repository: https://fake.repo/
+    version: 5.4.5
+    name: testDependency4

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: app
+version: 0.0.1
+
+# test comment
+dependencies:
+  - name: testDependency1  # test comment
+    version: 1.0.0  # test comment
+    repository: https://fake.repo/  # test comment
+  - name: testDependency2  # test comment
+    version: 3.1.1  # test comment
+    repository: https://fake.repo/  # test comment
+# test comment

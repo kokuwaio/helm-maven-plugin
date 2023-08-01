@@ -146,6 +146,11 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${version.com.fasterxml.jackson}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>${version.com.fasterxml.jackson}</version>
+		</dependency>
 
 		<!-- test -->
 		<dependency>

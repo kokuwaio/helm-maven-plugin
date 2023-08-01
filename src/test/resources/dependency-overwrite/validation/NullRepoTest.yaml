@@ -1,0 +1,10 @@
+apiVersion: v2
+name: app
+version: 0.0.1
+
+dependencies:
+  - name: testDependency1
+    version: 5.0.1
+  - name: testDependency2
+    version: 1.0.0
+    repository: https://fake.repo/

@@ -1,0 +1,14 @@
+apiVersion: v2
+name: app
+version: 0.0.1
+
+dependencies:
+  - name: visual-regression-tracker
+    version: 2.0.1
+    repository: "@kokuwaio"
+  - name: mysqldump
+    version: 0.0.1
+    repository: file://test/path/
+  - name: fluentd-elasticsearch
+    version: 13.10.0
+    repository: "@kokuwaio"
