@@ -305,6 +305,7 @@ Parameter | Type | User Property | Required | Description
 `<values>` | [ValueOverride](./src/main/java/io/kokuwa/maven/helm/pojo/ValueOverride.java) | | false | override some values for linting with helm.values.overrides (--set option), helm.values.stringOverrides (--set-string option), helm.values.fileOverrides (--set-file option) and last but not least helm.values.yamlFile (--values option)
 `<namespace>` | string | helm.namespace | false | namespace scope for helm command
 `<kubeApiServer>` | string | helm.kubeApiServer | false | the address and the port for the Kubernetes API server
+`<kubeInsecure>` | string | helm.kubeInsecure | false | Skip tls certificate checks for the operation. Also known as `helm --kube-insecure-skip-tls-verify`.
 `<kubeAsUser>` | string | helm.kubeAsUser | false | username to impersonate for the operation
 `<kubeAsGroup>` | string | helm.kubeAsGroup | false | group to impersonate for the operation, this flag can be repeated to specify multiple groups
 `<kubeToken>` | string | helm.kubeToken | false | bearer token used for authentication

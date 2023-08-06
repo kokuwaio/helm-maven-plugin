@@ -230,6 +230,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private String kubeApiServer;
 
 	/**
+	 * Skip tls certificate checks for the operation. Also known as `helm --kube-insecure-skip-tls-verify`.
+	 *
+	 * @since 6.10.0
+	 */
+	@Parameter(property = "helm.kubeInsecure")
+	private boolean kubeInsecure;
+
+	/**
 	 * Username to impersonate for the operation.
 	 *
 	 * @since 6.4.0
@@ -315,6 +323,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 				.flag("kube-as-group", kubeAsUser)
 				.flag("kube-as-user", kubeAsGroup)
 				.flag("kube-ca-file", kubeCaFile)
+				.flag("kube-insecure-skip-tls-verify", kubeInsecure)
 				.flag("kube-token", kubeToken)
 				.flag("namespace", namespace)
 				.flag("registry-config", registryConfig)
