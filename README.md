@@ -33,7 +33,7 @@ Add following dependency to your pom.xml:
 <dependency>
   <groupId>io.kokuwa.maven</groupId>
   <artifactId>helm-maven-plugin</artifactId>
-  <version>6.9.0</version>
+  <version>6.10.0</version>
 </dependency>
 ```
 
@@ -49,7 +49,7 @@ The default setting is to construct the Helm download URL based upon the detecte
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.9.0</version>
+      <version>6.10.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -70,7 +70,7 @@ If you leave `helmVersion` and `helmDownloadUrl` empty the plugin will determine
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.9.0</version>
+      <version>6.10.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -94,7 +94,7 @@ When `useLocalHelmBinary` is enabled, the plugin by default will search for the 
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.9.0</version>
+      <version>6.10.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -117,7 +117,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.9.0</version>
+      <version>6.10.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -141,7 +141,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.9.0</version>
+      <version>6.10.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -173,7 +173,7 @@ and disables the auto-detection feature:
     <plugin>
       <groupId>io.kokuwa.maven</groupId>
       <artifactId>helm-maven-plugin</artifactId>
-      <version>6.9.0</version>
+      <version>6.10.0</version>
       <configuration>
         <chartDirectory>${project.basedir}</chartDirectory>
         <chartVersion>${project.version}</chartVersion>
@@ -311,9 +311,9 @@ Parameter | Type | User Property | Required | Description
 `<kubeToken>` | string | helm.kubeToken | false | bearer token used for authentication
 `<releaseName>` | string | helm.releaseName | false | Name of the release for upgrade goal
 `<installAtomic>` | boolean | helm.install.atomic | false | Set this to `true` to delete the installation on failure.
-`<installTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during install process. The default is 300 seconds if `installAtomic` is set to `true`.
+`<installTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during install process. The default is 300 seconds (from helm) if `installAtomic` is set to `true`.
 `<upgradeAtomic>` | boolean | helm.upgrade.atomic | false | Set this to `true` to rollback changes made in case of failed upgrade.
-`<upgradeTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during upgrade process. The default is 300 seconds if `upgradeTimeout` is set to `true`.
+`<upgradeTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during upgrade process. The default is 300 seconds (from helm) if `upgradeTimeout` is set to `true`.
 `<upgradeDryRun>` | boolean | helm.upgrade.dryRun | false | Run upgrade goal only in dry run mode
 `<templateOutputDir>` | file | helm.template.output-dir | false | Writes the executed templates to files in output-dir instead of stdout.
 `<templateGenerateName>` | boolean | helm.template.generate-name | false | Generate the name (and omit the NAME parameter).

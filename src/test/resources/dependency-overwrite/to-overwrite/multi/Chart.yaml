@@ -8,10 +8,10 @@ dependencies:
     repository: file://test/path/
   - name: testDependency2
     version: 3.1.1
-    repository: https://fake.repo/
+    repository: https://fake.example.org/
   - name: testDependency3
     version: 0.0.1
     repository: file://test/path/
   - name: testDependency4
     version: 5.4.5
-    repository: https://fake.repo/
+    repository: https://fake.example.org/

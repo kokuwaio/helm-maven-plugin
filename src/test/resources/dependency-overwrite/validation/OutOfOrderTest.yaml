@@ -3,15 +3,15 @@ name: app
 version: 0.0.1
 
 dependencies:
-  - repository: https://fake.repo/
+  - repository: https://fake.example.org/
     name: testDependency1
     version: 1.0.0
   - version: 3.1.1
     name: testDependency2
-    repository: https://fake.repo/
+    repository: https://fake.example.org/
   - name: testDependency3
     version: 1.0.0
-    repository: https://fake.repo/
-  - repository: https://fake.repo/
+    repository: https://fake.example.org/
+  - repository: https://fake.example.org/
     version: 5.4.5
     name: testDependency4

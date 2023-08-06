@@ -5,7 +5,7 @@ version: 0.0.1
 dependencies:
   - name: testDependency1
     version: 5.0.1
-    repository: https://fake.repo/
+    repository: https://fake.example.org/
   - name: testDependency2
     version: 0.0.1
     repository: file://test/path/

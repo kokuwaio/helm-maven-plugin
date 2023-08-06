@@ -1,28 +1,27 @@
 package io.kokuwa.maven.helm.pojo;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 
 /**
- * POJO for list of Chart.yaml dependencies
+ * POJO for list of "Chart.yaml" dependencies.
  *
- * @since 6.9.1
+ * @since 6.10.0
  */
 @Data
 public class Dependencies {
-	private ArrayList<Dependency> dependencies;
+
+	private List<Dependency> dependencies;
 
 	@Data
 	public static class Dependency {
-		private String name;
-		private String version;
-		private String repository;
 
-		/**
-		 * Determines whether the repository/version will be updated 
-		 * for a given dependency.
-		 */
-		private boolean overwrite = false;		
+		private String name;
+		private String repository;
+		private String version;
+
+		/** Determines whether the repository/version will be updated for a given dependency. */
+		private boolean overwrite = false;
 	}
 }

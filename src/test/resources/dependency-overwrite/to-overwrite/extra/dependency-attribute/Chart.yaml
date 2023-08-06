@@ -12,7 +12,7 @@ dependencies:
       - test2
   - name: testDependency2
     version: 5.0.1
-    repository: https://fake.repo/
+    repository: https://fake.example.org/
     import-values:
       - test1
       - child: default.data

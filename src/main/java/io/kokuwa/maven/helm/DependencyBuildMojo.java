@@ -30,33 +30,36 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 	private boolean skipDependencyBuild;
 
 	/**
-	 * Controls whether a local path chart should be used for a chart dependency. When set to <code>true</code>,
-	 * chart dependencies on a local path chart will be overwritten with the respective properties set by
-	 * "helm.overwriteDependencyVersion" and "helm.overwriteDependencyRepository". This is helpful for deploying charts 
+	 * Controls whether a local path chart should be used for a chart dependency. When set to <code>true</code>, chart
+	 * dependencies on a local path chart will be overwritten with the respective properties set by
+	 * "helm.overwriteDependencyVersion" and "helm.overwriteDependencyRepository". This is helpful for deploying charts
 	 * with intra repository dependencies, while still being able to use local path dependencies for development builds.
 	 *
 	 * Example usage:
-	 * 	For development: mvn clean install
-	 * 	For deployment: mvn clean deploy -Dhelm.overwriteLocalDependencies=true
-	 * @since 6.9.1
+	 * <ul>
+	 * <li>For development: mvn clean install</li>
+	 * <li>For deployment: mvn clean deploy -Dhelm.overwriteLocalDependencies=true</li>
+	 * </ul>
+	 *
+	 * @since 6.10.0
 	 */
 	@Parameter(property = "helm.overwriteLocalDependencies", defaultValue = "false")
 	private boolean overwriteLocalDependencies;
 
 	/**
-	 * Value used to overwrite a local path chart's version within a chart's dependencies. The property 
+	 * Value used to overwrite a local path chart's version within a chart's dependencies. The property
 	 * "helm.overwriteLocalDependencies" must be set to <code>true</code> for this to apply.
 	 *
-	 * @since 6.9.1
+	 * @since 6.10.0
 	 */
 	@Parameter(property = "helm.overwriteDependencyVersion")
 	private String overwriteDependencyVersion;
 
 	/**
-	 * Value used to overwrite a local path chart's repository within a chart's dependencies. The property 
+	 * Value used to overwrite a local path chart's repository within a chart's dependencies. The property
 	 * "helm.overwriteLocalDependencies" must be set to <code>true</code> for this to apply.
 	 *
-	 * @since 6.9.1
+	 * @since 6.10.0
 	 */
 	@Parameter(property = "helm.overwriteDependencyRepository")
 	private String overwriteDependencyRepository;
@@ -70,10 +73,16 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 		}
 
 		for (Path chartDirectory : getChartDirectories()) {
+
 			if (overwriteLocalDependencies) {
-				DependencyOverwriter dependencyOverwriter = 
-					new DependencyOverwriter(overwriteDependencyRepository, overwriteDependencyVersion, getLog());
-				dependencyOverwriter.execute(chartDirectory);
+				if (overwriteDependencyRepository == null) {
+					throw new MojoExecutionException("Null value for 'overwriteDependencyRepository' is " +
+							"not allowed when using 'overwriteLocalDependencies'. See the README for more details.");
+				}
+				getLog().info("Overwriting dependencies that contain local path charts with "
+						+ overwriteDependencyRepository);
+				new DependencyOverwriter(overwriteDependencyRepository, overwriteDependencyVersion, getLog())
+						.execute(chartDirectory);
 			}
 
 			getLog().info("Build chart dependencies for " + chartDirectory + " ...");

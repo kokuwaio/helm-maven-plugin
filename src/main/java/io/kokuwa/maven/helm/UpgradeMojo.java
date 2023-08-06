@@ -41,7 +41,7 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 	 * @since 6.10.0
 	 */
 	@Parameter(property = "helm.upgrade.timeout")
-	private int upgradeTimeout;
+	private Integer upgradeTimeout;
 
 	/**
 	 * Upgrade with install parameter.
@@ -79,7 +79,7 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 			getLog().info("Upgrading the chart " +
 					(upgradeWithInstall ? "with install " : "") +
 					(upgradeAtomic ? "with atomic " : "") +
-					(upgradeTimeout > 0 ? String.format("timeout %s ", upgradeTimeout) : "") +
+					(upgradeTimeout != null ? upgradeTimeout + "s" : "") +
 					(upgradeDryRun ? "as dry run " : "") +
 					chartDirectory);
 			helm()
@@ -87,7 +87,7 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 					.flag("install", upgradeWithInstall)
 					.flag("dry-run", upgradeDryRun)
 					.flag("atomic", upgradeAtomic)
-					.flag("timeout", upgradeTimeout > 0 ? upgradeTimeout + "s" : null)
+					.flag("timeout", upgradeTimeout != null ? upgradeTimeout + "s" : null)
 					.execute("Error occurred while upgrading the chart");
 		}
 	}

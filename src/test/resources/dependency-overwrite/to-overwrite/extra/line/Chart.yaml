@@ -10,4 +10,4 @@ dependencies:
     -
         name: testDependency2
         version: 3.1.1
-        repository: https://fake.repo/
+        repository: https://fake.example.org/

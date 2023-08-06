@@ -7,4 +7,4 @@ dependencies:
     version: 5.0.1
   - name: testDependency2
     version: 1.0.0
-    repository: https://fake.repo/
+    repository: https://fake.example.org/
