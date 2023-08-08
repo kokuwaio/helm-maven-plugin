@@ -38,7 +38,7 @@ public class InstallMojoTest extends AbstractMojoTest {
 	void atomicAndTimeout(InstallMojo mojo) {
 		mojo.setSkipInstall(false);
 		mojo.setInstallAtomic(true);
-		mojo.setInstallTimeout("30s");
+		mojo.setInstallTimeout(30);
 		assertHelm(mojo, "install simple src/test/resources/simple --atomic --timeout 30s");
 	}
 

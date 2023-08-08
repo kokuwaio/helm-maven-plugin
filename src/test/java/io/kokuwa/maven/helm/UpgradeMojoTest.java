@@ -50,7 +50,7 @@ public class UpgradeMojoTest extends AbstractMojoTest {
 		mojo.setReleaseName("foo");
 		mojo.setUpgradeWithInstall(false);
 		mojo.setUpgradeAtomic(true);
-		mojo.setUpgradeTimeout("30s");
+		mojo.setUpgradeTimeout(30);
 		assertHelm(mojo, "upgrade foo src/test/resources/simple --atomic --timeout 30s");
 	}
 
