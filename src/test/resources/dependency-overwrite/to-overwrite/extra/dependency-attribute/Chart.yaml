@@ -1,0 +1,20 @@
+apiVersion: v2
+name: app
+version: 0.0.1
+
+dependencies:
+  - name: testDependency1
+    version: 0.0.1
+    repository: file://test/path/
+    condition: test
+    tags:
+      - test1
+      - test2
+  - name: testDependency2
+    version: 5.0.1
+    repository: https://fake.repo/
+    import-values:
+      - test1
+      - child: default.data
+        parent: myimports
+    alias: alias1

@@ -319,7 +319,10 @@ Parameter | Type | User Property | Required | Description
 `<templateGenerateName>` | boolean | helm.template.generate-name | false | Generate the name (and omit the NAME parameter).
 `<caFile>` | boolean | helm.push.caFile | false | Verify certificates of HTTPS-enabled servers using this CA bundle.
 `<insecure>` | boolean | helm.push.insecure | false | Skip tls certificate checks for the chart upload. Also known as `helm push --insecure-skip-tls-verify`
-`<fallbackBinaryDownload>` | boolean | helm.fallbackBinaryDownload | Controls whether a download should occur when local helm binary is not found. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
+`<fallbackBinaryDownload>` | boolean | helm.fallbackBinaryDownload | false | Controls whether a download should occur when local helm binary is not found. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
+`<overwriteLocalDependencies>` | boolean | helm.overwriteLocalDependencies | false | Controls whether a local path chart should be used for a chart dependency. When set to `true`, chart dependencies on a local path chart will be overwritten with the respective properties set by `overwriteDependencyVersion` and `overwriteDependencyRepository`. This is helpful for deploying charts with intra repository dependencies, while still being able to use local path dependencies for development builds. Example usage: for development use `mvn clean install` and for deployment use `mvn clean deploy -Dhelm.overwriteLocalDependencies=true`
+`overwriteDependencyVersion>` | string | helm.overwriteDependencyVersion | false |  Value used to overwrite a local path chart's version within a chart's dependencies. The property `overwriteLocalDependencies` must be set to `true` for this to apply.
+`overwriteDependencyRepository>` | string | helm.overwriteDependencyRepository | false | Value used to overwrite a local path chart's repository within a chart's dependencies. The property `overwriteLocalDependencies` must be set to `true` for this to apply.
 
 ## Packaging with the Helm Lifecycle
 

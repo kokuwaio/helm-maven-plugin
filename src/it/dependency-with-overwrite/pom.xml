@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>@project.groupId@</groupId>
+		<artifactId>@project.artifactId@-it</artifactId>
+		<version>LOCAL-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>@project.artifactId@-path-with-spaces</artifactId>
+	<packaging>helm</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.kokuwa.maven</groupId>
+				<artifactId>helm-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
+					<useLocalHelmBinary>true</useLocalHelmBinary>
+					<helmExecutableDirectory>${project.basedir}/..</helmExecutableDirectory>
+					<helmExtraRepos>
+						<helmExtraRepo>
+							<name>kokuwaio</name>
+							<url>https://kokuwaio.github.io/helm-charts</url>
+						</helmExtraRepo>
+					</helmExtraRepos>
+					<addDefaultRepo>false</addDefaultRepo>
+					<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
+					<chartVersion>1.0.0</chartVersion>
+					<overwriteLocalDependencies>true</overwriteLocalDependencies>
+					<overwriteDependencyVersion>5.0.0</overwriteDependencyVersion>
+                    <overwriteDependencyRepository>"@kokuwaio"</overwriteDependencyRepository>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
