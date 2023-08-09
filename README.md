@@ -297,6 +297,7 @@ Parameter | Type | User Property | Required | Description
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
 `<insecure>` | boolean | helm.upload.insecure | false | Skip tls certificate checks for the chart upload.
 `<skipInstall>` | boolean | helm.install.skip | false | skip install goal
+`<skipUninstall>` | boolean | helm.uninstall.skip | false | skip uninstall goal
 `<security>` | string | helm.security | false | path to your [settings-security.xml](https://maven.apache.org/guides/mini/guide-encryption.html) (default: `~/.m2/settings-security.xml`)
 `<keyring>` | string | helm.package.keyring | false | path to gpg secret keyring for signing
 `<key>` | string  | helm.package.key | false | name of gpg key in keyring
@@ -315,6 +316,11 @@ Parameter | Type | User Property | Required | Description
 `<upgradeAtomic>` | boolean | helm.upgrade.atomic | false | Set this to `true` to rollback changes made in case of failed upgrade.
 `<upgradeTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during upgrade process. The default is 300 seconds (from helm) if `upgradeTimeout` is set to `true`.
 `<upgradeDryRun>` | boolean | helm.upgrade.dryRun | false | Run upgrade goal only in dry run mode
+`<uninstallWait>` | boolean | helm.uninstall.wait | false | If set, will wait until all the resources are deleted before returning. It will wait for as long as `uninstallTimeout`.
+`<uninstallTimeout>` | boolean | helm.uninstall.timeout | false | Time to wait for any individual Kubernetes operation (like Jobs for hooks) (default 5m0s).
+`<uninstallNoHooks>` | boolean | helm.uninstall.no-hooks | false | Prevent hooks from running during uninstallation.
+`<uninstallCascade>` | boolean | helm.uninstall.cascade | false | Must be "background", "orphan", or "foreground". Selects the deletion cascading strategy for the dependents. Defaults to background. (default "background" from helm)
+`<uninstallKeepHistory>` | boolean | helm.uninstall.keep-history | false | Remove all associated resources and mark the release as deleted, but retain the release history.
 `<templateOutputDir>` | file | helm.template.output-dir | false | Writes the executed templates to files in output-dir instead of stdout.
 `<templateGenerateName>` | boolean | helm.template.generate-name | false | Generate the name (and omit the NAME parameter).
 `<caFile>` | boolean | helm.push.caFile | false | Verify certificates of HTTPS-enabled servers using this CA bundle.
