@@ -25,6 +25,23 @@ public class InstallMojoTest extends AbstractMojoTest {
 		assertHelm(mojo.setSkipInstall(true).setSkip(true));
 	}
 
+	@DisplayName("with flag atomic")
+	@Test
+	void atomic(InstallMojo mojo) {
+		mojo.setSkipInstall(false);
+		mojo.setInstallAtomic(true);
+		assertHelm(mojo, "install simple src/test/resources/simple --atomic");
+	}
+
+	@DisplayName("with flags atomic and timeout")
+	@Test
+	void atomicAndTimeout(InstallMojo mojo) {
+		mojo.setSkipInstall(false);
+		mojo.setInstallAtomic(true);
+		mojo.setInstallTimeout(30);
+		assertHelm(mojo, "install simple src/test/resources/simple --atomic --timeout 30s");
+	}
+
 	@DisplayName("with values overrides")
 	@Test
 	void valuesFile(InstallMojo mojo) {

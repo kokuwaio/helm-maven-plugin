@@ -33,6 +33,27 @@ public class UpgradeMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "upgrade foo src/test/resources/simple --install --dry-run");
 	}
 
+	@DisplayName("with flag atomic")
+	@Test
+	void atomic(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
+		mojo.setUpgradeWithInstall(false);
+		mojo.setUpgradeAtomic(true);
+		assertHelm(mojo, "upgrade foo src/test/resources/simple --atomic");
+	}
+
+	@DisplayName("with flags atomic and timeout")
+	@Test
+	void atomicAndTimeout(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
+		mojo.setUpgradeWithInstall(false);
+		mojo.setUpgradeAtomic(true);
+		mojo.setUpgradeTimeout(30);
+		assertHelm(mojo, "upgrade foo src/test/resources/simple --atomic --timeout 30s");
+	}
+
 	@DisplayName("without flag install")
 	@Test
 	void install(UpgradeMojo mojo) {

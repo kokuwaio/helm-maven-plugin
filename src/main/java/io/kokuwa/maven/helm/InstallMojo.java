@@ -32,6 +32,22 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 	private String action;
 
 	/**
+	 * Set this to <code>true</code> to delete the installation on failure.
+	 *
+	 * @since 6.10.0
+	 */
+	@Parameter(property = "helm.install.atomic")
+	private boolean installAtomic;
+
+	/**
+	 * Time in seconds to wait for any individual Kubernetes operation.
+	 *
+	 * @since 6.10.0
+	 */
+	@Parameter(property = "helm.install.timeout")
+	private int installTimeout;
+
+	/**
 	 * Set this to <code>true</code> to skip invoking install goal.
 	 *
 	 * @since 5.10
@@ -48,9 +64,13 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 		}
 
 		for (Path chartDirectory : getChartDirectories()) {
-			getLog().info(String.format("\n\nPerform install for chart %s...", chartDirectory));
+			getLog().info(String.format("\n\nPerform install for chart %s...", chartDirectory) +
+					(installAtomic ? " with atomic" : "") +
+					(installTimeout > 0 ? String.format(" timeout %s", installTimeout) : ""));
 			helm()
 					.arguments(action, chartDirectory.getFileName().toString(), chartDirectory)
+					.flag("atomic", installAtomic)
+					.flag("timeout", installTimeout > 0 ? installTimeout + "s" : null)
 					.execute("Failed to deploy helm chart");
 		}
 	}

@@ -28,6 +28,22 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 	private boolean skipUpgrade;
 
 	/**
+	 * Set this to <code>true</code> to rollback changes made in case of failed upgrade.
+	 *
+	 * @since 6.10.0
+	 */
+	@Parameter(property = "helm.upgrade.atomic")
+	private boolean upgradeAtomic;
+
+	/**
+	 * Time in seconds to wait for any individual Kubernetes operation.
+	 *
+	 * @since 6.10.0
+	 */
+	@Parameter(property = "helm.upgrade.timeout")
+	private int upgradeTimeout;
+
+	/**
 	 * Upgrade with install parameter.
 	 *
 	 * @since 6.4.0
@@ -60,14 +76,18 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 		}
 
 		for (Path chartDirectory : getChartDirectories()) {
-			getLog().info("installing the chart " +
+			getLog().info("Upgrading the chart " +
 					(upgradeWithInstall ? "with install " : "") +
+					(upgradeAtomic ? "with atomic " : "") +
+					(upgradeTimeout > 0 ? String.format("timeout %s ", upgradeTimeout) : "") +
 					(upgradeDryRun ? "as dry run " : "") +
 					chartDirectory);
 			helm()
 					.arguments("upgrade", releaseName, chartDirectory)
 					.flag("install", upgradeWithInstall)
 					.flag("dry-run", upgradeDryRun)
+					.flag("atomic", upgradeAtomic)
+					.flag("timeout", upgradeTimeout > 0 ? upgradeTimeout + "s" : null)
 					.execute("Error occurred while upgrading the chart");
 		}
 	}
