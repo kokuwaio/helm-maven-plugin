@@ -33,6 +33,15 @@ public class UpgradeMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "upgrade foo src/test/resources/simple --install --dry-run");
 	}
 
+	@DisplayName("with flag force")
+	@Test
+	void force(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
+		mojo.setUpgradeForce(true);
+		assertHelm(mojo, "upgrade foo src/test/resources/simple --install --force");
+	}
+
 	@DisplayName("with flag atomic")
 	@Test
 	void atomic(UpgradeMojo mojo) {

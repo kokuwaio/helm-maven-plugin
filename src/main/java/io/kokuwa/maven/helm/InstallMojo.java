@@ -48,6 +48,14 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 	private Integer installTimeout;
 
 	/**
+	 * Force resource updates through a replacement strategy.
+	 *
+	 * @since 6.10.1
+	 */
+	@Parameter(property = "helm.install.force")
+	private boolean installForce;
+
+	/**
 	 * Set this to <code>true</code> to skip invoking install goal.
 	 *
 	 * @since 5.10
@@ -70,6 +78,7 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 			helm()
 					.arguments(action, chartDirectory.getFileName().toString(), chartDirectory)
 					.flag("atomic", installAtomic)
+					.flag("force", installForce)
 					.flag("timeout", installTimeout != null ? installTimeout + "s" : null)
 					.execute("Failed to deploy helm chart");
 		}
