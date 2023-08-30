@@ -311,8 +311,10 @@ Parameter | Type | User Property | Required | Description
 `<kubeAsGroup>` | string | helm.kubeAsGroup | false | group to impersonate for the operation, this flag can be repeated to specify multiple groups
 `<kubeToken>` | string | helm.kubeToken | false | bearer token used for authentication
 `<releaseName>` | string | helm.releaseName | false | Name of the release for upgrade goal
+`<installForce>` | boolean | helm.install.force | false | Force resource updates through a replacement strategy.
 `<installAtomic>` | boolean | helm.install.atomic | false | Set this to `true` to delete the installation on failure.
 `<installTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during install process. The default is 300 seconds (from helm) if `installAtomic` is set to `true`.
+`<upgradeForce>` | boolean | helm.upgrade.force | false | Force resource updates through a replacement strategy.
 `<upgradeAtomic>` | boolean | helm.upgrade.atomic | false | Set this to `true` to rollback changes made in case of failed upgrade.
 `<upgradeTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during upgrade process. The default is 300 seconds (from helm) if `upgradeTimeout` is set to `true`.
 `<upgradeDryRun>` | boolean | helm.upgrade.dryRun | false | Run upgrade goal only in dry run mode
@@ -327,8 +329,8 @@ Parameter | Type | User Property | Required | Description
 `<insecure>` | boolean | helm.push.insecure | false | Skip tls certificate checks for the chart upload. Also known as `helm push --insecure-skip-tls-verify`
 `<fallbackBinaryDownload>` | boolean | helm.fallbackBinaryDownload | false | Controls whether a download should occur when local helm binary is not found. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
 `<overwriteLocalDependencies>` | boolean | helm.overwriteLocalDependencies | false | Controls whether a local path chart should be used for a chart dependency. When set to `true`, chart dependencies on a local path chart will be overwritten with the respective properties set by `overwriteDependencyVersion` and `overwriteDependencyRepository`. This is helpful for deploying charts with intra repository dependencies, while still being able to use local path dependencies for development builds. Example usage: for development use `mvn clean install` and for deployment use `mvn clean deploy -Dhelm.overwriteLocalDependencies=true`
-`overwriteDependencyVersion>` | string | helm.overwriteDependencyVersion | false |  Value used to overwrite a local path chart's version within a chart's dependencies. The property `overwriteLocalDependencies` must be set to `true` for this to apply.
-`overwriteDependencyRepository>` | string | helm.overwriteDependencyRepository | false | Value used to overwrite a local path chart's repository within a chart's dependencies. The property `overwriteLocalDependencies` must be set to `true` for this to apply.
+`<overwriteDependencyVersion>` | string | helm.overwriteDependencyVersion | false |  Value used to overwrite a local path chart's version within a chart's dependencies. The property `overwriteLocalDependencies` must be set to `true` for this to apply.
+`<overwriteDependencyRepository>` | string | helm.overwriteDependencyRepository | false | Value used to overwrite a local path chart's repository within a chart's dependencies. The property `overwriteLocalDependencies` must be set to `true` for this to apply.
 
 ## Packaging with the Helm Lifecycle
 

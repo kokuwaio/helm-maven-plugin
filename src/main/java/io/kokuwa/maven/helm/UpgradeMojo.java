@@ -60,6 +60,14 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 	private boolean upgradeDryRun;
 
 	/**
+	 * Force resource updates through a replacement strategy.
+	 *
+	 * @since 6.10.1
+	 */
+	@Parameter(property = "helm.upgrade.force")
+	private boolean upgradeForce;
+
+	/**
 	 * Name of the release for upgrade goal.
 	 *
 	 * @since 6.4.0
@@ -87,6 +95,7 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 					.flag("install", upgradeWithInstall)
 					.flag("dry-run", upgradeDryRun)
 					.flag("atomic", upgradeAtomic)
+					.flag("force", upgradeForce)
 					.flag("timeout", upgradeTimeout != null ? upgradeTimeout + "s" : null)
 					.execute("Error occurred while upgrading the chart");
 		}

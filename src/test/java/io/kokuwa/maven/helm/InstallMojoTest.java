@@ -25,6 +25,14 @@ public class InstallMojoTest extends AbstractMojoTest {
 		assertHelm(mojo.setSkipInstall(true).setSkip(true));
 	}
 
+	@DisplayName("with flag force")
+	@Test
+	void force(InstallMojo mojo) {
+		mojo.setSkipInstall(false);
+		mojo.setInstallForce(true);
+		assertHelm(mojo, "install simple src/test/resources/simple --force");
+	}
+
 	@DisplayName("with flag atomic")
 	@Test
 	void atomic(InstallMojo mojo) {
