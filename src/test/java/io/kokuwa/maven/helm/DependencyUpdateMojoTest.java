@@ -9,37 +9,37 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("helm:dependency-build")
-public class DependencyBuildMojoTest extends AbstractMojoTest {
+@DisplayName("helm:dependency-update")
+public class DependencyUpdateMojoTest extends AbstractMojoTest {
 
 	@DisplayName("default values")
 	@Test
-	void DependencyBuild(DependencyBuildMojo mojo) {
-		assertHelm(mojo, "dependency build src/test/resources/simple");
+	void DependencyUpdate(DependencyUpdateMojo mojo) {
+		assertHelm(mojo, "dependency update src/test/resources/simple");
 	}
 
 	@DisplayName("with flag skip")
 	@Test
-	void skip(DependencyBuildMojo mojo) {
-		assertHelm(mojo.setSkipDependencyBuild(false).setSkip(true));
-		assertHelm(mojo.setSkipDependencyBuild(true).setSkip(false));
-		assertHelm(mojo.setSkipDependencyBuild(true).setSkip(true));
+	void skip(DependencyUpdateMojo mojo) {
+		assertHelm(mojo.setSkipDependencyUpdate(false).setSkip(true));
+		assertHelm(mojo.setSkipDependencyUpdate(true).setSkip(false));
+		assertHelm(mojo.setSkipDependencyUpdate(true).setSkip(true));
 	}
 
 	@DisplayName("with dependencies")
 	@Test
-	void dependencies(DependencyBuildMojo mojo) {
+	void dependencies(DependencyUpdateMojo mojo) {
 		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 		assertHelm(mojo,
-				"dependency build src/test/resources/dependencies/b",
-				"dependency build src/test/resources/dependencies/a2",
-				"dependency build src/test/resources/dependencies/a1",
-				"dependency build src/test/resources/dependencies");
+				"dependency update src/test/resources/dependencies/b",
+				"dependency update src/test/resources/dependencies/a2",
+				"dependency update src/test/resources/dependencies/a1",
+				"dependency update src/test/resources/dependencies");
 	}
 
 	@DisplayName("with overwriteLocalDependencies (throws invalid config)")
 	@Test
-	void overwriteLocalDependenciesMisconfig(DependencyBuildMojo mojo) {
+	void overwriteLocalDependenciesMisconfig(DependencyUpdateMojo mojo) {
 		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 		mojo.setOverwriteLocalDependencies(true);
 		String message = assertThrows(MojoExecutionException.class, () -> mojo.execute()).getMessage();
@@ -48,14 +48,14 @@ public class DependencyBuildMojoTest extends AbstractMojoTest {
 
 	@DisplayName("with overwriteLocalDependencies and overwriteDependencyRepository")
 	@Test
-	void overwriteLocalDependencies(DependencyBuildMojo mojo) {
+	void overwriteLocalDependencies(DependencyUpdateMojo mojo) {
 		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
 		mojo.setOverwriteLocalDependencies(true);
 		mojo.setOverwriteDependencyRepository("fake.example.org");
 		assertHelm(mojo,
-				"dependency build src/test/resources/dependencies/b",
-				"dependency build src/test/resources/dependencies/a2",
-				"dependency build src/test/resources/dependencies/a1",
-				"dependency build src/test/resources/dependencies");
+				"dependency update src/test/resources/dependencies/b",
+				"dependency update src/test/resources/dependencies/a2",
+				"dependency update src/test/resources/dependencies/a1",
+				"dependency update src/test/resources/dependencies");
 	}
 }

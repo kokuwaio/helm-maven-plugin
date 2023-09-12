@@ -7,7 +7,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import io.kokuwa.maven.helm.util.DependencyOverwriter;
 import lombok.Setter;
 
 /**
@@ -19,7 +18,7 @@ import lombok.Setter;
  */
 @Mojo(name = "dependency-build", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 @Setter
-public class DependencyBuildMojo extends AbstractHelmMojo {
+public class DependencyBuildMojo extends AbstractDependencyMojo {
 
 	/**
 	 * Set this to <code>true</code> to skip invoking dependency-build goal.
@@ -28,41 +27,6 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 	 */
 	@Parameter(property = "helm.dependency-build.skip", defaultValue = "false")
 	private boolean skipDependencyBuild;
-
-	/**
-	 * Controls whether a local path chart should be used for a chart dependency. When set to <code>true</code>, chart
-	 * dependencies on a local path chart will be overwritten with the respective properties set by
-	 * "helm.overwriteDependencyVersion" and "helm.overwriteDependencyRepository". This is helpful for deploying charts
-	 * with intra repository dependencies, while still being able to use local path dependencies for development builds.
-	 *
-	 * Example usage:
-	 * <ul>
-	 * <li>For development: mvn clean install</li>
-	 * <li>For deployment: mvn clean deploy -Dhelm.overwriteLocalDependencies=true</li>
-	 * </ul>
-	 *
-	 * @since 6.10.0
-	 */
-	@Parameter(property = "helm.overwriteLocalDependencies", defaultValue = "false")
-	private boolean overwriteLocalDependencies;
-
-	/**
-	 * Value used to overwrite a local path chart's version within a chart's dependencies. The property
-	 * "helm.overwriteLocalDependencies" must be set to <code>true</code> for this to apply.
-	 *
-	 * @since 6.10.0
-	 */
-	@Parameter(property = "helm.overwriteDependencyVersion")
-	private String overwriteDependencyVersion;
-
-	/**
-	 * Value used to overwrite a local path chart's repository within a chart's dependencies. The property
-	 * "helm.overwriteLocalDependencies" must be set to <code>true</code> for this to apply.
-	 *
-	 * @since 6.10.0
-	 */
-	@Parameter(property = "helm.overwriteDependencyRepository")
-	private String overwriteDependencyRepository;
 
 	@Override
 	public void execute() throws MojoExecutionException {
@@ -74,16 +38,7 @@ public class DependencyBuildMojo extends AbstractHelmMojo {
 
 		for (Path chartDirectory : getChartDirectories()) {
 
-			if (overwriteLocalDependencies) {
-				if (overwriteDependencyRepository == null) {
-					throw new MojoExecutionException("Null value for 'overwriteDependencyRepository' is " +
-							"not allowed when using 'overwriteLocalDependencies'. See the README for more details.");
-				}
-				getLog().info("Overwriting dependencies that contain local path charts with "
-						+ overwriteDependencyRepository);
-				new DependencyOverwriter(overwriteDependencyRepository, overwriteDependencyVersion, getLog())
-						.execute(chartDirectory);
-			}
+			doOverwriteLocalDependencies(chartDirectory);
 
 			getLog().info("Build chart dependencies for " + chartDirectory + " ...");
 			helm()
