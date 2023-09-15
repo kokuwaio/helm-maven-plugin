@@ -8,11 +8,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import io.kokuwa.maven.helm.util.DependencyOverwriter;
 import lombok.Setter;
 
-/**
- * Base class for dependency build and update mojos
- *
- * @since 6.10.2
- */
+/** Base class for dependency build and update mojos. */
 @Setter
 public abstract class AbstractDependencyMojo extends AbstractHelmMojo {
 
@@ -50,15 +46,15 @@ public abstract class AbstractDependencyMojo extends AbstractHelmMojo {
 	 */
 	@Parameter(property = "helm.overwriteDependencyRepository")
 	protected String overwriteDependencyRepository;
-	
+
 	/**
 	 * Overwrites the local path of a chart dependency with the desired repository and version when
 	 * helm.overwriteLocalDependencies is set to <code>true</code>.
-	 * 
+	 *
 	 * @param chartDirectory directory containing a Helm chart
 	 * @throws MojoExecutionException Null value for 'overwriteDependencyRepository'
-	 * 
-	 * @since 6.10.2
+	 *
+	 * @since 6.11.0
 	 */
 	protected void doOverwriteLocalDependencies(Path chartDirectory) throws MojoExecutionException {
 		if (overwriteLocalDependencies) {

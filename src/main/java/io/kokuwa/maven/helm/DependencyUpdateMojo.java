@@ -22,7 +22,7 @@ public class DependencyUpdateMojo extends AbstractDependencyMojo {
 	/**
 	 * Set this to <code>true</code> to skip invoking dependency-update goal.
 	 *
-	 * @since 6.10.2
+	 * @since 6.11.0
 	 */
 	@Parameter(property = "helm.dependency-update.skip", defaultValue = "false")
 	private boolean skipDependencyUpdate;
