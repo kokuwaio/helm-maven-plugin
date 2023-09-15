@@ -293,6 +293,7 @@ Parameter | Type | User Property | Required | Description
 `<skipTemplate>` | boolean | helm.template.skip | false | skip template goal. Default value is true due to the dry-run goal
 `<skipDryRun>` | boolean | helm.dry-run.skip | false | skip dry-run goal
 `<skipDependencyBuild>` | boolean | helm.dependency-build.skip | false | skip dependency-build goal
+`<skipDependencyUpdate>` | boolean | helm.dependency-update.skip | false | skip dependency-update goal
 `<skipPackage>` | boolean | helm.package.skip | false | skip package goal
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
 `<insecure>` | boolean | helm.upload.insecure | false | Skip tls certificate checks for the chart upload.
