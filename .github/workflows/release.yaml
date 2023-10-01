@@ -10,7 +10,7 @@ jobs:
     steps:
       - run: git config --global user.name "${{ vars.KOKUWA_IO_BOT_NAME }}"
       - run: git config --global user.email "${{ vars.KOKUWA_IO_BOT_EMAIL }}"
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GIT_ACTION_TOKEN }}
       - uses: crazy-max/ghaction-import-gpg@v6
