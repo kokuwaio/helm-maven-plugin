@@ -399,11 +399,11 @@ public class InitMojo extends AbstractHelmMojo {
 	private String getArchitecture() {
 		String architecture = System.getProperty("os.arch").toLowerCase(Locale.US);
 
-		if (architecture.equals("x86_64") || architecture.equals("amd64") || architecture.equals("aarch64")) {
+		if (architecture.equals("x86_64") || architecture.equals("amd64")) {
 			return "amd64";
 		} else if (architecture.equals("x86") || architecture.equals("i386")) {
 			return "386";
-		} else if (architecture.contains("arm64")) {
+		} else if (architecture.contains("arm64") || architecture.equals("aarch64")) {
 			return "arm64";
 		} else if (architecture.equals("aarch32") || architecture.startsWith("arm")) {
 			return "arm";
