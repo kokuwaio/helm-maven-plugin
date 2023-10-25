@@ -16,6 +16,8 @@ import org.apache.maven.plugin.descriptor.Parameter;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugin.descriptor.PluginDescriptorBuilder;
 import org.apache.maven.plugin.logging.SystemStreamLog;
+import org.apache.maven.project.DefaultMavenProjectHelper;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.util.InterpolationFilterReader;
 import org.codehaus.plexus.util.ReflectionUtils;
@@ -81,6 +83,8 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 			AbstractHelmMojo mojo = spy(mojoType);
 			mojo.setSettings(new Settings());
 			mojo.setSecurityDispatcher(new DefaultSecDispatcher(new DefaultPlexusCipher()));
+			mojo.setMavenProjectHelper(new DefaultMavenProjectHelper());
+			mojo.setMavenProject(new MavenProject());
 			mojo.setLog(new SystemStreamLog());
 
 			// set parameter
