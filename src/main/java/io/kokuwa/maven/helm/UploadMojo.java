@@ -3,13 +3,20 @@ package io.kokuwa.maven.helm;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -20,6 +27,12 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import io.kokuwa.maven.helm.pojo.Catalog;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 import lombok.Setter;
@@ -33,6 +46,9 @@ import lombok.Setter;
 @Mojo(name = "upload", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
 public class UploadMojo extends AbstractHelmMojo {
+
+	private static final String CATALOG_ARTIFACT_NAME = "helm-catalog";
+	private static final String CATALOG_ARTIFACT_TYPE = "json";
 
 	/**
 	 * Set this to <code>true</code> to skip invoking upload goal.
@@ -74,6 +90,14 @@ public class UploadMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.upload.insecure", defaultValue = "false")
 	private boolean insecure;
 
+	/**
+	 * Path to a catalog file with a list of helm chart deployment details.
+	 *
+	 * @since 6.11.2
+	 */
+	@Parameter(property = "helm.upload.skip.catalog", defaultValue = "true")
+	private boolean skipCatalog;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -91,6 +115,13 @@ public class UploadMojo extends AbstractHelmMojo {
 				throw new MojoExecutionException("Upload failed.", e);
 			}
 		}
+
+		if (!skipCatalog) {
+			Path catalogPath = getCatalogFilePath();
+			getLog().info("Attaching catalog artifact: " + catalogPath);
+			mavenProjectHelper.attachArtifact(mavenProject, CATALOG_ARTIFACT_TYPE, CATALOG_ARTIFACT_NAME,
+					catalogPath.toFile());
+		}
 	}
 
 	/**
@@ -103,6 +134,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		String chartVersion = getChartVersion();
 		HelmRepository uploadRepoStable = getUploadRepoStable();
 		HelmRepository uploadRepoSnapshot = getUploadRepoSnapshot();
+
 		String uploadUrl = uploadRepoStable.getUrl();
 		if (chartVersion != null && chartVersion.endsWith("-SNAPSHOT")
 				&& uploadRepoSnapshot != null
@@ -111,6 +143,50 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 
 		return uploadUrl;
+	}
+
+	private String createCatalogContent(Catalog data) throws MojoExecutionException {
+		ObjectMapper mapper = new ObjectMapper();
+		File file = getCatalogFilePath().toFile();
+		List<Catalog> catalog = new ArrayList<>();
+		try {
+			if (file.exists()) {
+				catalog = Arrays.asList(mapper.readValue(file, Catalog[].class));
+			}
+		} catch (DatabindException e) {
+			getLog().warn("Unable to parse the existing catalog file content. Overwriting data.");
+		} catch (IOException e) {
+			throw new MojoExecutionException("Failure occurred while reading the catalog file.", e);
+		}
+		catalog.add(data);
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		try {
+			return mapper.writeValueAsString(catalog);
+		} catch (JsonProcessingException e) {
+			throw new MojoExecutionException("Failure occurred while writing the catalog content as a JSON string.", e);
+		}
+	}
+
+	private Path getCatalogFilePath() {
+		String catalogFileName = String.format("%s.%s", CATALOG_ARTIFACT_NAME, CATALOG_ARTIFACT_TYPE);
+		return Paths.get(mavenProject.getBuild().getDirectory(), catalogFileName);
+	}
+
+	private void catalogHelmChart(String content) throws MojoExecutionException {
+		Path catalogPath = getCatalogFilePath();
+		File catalogFile = catalogPath.toFile();
+		getLog().debug("Writing content to catalog file: " + content);
+
+		try (OutputStream out = Files.newOutputStream(catalogFile.toPath())) {
+			// FIXME: It is better to use the encoding either from
+			// project.build.sourceEncoding or project.reporting.outputEncoding
+			OutputStreamWriter fileWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+			fileWriter.write(content);
+			fileWriter.close();
+		}
+		catch (IOException e) {
+			throw new MojoExecutionException("Failure occurred while writing the catalog file.", e);
+		}
 	}
 
 	private void uploadSingle(Path chart) throws MojoExecutionException, IOException {
@@ -154,15 +230,24 @@ public class UploadMojo extends AbstractHelmMojo {
 				response = "No details provided";
 			}
 			throw new MojoExecutionException("Failed to upload: " + response);
-		} else {
-			String message = "Returned: " + connection.getResponseCode();
-			if (connection.getInputStream() != null) {
-				String details = new String(IOUtils.toByteArray(connection.getInputStream()), StandardCharsets.UTF_8);
-				if (!details.isEmpty()) {
-					message += " - " + details;
-				}
+		}
+		String message = "Returned: " + connection.getResponseCode();
+		String details = "";
+		if (connection.getInputStream() != null) {
+			details = new String(IOUtils.toByteArray(connection.getInputStream()), StandardCharsets.UTF_8);
+			if (!details.isEmpty()) {
+				message += " - " + details;
 			}
-			getLog().info(message);
+		}
+		getLog().info(message);
+		if (!skipCatalog) {
+			Catalog data = new Catalog(
+				chart,
+				connection.getURL(),
+				connection.getContentType(),
+				details
+			);
+			catalogHelmChart(createCatalogContent(data));
 		}
 		connection.disconnect();
 	}

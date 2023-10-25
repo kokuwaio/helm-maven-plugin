@@ -19,6 +19,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.util.FileUtils;
@@ -51,6 +53,17 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	@Component(role = SecDispatcher.class, hint = "default")
 	private SecDispatcher securityDispatcher;
+
+	@Component
+	protected MavenProjectHelper mavenProjectHelper;
+
+	/**
+	 * The maven project
+	 *
+	 * @since 6.11.2
+	 */
+	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	protected MavenProject mavenProject;
 
 	/**
 	 * Controls whether a local binary should be used instead of downloading it. If set to <code>true</code> path has to
