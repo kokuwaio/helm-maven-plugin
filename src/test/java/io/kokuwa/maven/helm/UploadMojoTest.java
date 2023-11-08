@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -342,6 +343,58 @@ public class UploadMojoTest extends AbstractMojoTest {
 		assertThrows(IllegalArgumentException.class, mojo::execute, "Missing repo type must fail.");
 	}
 
+	@DisplayName("flag: with flag verify")
+	@Test
+	void verify(UploadMojo mojo) throws IOException {
+		mojo.setUploadVerification(true);
+		mojo.setChartVersion("0.1.0");
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/nexus"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUploadVerifySuccess(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName());
+	}
+
+	@DisplayName("flag: with flags verify and timeout")
+	@Test
+	void verifyAndTimeout(UploadMojo mojo) {
+		mojo.setUploadVerification(true);
+		mojo.setUploadVerificationTimeout(10);
+		mojo.setChartVersion("0.1.0");
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/nexus"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUploadVerifySuccess(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName());
+	}
+
+	@DisplayName("flag: with flags verify and timeout times out")
+	@Test
+	void verifyAndTimeoutFail(UploadMojo mojo) {
+		mojo.setUploadVerification(true);
+		mojo.setUploadVerificationTimeout(10);
+		mojo.setChartVersion("0.1.0");
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/nexus"));
+		mojo.setChartDirectory(new File("src/test/resources/simple-fail/"));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		assertUploadVerifyFail(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName());
+	}
+
+	@DisplayName("input: timeout not postive")
+	@Test
+	void timeoutTimeNotPositive(UploadMojo mojo) throws Exception {
+		mojo.setUploadVerification(true);
+		mojo.setUploadVerificationTimeout(-1);
+		mojo.setChartVersion("0.1.0");
+		copyPackagedHelmChartToOutputdirectory(mojo);
+		assertThrows(IllegalArgumentException.class, mojo::execute, "Nonpositive timeout must fail.");
+	}
+
 	private void assertUpload(UploadMojo mojo, RequestMethod method, String path, String authorization) {
 
 		RequestPatternBuilder requestPattern;
@@ -386,5 +439,60 @@ public class UploadMojoTest extends AbstractMojoTest {
 			fail(e);
 		}
 
+	}
+
+	private void assertUploadVerifySuccess(UploadMojo mojo, RequestMethod method, String path) {
+		mockHelmShowChart();
+		assertDoesNotThrow(() -> mojo.execute(), "upload failed");
+		verifyRequests(mojo, method, path);
+	}
+
+	private void assertUploadVerifyFail(UploadMojo mojo, RequestMethod method, String path) {
+		mockHelmShowChart();
+		assertThrows(MojoExecutionException.class, mojo::execute, "could not verify");
+		verifyRequests(mojo, method, path);
+	}
+
+	private void mockHelmShowChart() {
+		mock.stubFor(WireMock.put(WireMock.urlMatching(".*"))
+				.willReturn(WireMock.ok()
+						.withStatus(200)));
+		mock.stubFor(WireMock.get(WireMock.urlMatching(".*/index\\.yaml$"))
+				.willReturn(WireMock.ok()
+						.withStatus(200)
+						.withHeader("Content-Type", "application/yaml")
+						.withBody(getIndexYamlBody())));
+		mock.stubFor(WireMock.get(WireMock.urlMatching(".*\\.tgz$"))
+				.willReturn(WireMock.ok()
+						.withStatus(200)
+						.withHeader("Content-Type", "application/gzip")
+						.withBodyFile("app-0.1.0.tgz")));
+	}
+
+	private void verifyRequests(UploadMojo mojo, RequestMethod method, String path) {
+		List<LoggedRequest> requests = mock.findAll(RequestPatternBuilder.allRequests());
+		LoggedRequest request = requests.get(0);
+		assertEquals(method, request.getMethod(), "method");
+		assertEquals((mojo.getUploadRepoStable().getUrl().startsWith("https")
+				? "https://127.0.0.1:" + mock.getHttpsPort()
+				: "http://127.0.0.1:" + mock.getPort()) + path, request.getAbsoluteUrl(), "url");
+		assertEquals("application/gzip", request.getHeader(HttpHeaders.CONTENT_TYPE), "content-type");
+	}
+
+	private String getIndexYamlBody() {
+		String indexYamlBody = "apiVersion: v1\n" +
+				"entries:\n" +
+				"  app:\n" +
+				"    - created: 2023-11-05T12:15:23.451853285-06:00\n" +
+				"      description: Dummy chart for testing\n" +
+				"      digest: digesthash1\n" +
+				"      home: https://helm.sh/helm\n" +
+				"      name: app\n" +
+				"      sources:\n" +
+				"        - https://github.com/helm/helm\n" +
+				"      urls:\n" +
+				"        - " + "http://127.0.0.1:" + mock.getPort() + "/nexus/app-0.1.0.tgz" + "\n" +
+				"      version: 0.1.0";
+		return indexYamlBody;
 	}
 }
