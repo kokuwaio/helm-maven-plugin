@@ -91,7 +91,7 @@ public class UploadMojo extends AbstractHelmMojo {
 	private boolean insecure;
 
 	/**
-	 * Path to a catalog file with a list of helm chart deployment details.
+	 * Skips creation of a catalog file with a list of helm chart upload details.
 	 *
 	 * @since 6.11.2
 	 */
@@ -145,19 +145,40 @@ public class UploadMojo extends AbstractHelmMojo {
 		return uploadUrl;
 	}
 
-	private String createCatalogContent(Catalog data) throws MojoExecutionException {
+	/**
+	 * Reads the catalog file and deserializes its content as a POJO.
+	 *
+	 * @param catalogFile instance of catalog file
+	 * @return list of Catalog
+	 * @throws MojoExecutionException when IOException is encountered
+	 */
+	List<Catalog> readCatalog(File catalogFile) throws MojoExecutionException {
+		List<Catalog> catalogList = new ArrayList<>();
+		if (catalogFile == null || !catalogFile.exists()) {
+			return catalogList;
+		}
 		ObjectMapper mapper = new ObjectMapper();
-		File file = getCatalogFilePath().toFile();
-		List<Catalog> catalog = new ArrayList<>();
 		try {
-			if (file.exists()) {
-				catalog = Arrays.asList(mapper.readValue(file, Catalog[].class));
-			}
+			return Arrays.asList(mapper.readValue(catalogFile, Catalog[].class));
 		} catch (DatabindException e) {
 			getLog().warn("Unable to parse the existing catalog file content. Overwriting data.");
 		} catch (IOException e) {
 			throw new MojoExecutionException("Failure occurred while reading the catalog file.", e);
 		}
+		return catalogList;
+	}
+
+	/**
+	 * Reads the existing helm catalog content file and merges the new
+	 * catalog data with it.
+	 *
+	 * @param data helm chart upload info represented as the Catalog object
+	 * @return pretty string json representation of the updated helm catalog contents
+	 */
+	private String createCatalogContent(Catalog data) throws MojoExecutionException {
+		ObjectMapper mapper = new ObjectMapper();
+		File file = getCatalogFilePath().toFile();
+		List<Catalog> catalog = readCatalog(file);
 		catalog.add(data);
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		try {
@@ -167,11 +188,23 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 	}
 
-	private Path getCatalogFilePath() {
+	/**
+	 * Returns the path where the catalog file is to be created.
+	 * The catalog file is created in the maven project build directory.
+	 *
+	 * @return Path of the catalog file
+	 */
+	protected Path getCatalogFilePath() {
 		String catalogFileName = String.format("%s.%s", CATALOG_ARTIFACT_NAME, CATALOG_ARTIFACT_TYPE);
 		return Paths.get(mavenProject.getBuild().getDirectory(), catalogFileName);
 	}
 
+	/**
+	 * Writes the catalog data to the catalog file.
+	 *
+	 * @param content Helm upload catalog data in string form
+	 * @throws MojoExecutionException when writing catalog data to the file
+	 */
 	private void catalogHelmChart(String content) throws MojoExecutionException {
 		Path catalogPath = getCatalogFilePath();
 		File catalogFile = catalogPath.toFile();

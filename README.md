@@ -296,6 +296,7 @@ Parameter | Type | User Property | Required | Description
 `<skipDependencyUpdate>` | boolean | helm.dependency-update.skip | false | skip dependency-update goal
 `<skipPackage>` | boolean | helm.package.skip | false | skip package goal
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
+`<skipCatalog>` | boolean | helm.upload.skip.catalog | true | Skips creation of a catalog file with a list of helm chart upload details
 `<insecure>` | boolean | helm.upload.insecure | false | Skip tls certificate checks for the chart upload.
 `<skipInstall>` | boolean | helm.install.skip | false | skip install goal
 `<skipUninstall>` | boolean | helm.uninstall.skip | false | skip uninstall goal

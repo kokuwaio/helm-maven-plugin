@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.mockito.Mockito;
 import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 
@@ -83,8 +84,9 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 			AbstractHelmMojo mojo = spy(mojoType);
 			mojo.setSettings(new Settings());
 			mojo.setSecurityDispatcher(new DefaultSecDispatcher(new DefaultPlexusCipher()));
-			mojo.setMavenProjectHelper(new DefaultMavenProjectHelper());
+			mojo.setMavenProjectHelper(Mockito.mock(DefaultMavenProjectHelper.class));
 			mojo.setMavenProject(new MavenProject());
+			mojo.getMavenProject().getBuild().setDirectory("target");
 			mojo.setLog(new SystemStreamLog());
 
 			// set parameter
