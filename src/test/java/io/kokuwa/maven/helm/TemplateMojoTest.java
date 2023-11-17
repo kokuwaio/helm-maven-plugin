@@ -25,6 +25,28 @@ public class TemplateMojoTest extends AbstractMojoTest {
 		assertHelm(mojo.setSkipTemplate(true).setSkip(true));
 	}
 
+	@DisplayName("with flag plain-http")
+	@Test
+	void plainHttp(TemplateMojo mojo) {
+		mojo.setSkipTemplate(false);
+
+		mojo.setPlainHttp(false);
+		mojo.setTemplatePlainHttp(null);
+		assertHelm(mojo, "template src/test/resources/simple");
+
+		mojo.setPlainHttp(true);
+		mojo.setTemplatePlainHttp(null);
+		assertHelm(mojo, "template src/test/resources/simple --plain-http");
+
+		mojo.setPlainHttp(false);
+		mojo.setTemplatePlainHttp(true);
+		assertHelm(mojo, "template src/test/resources/simple --plain-http");
+
+		mojo.setPlainHttp(false);
+		mojo.setTemplatePlainHttp(false);
+		assertHelm(mojo, "template src/test/resources/simple");
+	}
+
 	@DisplayName("with values overrides")
 	@Test
 	void valuesFile(TemplateMojo mojo) {

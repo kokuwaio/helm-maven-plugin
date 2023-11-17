@@ -72,6 +72,28 @@ public class UpgradeMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "upgrade foo src/test/resources/simple");
 	}
 
+	@DisplayName("with flag plain-http")
+	@Test
+	void plainHttp(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+
+		mojo.setPlainHttp(false);
+		mojo.setUpgradePlainHttp(null);
+		assertHelm(mojo, "upgrade src/test/resources/simple --install");
+
+		mojo.setPlainHttp(true);
+		mojo.setUpgradePlainHttp(null);
+		assertHelm(mojo, "upgrade src/test/resources/simple --install --plain-http");
+
+		mojo.setPlainHttp(false);
+		mojo.setUpgradePlainHttp(true);
+		assertHelm(mojo, "upgrade src/test/resources/simple --install --plain-http");
+
+		mojo.setPlainHttp(false);
+		mojo.setUpgradePlainHttp(false);
+		assertHelm(mojo, "upgrade src/test/resources/simple --install");
+	}
+
 	@DisplayName("with values overrides")
 	@Test
 	void valuesFile(UpgradeMojo mojo) {

@@ -60,6 +60,14 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	private String additionalArguments;
 
 	/**
+	 * Use insecure HTTP connections for the chart download.
+	 *
+	 * @since 6.12.0
+	 */
+	@Parameter(property = "helm.template.plain-http")
+	private Boolean templatePlainHttp;
+
+	/**
 	 * Set this to <code>true</code> to skip invoking template goal.
 	 *
 	 * @since 5.10
@@ -82,6 +90,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 					.arguments(getArguments())
 					.flag("output-dir", templateOutputDir)
 					.flag("generate-name", templateGenerateName)
+					.flag("plain-http", isPlainHttp(templatePlainHttp))
 					.execute("There are test failures");
 		}
 	}

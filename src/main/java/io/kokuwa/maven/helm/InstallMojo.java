@@ -56,6 +56,14 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 	private boolean installForce;
 
 	/**
+	 * Use insecure HTTP connections for the chart download.
+	 *
+	 * @since 6.12.0
+	 */
+	@Parameter(property = "helm.install.plain-http")
+	private Boolean installPlainHttp;
+
+	/**
 	 * Set this to <code>true</code> to skip invoking install goal.
 	 *
 	 * @since 5.10
@@ -79,6 +87,7 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 					.arguments(action, chartDirectory.getFileName().toString(), chartDirectory)
 					.flag("atomic", installAtomic)
 					.flag("force", installForce)
+					.flag("plain-http", isPlainHttp(installPlainHttp))
 					.flag("timeout", installTimeout != null ? installTimeout + "s" : null)
 					.execute("Failed to deploy helm chart");
 		}

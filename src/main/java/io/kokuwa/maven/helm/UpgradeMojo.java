@@ -68,6 +68,13 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 	private boolean upgradeForce;
 
 	/**
+	 * Use insecure HTTP connections for the chart download.
+	 *
+	 * @since 6.12.0
+	 */
+	@Parameter(property = "helm.upgrade.plain-http")
+	private Boolean upgradePlainHttp;
+	/**
 	 * Name of the release for upgrade goal.
 	 *
 	 * @since 6.4.0
@@ -96,6 +103,7 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 					.flag("dry-run", upgradeDryRun)
 					.flag("atomic", upgradeAtomic)
 					.flag("force", upgradeForce)
+					.flag("plain-http", isPlainHttp(upgradePlainHttp))
 					.flag("timeout", upgradeTimeout != null ? upgradeTimeout + "s" : null)
 					.execute("Error occurred while upgrading the chart");
 		}

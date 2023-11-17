@@ -316,10 +316,12 @@ Parameter | Type | User Property | Required | Description
 `<installForce>` | boolean | helm.install.force | false | Force resource updates through a replacement strategy.
 `<installAtomic>` | boolean | helm.install.atomic | false | Set this to `true` to delete the installation on failure.
 `<installTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during install process. The default is 300 seconds (from helm) if `installAtomic` is set to `true`.
+`<installPlainHttp>` | boolean | helm.install.plain-http | false | Use insecure HTTP connections for the chart download.
 `<upgradeForce>` | boolean | helm.upgrade.force | false | Force resource updates through a replacement strategy.
 `<upgradeAtomic>` | boolean | helm.upgrade.atomic | false | Set this to `true` to rollback changes made in case of failed upgrade.
 `<upgradeTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during upgrade process. The default is 300 seconds (from helm) if `upgradeTimeout` is set to `true`.
 `<upgradeDryRun>` | boolean | helm.upgrade.dryRun | false | Run upgrade goal only in dry run mode
+`<upgradePlainHttp>` | boolean | helm.upgrade.plain-http | false | Use insecure HTTP connections for the chart download.
 `<uninstallWait>` | boolean | helm.uninstall.wait | false | If set, will wait until all the resources are deleted before returning. It will wait for as long as `uninstallTimeout`.
 `<uninstallTimeout>` | boolean | helm.uninstall.timeout | false | Time to wait for any individual Kubernetes operation (like Jobs for hooks) (default 5m0s).
 `<uninstallNoHooks>` | boolean | helm.uninstall.no-hooks | false | Prevent hooks from running during uninstallation.
@@ -327,6 +329,9 @@ Parameter | Type | User Property | Required | Description
 `<uninstallKeepHistory>` | boolean | helm.uninstall.keep-history | false | Remove all associated resources and mark the release as deleted, but retain the release history.
 `<templateOutputDir>` | file | helm.template.output-dir | false | Writes the executed templates to files in output-dir instead of stdout.
 `<templateGenerateName>` | boolean | helm.template.generate-name | false | Generate the name (and omit the NAME parameter).
+`<templatePlainHttp>` | boolean | helm.template.plain-http | false | Use insecure HTTP connections for the chart download.
+`<pushPlainHttp>` | boolean | helm.push.plain-http | false | Use insecure HTTP connections for the chart download.
+`<plainHttp>` | boolean | helm.plain-http | false | Global Flag: Use insecure HTTP connections for the chart download.
 `<caFile>` | boolean | helm.push.caFile | false | Verify certificates of HTTPS-enabled servers using this CA bundle.
 `<insecure>` | boolean | helm.push.insecure | false | Skip tls certificate checks for the chart upload. Also known as `helm push --insecure-skip-tls-verify`
 `<fallbackBinaryDownload>` | boolean | helm.fallbackBinaryDownload | false | Controls whether a download should occur when local helm binary is not found. This property has no effect unless `<useLocalHelmBinary>` is set to `true`.
