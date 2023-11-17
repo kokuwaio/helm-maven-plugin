@@ -60,7 +60,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	/**
 	 * The maven project
 	 *
-	 * @since 6.11.2
+	 * @since 6.12.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	protected MavenProject mavenProject;

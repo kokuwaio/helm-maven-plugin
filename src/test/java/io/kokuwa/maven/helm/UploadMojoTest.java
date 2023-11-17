@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -374,17 +375,16 @@ public class UploadMojoTest extends AbstractMojoTest {
 	private void assertCatalog(UploadMojo mojo, Path archive, String uploadUrl) {
 		File helmCatalogFile = mojo.getCatalogFilePath().toFile();
 		assertTrue(helmCatalogFile.exists());
-		List<Catalog> catalogs;
 		try {
-			catalogs = mojo.readCatalog(helmCatalogFile);
+			for (Catalog catalog : mojo.readCatalog(helmCatalogFile)) {
+				assertEquals(archive.toString(), catalog.getChart().toString());
+				assertEquals(uploadUrl, catalog.getUploadUrl().toString());
+				assertNull(catalog.getUploadResponseType());
+				assertEquals("", catalog.getUploadResponse());
+			}
 		} catch (MojoExecutionException e) {
-			throw new RuntimeException(e);
+			fail(e);
 		}
-		for (Catalog catalog : catalogs) {
-			assertEquals(archive.toString(), catalog.getChart().toString());
-			assertEquals(uploadUrl, catalog.getUploadUrl().toString());
-			assertNull(catalog.getUploadResponseType());
-			assertEquals("", catalog.getUploadResponse());
-		}
+
 	}
 }
