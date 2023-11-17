@@ -43,6 +43,29 @@ public class PushMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "push " + packaged + " oci://reg.example.org --ca-file registry-ca.pem");
 	}
 
+	@DisplayName("with flag plain-http")
+	@Test
+	void plainHttp(PushMojo mojo) {
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		mojo.setUploadRepoStable(new HelmRepository().setUrl("reg.example.org"));
+
+		mojo.setPlainHttp(false);
+		mojo.setPushPlainHttp(null);
+		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
+
+		mojo.setPlainHttp(true);
+		mojo.setPushPlainHttp(null);
+		assertHelm(mojo, "push " + packaged + " oci://reg.example.org --plain-http");
+
+		mojo.setPlainHttp(false);
+		mojo.setPushPlainHttp(true);
+		assertHelm(mojo, "push " + packaged + " oci://reg.example.org --plain-http");
+
+		mojo.setPlainHttp(false);
+		mojo.setPushPlainHttp(false);
+		assertHelm(mojo, "push " + packaged + " oci://reg.example.org");
+	}
+
 	@DisplayName("push without authentication")
 	@Test
 	void withoutAuthentication(PushMojo mojo) {

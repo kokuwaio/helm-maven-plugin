@@ -41,6 +41,14 @@ public class PushMojo extends AbstractHelmMojo {
 	private boolean insecure;
 
 	/**
+	 * Use insecure HTTP connections for the chart download.
+	 *
+	 * @since 6.12.0
+	 */
+	@Parameter(property = "helm.push.plain-http")
+	private Boolean pushPlainHttp;
+
+	/**
 	 * Skip login, usefull if already logged via `helm:registry-login`.
 	 *
 	 * @since 6.8.0
@@ -104,6 +112,7 @@ public class PushMojo extends AbstractHelmMojo {
 					.arguments("push", chartArchive, "oci://" + repository.getUrl())
 					.flag("ca-file", caFile)
 					.flag("insecure-skip-tls-verify", insecure)
+					.flag("plain-http", isPlainHttp(pushPlainHttp))
 					.execute("Upload failed");
 		}
 	}

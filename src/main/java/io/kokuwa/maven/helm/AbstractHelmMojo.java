@@ -205,6 +205,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	private String helmSecurity;
 
 	/**
+	 * Global Flag: Use insecure HTTP connections for the chart download.
+	 *
+	 * @since 6.12.0
+	 */
+	@Parameter(property = "helm.plain-http", defaultValue = "false")
+	private boolean plainHttp;
+
+	/**
 	 * Set this to <code>true</code> to skip all goals.
 	 *
 	 * @since 3.2
@@ -441,6 +449,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 			helmVersion = new Github(getLog(), tmpDir.toPath(), githubUserAgent).getHelmVersion();
 		}
 		return helmVersion;
+	}
+
+	public boolean isPlainHttp(Boolean mojoPlainHttp) {
+		return mojoPlainHttp != null ? mojoPlainHttp : plainHttp;
 	}
 
 	public Path getOutputDirectory() {

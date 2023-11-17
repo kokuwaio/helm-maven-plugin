@@ -50,6 +50,28 @@ public class InstallMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "install simple src/test/resources/simple --atomic --timeout 30s");
 	}
 
+	@DisplayName("with flag plain-http")
+	@Test
+	void plainHttp(InstallMojo mojo) {
+		mojo.setSkipInstall(false);
+
+		mojo.setPlainHttp(false);
+		mojo.setInstallPlainHttp(null);
+		assertHelm(mojo, "install simple src/test/resources/simple");
+
+		mojo.setPlainHttp(true);
+		mojo.setInstallPlainHttp(null);
+		assertHelm(mojo, "install simple src/test/resources/simple --plain-http");
+
+		mojo.setPlainHttp(false);
+		mojo.setInstallPlainHttp(true);
+		assertHelm(mojo, "install simple src/test/resources/simple --plain-http");
+
+		mojo.setPlainHttp(false);
+		mojo.setInstallPlainHttp(false);
+		assertHelm(mojo, "install simple src/test/resources/simple");
+	}
+
 	@DisplayName("with values overrides")
 	@Test
 	void valuesFile(InstallMojo mojo) {
