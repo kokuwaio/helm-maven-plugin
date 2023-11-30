@@ -24,7 +24,7 @@
 						<configuration>
 							<autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
 							<useLocalHelmBinary>true</useLocalHelmBinary>
-							<helmExecutableDirectory>${project.basedir}/..</helmExecutableDirectory>
+							<helmExecutableDirectory>${test.helmExecutableDirectory}</helmExecutableDirectory>
 							<addDefaultRepo>false</addDefaultRepo>
 							<chartDirectory>${project.basedir}/src/main/helm</chartDirectory>
 							<chartVersion>1.0.0</chartVersion>
