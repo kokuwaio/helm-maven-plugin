@@ -26,6 +26,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 
+import io.kokuwa.maven.helm.junit.MojoExtension;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 
@@ -103,7 +104,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		mojo.setUseLocalHelmBinary(true);
 		mojo.setFallbackBinaryDownload(false);
 		mojo.setHelmVersion(null);
-		mojo.setHelmExecutableDirectory(new File("src/it"));
+		mojo.setHelmExecutableDirectory(MojoExtension.determineHelmExecutableDirectory().toFile());
 		assertHelm(mojo, "version", "repo add stable " + InitMojo.STABLE_HELM_REPO);
 	}
 

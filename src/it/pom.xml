@@ -20,6 +20,8 @@
 		<maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
 		<maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
 
+		<test.helmExecutableDirectory>${project.basedir}/../../../src/bin/amd64</test.helmExecutableDirectory>
+
 		<!-- ===================================================================== -->
 		<!-- ============================= Libaries ============================== -->
 		<!-- ===================================================================== -->

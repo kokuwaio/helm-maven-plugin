@@ -1,5 +1,6 @@
 // verify that configured helm was used
 
+System.out.println(basedir);
 return org.codehaus.plexus.util.FileUtils
 	.fileRead(basedir + "/build.log")
-	.contains("Using local HELM binary [" + basedir + "/../helm]")
+	.contains("Using local HELM binary [" + basedir + "/../../../src/bin/amd64/helm]")

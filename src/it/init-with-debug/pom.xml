@@ -24,7 +24,7 @@
 						<configuration>
 							<autoDetectLocalHelmBinary>false</autoDetectLocalHelmBinary>
 							<useLocalHelmBinary>true</useLocalHelmBinary>
-							<helmExecutableDirectory>${project.basedir}/..</helmExecutableDirectory>
+							<helmExecutableDirectory>${test.helmExecutableDirectory}</helmExecutableDirectory>
 							<helmExtraRepos>
 								<helmExtraRepo>
 									<name>kokuwaio-with-credentials</name>

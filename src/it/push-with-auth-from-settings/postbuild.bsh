@@ -2,4 +2,4 @@
 
 return org.codehaus.plexus.util.FileUtils
 	.fileRead(basedir + "/build.log")
-	.contains(basedir + "/../helm registry login 127.0.0.1 --username auth-from-settings --password-stdin\n")
+	.contains(basedir + "/../../../src/bin/amd64/helm registry login 127.0.0.1 --username auth-from-settings --password-stdin\n")

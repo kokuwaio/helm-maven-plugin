@@ -127,7 +127,7 @@ public abstract class AbstractMojoTest {
 	}
 
 	static Path copyPackagedHelmChartToOutputdirectory(AbstractHelmMojo mojo) {
-		Path source = Paths.get("src/test/resources/app-0.1.0.tgz");
+		Path source = Paths.get("src/test/resources/__files/app-0.1.0.tgz");
 		Path target = mojo.getOutputDirectory().resolve("app-0.1.0.tgz");
 		assertDoesNotThrow(() -> Files.createDirectories(target.getParent()));
 		assertDoesNotThrow(() -> Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING));

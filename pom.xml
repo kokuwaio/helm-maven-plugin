@@ -88,7 +88,7 @@
 		<!-- we have flaky tests with caching of Authenticator.setDefault() -->
 		<surefire.rerunFailingTestsCount>3</surefire.rerunFailingTestsCount>
 
-		<invoker.debug>true</invoker.debug>
+		<invoker.debug>false</invoker.debug>
 		<invoker.parallelThreads>0.5C</invoker.parallelThreads>
 		<invoker.settingsFile>${project.basedir}/src/it/settings.xml</invoker.settingsFile>
 
