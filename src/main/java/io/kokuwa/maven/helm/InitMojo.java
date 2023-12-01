@@ -268,7 +268,7 @@ public class InitMojo extends AbstractHelmMojo {
 
 		try (InputStream dis = openConnection(url).getInputStream();
 				InputStream cis = createCompressorInputStream(dis);
-				ArchiveInputStream is = createArchiverInputStream(cis)) {
+				ArchiveInputStream<?> is = createArchiverInputStream(cis)) {
 
 			// create directory if not present
 			Files.createDirectories(directory);
@@ -359,7 +359,7 @@ public class InitMojo extends AbstractHelmMojo {
 		}
 	}
 
-	private ArchiveInputStream createArchiverInputStream(InputStream is) throws MojoExecutionException {
+	private ArchiveInputStream<?> createArchiverInputStream(InputStream is) throws MojoExecutionException {
 
 		// Stream must support mark to allow for auto detection of compressor
 		InputStream inputStream = is.markSupported() ? is : new BufferedInputStream(is);
