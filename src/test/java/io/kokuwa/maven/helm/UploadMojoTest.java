@@ -392,7 +392,7 @@ public class UploadMojoTest extends AbstractMojoTest {
 		mojo.setUploadVerificationTimeout(-1);
 		mojo.setChartVersion("0.1.0");
 		copyPackagedHelmChartToOutputdirectory(mojo);
-		assertThrows(IllegalArgumentException.class, mojo::execute, "Nonpositive timeout must fail.");
+		assertThrows(MojoExecutionException.class, mojo::execute, "Nonpositive timeout must fail.");
 	}
 
 	private void assertUpload(UploadMojo mojo, RequestMethod method, String path, String authorization) {

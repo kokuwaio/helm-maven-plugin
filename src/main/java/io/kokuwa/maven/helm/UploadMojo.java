@@ -51,6 +51,8 @@ import lombok.Setter;
 public class UploadMojo extends AbstractHelmMojo {
 
 	private static final ObjectMapper MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+	private static final ObjectMapper YAML_MAPPER = new YAMLMapper()
+			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private static final String CATALOG_ARTIFACT_NAME = "helm-catalog";
 	private static final String CATALOG_ARTIFACT_TYPE = "json";
 
@@ -127,7 +129,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 
 		if (uploadVerificationTimeout != null && uploadVerificationTimeout <= 0) {
-			throw new IllegalArgumentException("Timeout must be a positive value.");
+			throw new MojoExecutionException("Timeout must be a positive value.");
 		}
 
 		getLog().info("Uploading to " + getHelmUploadUrl() + "\n");
@@ -311,11 +313,9 @@ public class UploadMojo extends AbstractHelmMojo {
 	}
 
 	private boolean verifyUpload(Path chartPath) throws MojoExecutionException {
-		ObjectMapper mapper = new YAMLMapper()
-				.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		String chartName;
 		try {
-			chartName = mapper.readValue(chartPath.toFile(), HelmChart.class).getName();
+			chartName = YAML_MAPPER.readValue(chartPath.toFile(), HelmChart.class).getName();
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to read chart from " + chartPath, e);
 		}
@@ -332,7 +332,7 @@ public class UploadMojo extends AbstractHelmMojo {
 						"--version", getChartVersion(), "--repo", getHelmUploadUrl())
 					.execute("show chart failed");
 				verificationSuccess = true;
-			} catch (Exception e) {
+			} catch (Exception MojoExecutionException) {
 				getLog().info("Upload verification failed, retrying...");
 				try {
 					Thread.sleep(1000);
