@@ -246,6 +246,7 @@ and disables the auto-detection feature:
 
 - `helm:init` initializes Helm by downloading a specific version
 - `helm:dependency-build` resolves the chart dependencies
+- `helm:dependency-update` verifies that the required chart dependencies are present
 - `helm:package` packages the given charts (chart.tar.gz)
 - `helm:lint` tests the given charts
 - `helm:template` Locally render templates
@@ -298,6 +299,8 @@ Parameter | Type | User Property | Required | Description
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
 `<skipCatalog>` | boolean | helm.upload.skip.catalog | true | Skips creation of a catalog file with a list of helm chart upload details
 `<insecure>` | boolean | helm.upload.insecure | false | Skip tls certificate checks for the chart upload.
+`<uploadVerification>` | boolean | helm.upload.verification | false | wait for the chart to be added to the repository index before continuing
+`<uploadVerificationTimeout>` | Integer | helm.upload.timeout | false | set the timeout limit (in seconds) for verification to be attempted
 `<skipInstall>` | boolean | helm.install.skip | false | skip install goal
 `<skipUninstall>` | boolean | helm.uninstall.skip | false | skip uninstall goal
 `<security>` | string | helm.security | false | path to your [settings-security.xml](https://maven.apache.org/guides/mini/guide-encryption.html) (default: `~/.m2/settings-security.xml`)

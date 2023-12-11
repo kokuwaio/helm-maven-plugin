@@ -105,6 +105,8 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 						field.set(mojo, new File(parameter.getDefaultValue()));
 					} else if (parameter.getType().equals(String.class.getName())) {
 						field.set(mojo, parameter.getDefaultValue());
+					} else if (parameter.getType().equals(Integer.class.getName())) {
+						field.set(mojo, Integer.parseInt(parameter.getDefaultValue()));
 					} else {
 						fail("unsupported type: " + parameter.getType());
 					}

@@ -15,8 +15,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
-import io.kokuwa.maven.helm.pojo.Dependencies;
-import io.kokuwa.maven.helm.pojo.Dependencies.Dependency;
+import io.kokuwa.maven.helm.pojo.HelmChart;
+import io.kokuwa.maven.helm.pojo.HelmChart.Dependency;
 
 /**
  * Utility class for overwriting a local path charts within a chart's dependencies.
@@ -72,7 +72,7 @@ public class DependencyOverwriter {
 		}
 		List<Dependency> dependencies;
 		try {
-			dependencies = MAPPER.readValue(chartFile.toFile(), Dependencies.class).getDependencies();
+			dependencies = MAPPER.readValue(chartFile.toFile(), HelmChart.class).getDependencies();
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to read chart dependencies from " + chartFile, e);
 		}
