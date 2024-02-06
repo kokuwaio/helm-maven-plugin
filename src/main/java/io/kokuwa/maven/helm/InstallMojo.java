@@ -1,7 +1,5 @@
 package io.kokuwa.maven.helm;
 
-import java.nio.file.Path;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -19,7 +17,7 @@ import lombok.Setter;
  */
 @Mojo(name = "install", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
-public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
+public class InstallMojo extends AbstractHandleMojo {
 
 	/**
 	 * Helm command to execute.
@@ -79,12 +77,13 @@ public class InstallMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (Path chartDirectory : getChartDirectories()) {
-			getLog().info(String.format("\n\nPerform install for chart %s...", chartDirectory) +
+		for (Chart chart : getCharts()) {
+			getLog().info("Perform install for chart " + chart.getReleaseName() + " " +
 					(installAtomic ? " with atomic" : "") +
-					(installTimeout != null ? installTimeout + "s" : ""));
+					(installTimeout != null ? installTimeout + "s" : "") +
+					chart.getDirectory());
 			helm()
-					.arguments(action, chartDirectory.getFileName().toString(), chartDirectory)
+					.arguments(action, chart.getReleaseName(), chart.getDirectory())
 					.flag("atomic", installAtomic)
 					.flag("force", installForce)
 					.flag("plain-http", isPlainHttp(installPlainHttp))

@@ -1,7 +1,5 @@
 package io.kokuwa.maven.helm;
 
-import java.nio.file.Path;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -18,7 +16,7 @@ import lombok.Setter;
  */
 @Mojo(name = "uninstall", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
-public class UninstallMojo extends AbstractHelmWithValueOverrideMojo {
+public class UninstallMojo extends AbstractHandleMojo {
 
 	/**
 	 * Must be "background", "orphan", or "foreground". Selects the deletion cascading strategy for the dependents.
@@ -86,9 +84,9 @@ public class UninstallMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (Path chartDirectory : getChartDirectories()) {
-			getLog().info("Perform uninstall for chart " + chartDirectory);
-			helm().arguments("uninstall", chartDirectory.getFileName().toString())
+		for (Chart charts : getCharts()) {
+			getLog().info("Perform uninstall for chart with name " + charts.getReleaseName());
+			helm().arguments("uninstall", charts.getReleaseName())
 					.flag("wait", uninstallWait)
 					.flag("timeout", uninstallTimeout != null ? uninstallTimeout + "s" : null)
 					.flag("cascade", uninstallCascade)
