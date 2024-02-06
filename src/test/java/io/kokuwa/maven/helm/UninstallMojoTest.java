@@ -44,6 +44,14 @@ public class UninstallMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "uninstall simple --no-hooks");
 	}
 
+	@DisplayName("with flag ignore-not-found")
+	@Test
+	void ignoreNotFound(UninstallMojo mojo) {
+		mojo.setSkipUninstall(false);
+		mojo.setUninstallIgnoreNotFound(true);
+		assertHelm(mojo, "uninstall simple --ignore-not-found");
+	}
+
 	@DisplayName("with flags cascade background")
 	@Test
 	void cascade(UninstallMojo mojo) {

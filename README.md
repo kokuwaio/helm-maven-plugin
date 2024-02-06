@@ -330,6 +330,7 @@ Parameter | Type | User Property | Required | Description
 `<uninstallNoHooks>` | boolean | helm.uninstall.no-hooks | false | Prevent hooks from running during uninstallation.
 `<uninstallCascade>` | boolean | helm.uninstall.cascade | false | Must be "background", "orphan", or "foreground". Selects the deletion cascading strategy for the dependents. Defaults to background. (default "background" from helm)
 `<uninstallKeepHistory>` | boolean | helm.uninstall.keep-history | false | Remove all associated resources and mark the release as deleted, but retain the release history.
+`<uninstallIgnoreNotFound>` | boolean | helm.uninstall.ignore-not-found | false | Treat "release not found" as a successful uninstall.
 `<templateOutputDir>` | file | helm.template.output-dir | false | Writes the executed templates to files in output-dir instead of stdout.
 `<templateGenerateName>` | boolean | helm.template.generate-name | false | Generate the name (and omit the NAME parameter).
 `<templatePlainHttp>` | boolean | helm.template.plain-http | false | Use insecure HTTP connections for the chart download.
