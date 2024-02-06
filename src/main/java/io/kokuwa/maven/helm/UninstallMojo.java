@@ -38,6 +38,14 @@ public class UninstallMojo extends AbstractHelmWithValueOverrideMojo {
 	private boolean uninstallNoHooks;
 
 	/**
+	 * Treat "release not found" as a successful uninstall.
+	 *
+	 * @since 6.14.0
+	 */
+	@Parameter(property = "helm.uninstall.ignore-not-found ", defaultValue = "false")
+	private boolean uninstallIgnoreNotFound;
+
+	/**
 	 * Remove all associated resources and mark the release as deleted, but retain the release history.
 	 *
 	 * @since 6.10.0
@@ -86,6 +94,7 @@ public class UninstallMojo extends AbstractHelmWithValueOverrideMojo {
 					.flag("cascade", uninstallCascade)
 					.flag("no-hooks", uninstallNoHooks)
 					.flag("keep-history", uninstallKeepHistory)
+					.flag("ignore-not-found", uninstallIgnoreNotFound)
 					.execute("Failed to deploy helm chart");
 		}
 	}
