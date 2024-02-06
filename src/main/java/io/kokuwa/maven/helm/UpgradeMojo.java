@@ -1,7 +1,5 @@
 package io.kokuwa.maven.helm;
 
-import java.nio.file.Path;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -17,7 +15,7 @@ import lombok.Setter;
  */
 @Mojo(name = "upgrade", defaultPhase = LifecyclePhase.DEPLOY, threadSafe = true)
 @Setter
-public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
+public class UpgradeMojo extends AbstractHandleMojo {
 
 	/**
 	 * Set this to <code>true</code> to skip invoking upgrade goal.
@@ -74,13 +72,6 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 	 */
 	@Parameter(property = "helm.upgrade.plain-http")
 	private Boolean upgradePlainHttp;
-	/**
-	 * Name of the release for upgrade goal.
-	 *
-	 * @since 6.4.0
-	 */
-	@Parameter(property = "helm.releaseName")
-	private String releaseName;
 
 	@Override
 	public void execute() throws MojoExecutionException {
@@ -90,15 +81,15 @@ public class UpgradeMojo extends AbstractHelmWithValueOverrideMojo {
 			return;
 		}
 
-		for (Path chartDirectory : getChartDirectories()) {
-			getLog().info("Upgrading the chart " +
+		for (Chart chart : getCharts()) {
+			getLog().info("Upgrading the chart " + chart.getReleaseName() + " " +
 					(upgradeWithInstall ? "with install " : "") +
 					(upgradeAtomic ? "with atomic " : "") +
 					(upgradeTimeout != null ? upgradeTimeout + "s" : "") +
 					(upgradeDryRun ? "as dry run " : "") +
-					chartDirectory);
+					chart.getDirectory());
 			helm()
-					.arguments("upgrade", releaseName, chartDirectory)
+					.arguments("upgrade", chart.getReleaseName(), chart.getDirectory())
 					.flag("install", upgradeWithInstall)
 					.flag("dry-run", upgradeDryRun)
 					.flag("atomic", upgradeAtomic)
