@@ -58,4 +58,11 @@ public class DependencyBuildMojoTest extends AbstractMojoTest {
 				"dependency build src/test/resources/dependencies/a1",
 				"dependency build src/test/resources/dependencies");
 	}
+
+	@DisplayName("with flag skip repo refresh")
+	@Test
+	void skipRepoRefresh(DependencyBuildMojo mojo) {
+		assertHelm(mojo.setSkipDependencyBuildRepoRefresh(true),
+				"dependency build src/test/resources/simple --skip-refresh");
+	}
 }

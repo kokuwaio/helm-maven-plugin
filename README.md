@@ -294,7 +294,9 @@ Parameter | Type | User Property | Required | Description
 `<skipTemplate>` | boolean | helm.template.skip | false | skip template goal. Default value is true due to the dry-run goal
 `<skipDryRun>` | boolean | helm.dry-run.skip | false | skip dry-run goal
 `<skipDependencyBuild>` | boolean | helm.dependency-build.skip | false | skip dependency-build goal
+`<skipDependencyBuildRepoRefresh>` | boolean | helm.dependency-build.skip-repo-refresh | false | skip local repository refresh in dependency-build goal
 `<skipDependencyUpdate>` | boolean | helm.dependency-update.skip | false | skip dependency-update goal
+`<skipDependencyUpdateRepoRefresh>` | boolean | helm.dependency-update.skip-repo-refresh | false | skip local repository refresh in dependency-update goal
 `<skipPackage>` | boolean | helm.package.skip | false | skip package goal
 `<skipUpload>` | boolean | helm.upload.skip | false | skip upload goal
 `<skipCatalog>` | boolean | helm.upload.skip.catalog | true | Skips creation of a catalog file with a list of helm chart upload details

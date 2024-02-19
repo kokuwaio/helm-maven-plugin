@@ -7,6 +7,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import io.kokuwa.maven.helm.pojo.HelmExecutable;
 import lombok.Setter;
 
 /**
@@ -28,6 +29,14 @@ public class DependencyBuildMojo extends AbstractDependencyMojo {
 	@Parameter(property = "helm.dependency-build.skip", defaultValue = "false")
 	private boolean skipDependencyBuild;
 
+	/**
+	 * Set this to <code>true</code> to skip refreshing the local repository cache when invoking dependency-build goal.
+	 *
+	 * @since 6.14.0
+	 */
+	@Parameter(property = "helm.dependency-build.skip-repo-refresh", defaultValue = "false")
+	private boolean skipDependencyBuildRepoRefresh;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -41,9 +50,12 @@ public class DependencyBuildMojo extends AbstractDependencyMojo {
 			doOverwriteLocalDependencies(chartDirectory);
 
 			getLog().info("Build chart dependencies for " + chartDirectory + " ...");
-			helm()
-					.arguments("dependency", "build", chartDirectory)
-					.execute("Failed to resolve dependencies");
+			HelmExecutable helm = helm()
+					.arguments("dependency", "build", chartDirectory);
+			if (skipDependencyBuildRepoRefresh) {
+				helm.flag("skip-refresh");
+			}
+			helm.execute("Failed to resolve dependencies");
 		}
 	}
 }
