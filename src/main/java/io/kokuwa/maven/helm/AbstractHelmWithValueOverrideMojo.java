@@ -11,7 +11,7 @@ import io.kokuwa.maven.helm.pojo.ValueOverride;
 import lombok.Setter;
 
 @Setter
-public abstract class AbstractHelmWithValueOverrideMojo extends AbstractHelmMojo {
+public abstract class AbstractHelmWithValueOverrideMojo extends AbstractChartDirectoryMojo {
 
 	/**
 	 * Additional values to set.

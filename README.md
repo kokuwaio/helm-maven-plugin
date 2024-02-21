@@ -251,6 +251,7 @@ and disables the auto-detection feature:
 - `helm:template` Locally render templates
 - `helm:dry-run` simulates an install
 - `helm:upload` upload charts via HTTP PUT
+- `helm:upload-dependencies` uploads dependency charts via HTTP PUT
 - `helm:registry-login` login into docker registry
 - `helm:registry-logout` login from docker registry
 - `helm:push` push charts to OCI (docker registry)
@@ -260,8 +261,8 @@ and disables the auto-detection feature:
 
 Parameter | Type | User Property | Required | Description
 --- | --- | --- | --- | ---
-`<chartDirectory>` | string | helm.chartDirectory | true | root directory of your charts
-`<chartVersion>` | string | helm.chartVersion | true | Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
+`<chartDirectory>` | string | helm.chartDirectory | false | root directory of your charts
+`<chartVersion>` | string | helm.chartVersion | false | Version of the charts. The version have to be in the [SEMVER-Format](https://semver.org/), required by helm.
 `<appVersion>` | string | helm.appVersion | false | The version of the app. This needn't be SemVer.
 `<helmDownloadUrl>` | string | helm.downloadUrl | false | URL to download helm. Leave empty to autodetect URL based upon OS and architecture.
 `<helmDownloadUser>` | string | helm.downloadUser | false | Username used to authenticate while downloading helm binary package

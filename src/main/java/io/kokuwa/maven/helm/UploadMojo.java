@@ -106,7 +106,6 @@ public class UploadMojo extends AbstractHelmMojo {
 			getLog().info("Skip upload");
 			return;
 		}
-
 		getLog().info("Uploading to " + getHelmUploadUrl() + "\n");
 		for (Path chart : getChartArchives()) {
 			getLog().info("Uploading " + chart + "...");

@@ -23,7 +23,7 @@ import lombok.Setter;
  */
 @Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true)
 @Setter
-public class PackageMojo extends AbstractHelmMojo {
+public class PackageMojo extends AbstractChartDirectoryMojo {
 
 	/**
 	 * Set this to <code>true</code> to skip invoking package goal.

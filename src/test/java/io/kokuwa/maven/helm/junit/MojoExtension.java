@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 
+import io.kokuwa.maven.helm.AbstractChartDirectoryMojo;
 import io.kokuwa.maven.helm.AbstractHelmMojo;
 
 @SuppressWarnings("unchecked")
@@ -113,7 +114,10 @@ public class MojoExtension implements ParameterResolver, BeforeAllCallback {
 
 			// preconfigure
 
-			mojo.setChartDirectory(new File("src/test/resources/simple")); // set some sane defaults for tests
+			if (mojo instanceof AbstractChartDirectoryMojo) {
+				((AbstractChartDirectoryMojo) mojo)
+					.setChartDirectory(new File("src/test/resources/simple")); // set some sane defaults for tests
+			}
 			mojo.setHelmExecutableDirectory(determineHelmExecutableDirectory().toFile()); // avoid download helm
 			mojo.setHelmVersion("3.12.0"); // avoid github api
 

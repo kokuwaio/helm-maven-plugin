@@ -10,7 +10,7 @@ import lombok.Setter;
 
 /** Base class for dependency build and update mojos. */
 @Setter
-public abstract class AbstractDependencyMojo extends AbstractHelmMojo {
+public abstract class AbstractDependencyMojo extends AbstractChartDirectoryMojo {
 
 	/**
 	 * Controls whether a local path chart should be used for a chart dependency. When set to <code>true</code>, chart
