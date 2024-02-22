@@ -1,5 +1,11 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.File;
+
+import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -79,27 +85,44 @@ public class UpgradeMojoTest extends AbstractMojoTest {
 
 		mojo.setPlainHttp(false);
 		mojo.setUpgradePlainHttp(null);
-		assertHelm(mojo, "upgrade src/test/resources/simple --install");
+		assertHelm(mojo, "upgrade simple src/test/resources/simple --install");
 
 		mojo.setPlainHttp(true);
 		mojo.setUpgradePlainHttp(null);
-		assertHelm(mojo, "upgrade src/test/resources/simple --install --plain-http");
+		assertHelm(mojo, "upgrade simple src/test/resources/simple --install --plain-http");
 
 		mojo.setPlainHttp(false);
 		mojo.setUpgradePlainHttp(true);
-		assertHelm(mojo, "upgrade src/test/resources/simple --install --plain-http");
+		assertHelm(mojo, "upgrade simple src/test/resources/simple --install --plain-http");
 
 		mojo.setPlainHttp(false);
 		mojo.setUpgradePlainHttp(false);
-		assertHelm(mojo, "upgrade src/test/resources/simple --install");
+		assertHelm(mojo, "upgrade simple src/test/resources/simple --install");
+	}
+
+	@DisplayName("with release name")
+	@Test
+	void releaseName(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
+		assertHelm(mojo, "upgrade foo src/test/resources/simple --install");
+	}
+
+	@DisplayName("with release name and multiple charts")
+	@Test
+	void releaseNameWithMultipleCharts(UpgradeMojo mojo) {
+		mojo.setSkipUpgrade(false);
+		mojo.setReleaseName("foo");
+		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
+		String message = assertThrows(MojoExecutionException.class, mojo::execute).getMessage();
+		assertEquals("For multiple charts releaseName is not supported.", message);
 	}
 
 	@DisplayName("with values overrides")
 	@Test
 	void valuesFile(UpgradeMojo mojo) {
 		mojo.setSkipUpgrade(false);
-		mojo.setReleaseName("foo");
 		mojo.setValues(new ValueOverride().setYamlFile("bar.yaml"));
-		assertHelm(mojo, "upgrade foo src/test/resources/simple --values bar.yaml --install");
+		assertHelm(mojo, "upgrade simple src/test/resources/simple --values bar.yaml --install");
 	}
 }

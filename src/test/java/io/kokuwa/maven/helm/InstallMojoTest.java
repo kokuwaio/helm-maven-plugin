@@ -1,7 +1,11 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.File;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -78,6 +82,24 @@ public class InstallMojoTest extends AbstractMojoTest {
 		mojo.setSkipInstall(false);
 		mojo.setValues(new ValueOverride().setYamlFile("bar.yaml"));
 		assertHelm(mojo, "install simple src/test/resources/simple --values bar.yaml");
+	}
+
+	@DisplayName("with release name")
+	@Test
+	void releaseName(InstallMojo mojo) {
+		mojo.setSkipInstall(false);
+		mojo.setReleaseName("foo");
+		assertHelm(mojo, "install foo src/test/resources/simple");
+	}
+
+	@DisplayName("with release name and multiple charts")
+	@Test
+	void releaseNameWithMultipleCharts(InstallMojo mojo) {
+		mojo.setSkipInstall(false);
+		mojo.setReleaseName("foo");
+		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
+		String message = assertThrows(MojoExecutionException.class, mojo::execute).getMessage();
+		assertEquals("For multiple charts releaseName is not supported.", message);
 	}
 
 	@DisplayName("with dependencies")

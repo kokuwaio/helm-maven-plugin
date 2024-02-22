@@ -317,7 +317,7 @@ Parameter | Type | User Property | Required | Description
 `<kubeAsUser>` | string | helm.kubeAsUser | false | username to impersonate for the operation
 `<kubeAsGroup>` | string | helm.kubeAsGroup | false | group to impersonate for the operation, this flag can be repeated to specify multiple groups
 `<kubeToken>` | string | helm.kubeToken | false | bearer token used for authentication
-`<releaseName>` | string | helm.releaseName | false | Name of the release for upgrade goal
+`<releaseName>` | string | helm.releaseName | false | Name of the release to handle.
 `<installForce>` | boolean | helm.install.force | false | Force resource updates through a replacement strategy.
 `<installAtomic>` | boolean | helm.install.atomic | false | Set this to `true` to delete the installation on failure.
 `<installTimeout>` | boolean | helm.upgrade.imeout | false | Time in seconds to wait for any individual Kubernetes operation during install process. The default is 300 seconds (from helm) if `installAtomic` is set to `true`.

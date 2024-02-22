@@ -1,5 +1,11 @@
 package io.kokuwa.maven.helm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.File;
+
+import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -67,5 +73,23 @@ public class UninstallMojoTest extends AbstractMojoTest {
 		mojo.setUninstallWait(true);
 		mojo.setUninstallTimeout(41);
 		assertHelm(mojo, "uninstall simple --wait --timeout 41s");
+	}
+
+	@DisplayName("with release name")
+	@Test
+	void releaseName(UninstallMojo mojo) {
+		mojo.setSkipUninstall(false);
+		mojo.setReleaseName("foo");
+		assertHelm(mojo, "uninstall foo");
+	}
+
+	@DisplayName("with release name and multiple charts")
+	@Test
+	void releaseNameWithMultipleCharts(UninstallMojo mojo) {
+		mojo.setSkipUninstall(false);
+		mojo.setReleaseName("foo");
+		mojo.setChartDirectory(new File("src/test/resources/dependencies"));
+		String message = assertThrows(MojoExecutionException.class, mojo::execute).getMessage();
+		assertEquals("For multiple charts releaseName is not supported.", message);
 	}
 }
