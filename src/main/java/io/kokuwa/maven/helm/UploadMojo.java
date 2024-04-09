@@ -120,6 +120,14 @@ public class UploadMojo extends AbstractHelmMojo {
 	@Parameter(property = "helm.upload.timeout", defaultValue = "30")
 	private Integer uploadVerificationTimeout;
 
+	/**
+	 * File where to write the helm chart upload URL.
+	 *
+	 * @since 6.14.0
+	 */
+	@Parameter(property = "helm.upload.urlWriteFile")
+	private File helmChartUploadUrlFile;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 
@@ -159,6 +167,18 @@ public class UploadMojo extends AbstractHelmMojo {
 				}
 			}
 		}
+
+		if (helmChartUploadUrlFile != null) {
+			try {
+				for (Path chart : getChartArchives()) {
+					getLog().info("Writing upload URL of chart " + chart + " to file: " + helmChartUploadUrlFile);
+					Files.write(helmChartUploadUrlFile.toPath(),
+							getHelmFileUploadUrl(chart).getBytes(StandardCharsets.UTF_8));
+				}
+			} catch (IOException e) {
+				throw new MojoExecutionException("Failed to write upload URL of charts to file", e);
+			}
+		}
 	}
 
 	/**
@@ -180,6 +200,31 @@ public class UploadMojo extends AbstractHelmMojo {
 		}
 
 		return uploadUrl;
+	}
+
+	/**
+	 * Returns the proper upload URL of the file based on the provided chart version.
+	 *
+	 * @return Upload URL of the file based on chart version
+	 */
+	private String getHelmFileUploadUrl(Path chart) {
+		File fileToUpload = chart.toFile();
+		HelmRepository uploadRepo = getHelmUploadRepo();
+
+		if (uploadRepo.getType() == null) {
+			throw new IllegalArgumentException("Repository type missing. Check your plugin configuration.");
+		}
+
+		switch (uploadRepo.getType()) {
+			case ARTIFACTORY:
+				return getFileUrlForUploadToArtifactory(fileToUpload, uploadRepo);
+			case CHARTMUSEUM:
+				return getHelmUploadUrl();
+			case NEXUS:
+				return getFileUrlForUploadToNexus(fileToUpload);
+			default:
+				throw new IllegalArgumentException("Unsupported repository type for upload.");
+		}
 	}
 
 	/**
@@ -367,22 +412,7 @@ public class UploadMojo extends AbstractHelmMojo {
 
 	private HttpURLConnection getConnectionForUploadToArtifactory(File file, HelmRepository repo)
 			throws IOException, MojoExecutionException {
-		String uploadUrl = getHelmUploadUrl();
-		// Append slash if not already in place
-		if (!uploadUrl.endsWith("/")) {
-			uploadUrl += "/";
-		}
-		if (repo.isUseGroupId()) {
-			uploadUrl += projectGroupId.replace(".", "/") + "/";
-		}
-		if (repo.isUseArtifactId()) {
-			uploadUrl += projectArtifactId.replace(".", "/") + "/";
-		}
-		if (repo.isUseGroupId() || repo.isUseArtifactId()) {
-			uploadUrl += projectVersion + "/";
-		}
-
-		uploadUrl = uploadUrl + file.getName();
+		String uploadUrl = getFileUrlForUploadToArtifactory(file, repo);
 
 		HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
 		connection.setDoOutput(true);
@@ -394,13 +424,28 @@ public class UploadMojo extends AbstractHelmMojo {
 		return connection;
 	}
 
-	private HttpURLConnection getConnectionForUploadToNexus(File file) throws IOException, MojoExecutionException {
+	private String getFileUrlForUploadToArtifactory(File file, HelmRepository repo) {
 		String uploadUrl = getHelmUploadUrl();
 		// Append slash if not already in place
 		if (!uploadUrl.endsWith("/")) {
-			uploadUrl += "/";
-		}
+				uploadUrl += "/";
+			}
+		if (repo.isUseGroupId()) {
+				uploadUrl += projectGroupId.replace(".", "/") + "/";
+			}
+		if (repo.isUseArtifactId()) {
+				uploadUrl += projectArtifactId.replace(".", "/") + "/";
+			}
+		if (repo.isUseGroupId() || repo.isUseArtifactId()) {
+				uploadUrl += projectVersion + "/";
+			}
+
 		uploadUrl = uploadUrl + file.getName();
+		return uploadUrl;
+	}
+
+	private HttpURLConnection getConnectionForUploadToNexus(File file) throws IOException, MojoExecutionException {
+		String uploadUrl = getFileUrlForUploadToNexus(file);
 
 		HttpURLConnection connection = (HttpURLConnection) new URL(uploadUrl).openConnection();
 		connection.setDoOutput(true);
@@ -410,6 +455,16 @@ public class UploadMojo extends AbstractHelmMojo {
 		verifyAndSetAuthentication(false);
 
 		return connection;
+	}
+
+	private String getFileUrlForUploadToNexus(File file) {
+		String uploadUrl = getHelmUploadUrl();
+		// Append slash if not already in place
+		if (!uploadUrl.endsWith("/")) {
+				uploadUrl += "/";
+			}
+		uploadUrl = uploadUrl + file.getName();
+		return uploadUrl;
 	}
 
 	/**
