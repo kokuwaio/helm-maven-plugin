@@ -15,7 +15,10 @@ import java.util.List;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -29,6 +32,9 @@ import io.kokuwa.maven.helm.pojo.Catalog;
 import io.kokuwa.maven.helm.pojo.HelmRepository;
 import io.kokuwa.maven.helm.pojo.RepoType;
 
+// execute test with specific order - first without authorization
+// due to caching of Authenticator.setDefault()
+@TestMethodOrder(OrderAnnotation.class)
 @DisplayName("helm:upload")
 public class UploadMojoTest extends AbstractMojoTest {
 
@@ -59,6 +65,7 @@ public class UploadMojoTest extends AbstractMojoTest {
 
 	@DisplayName("chartmuseum: without authentication")
 	@Test
+	@Order(1)
 	void urlChartmusemWithoutAuthentication(UploadMojo mojo) {
 		mojo.setUploadRepoStable(new HelmRepository()
 				.setType(RepoType.CHARTMUSEUM)
@@ -70,6 +77,7 @@ public class UploadMojoTest extends AbstractMojoTest {
 
 	@DisplayName("chartmuseum: check helm upload calatog file is created")
 	@Test
+	@Order(1)
 	void uploadChartToChartMuseumAndCheckCatalogIsCreated(UploadMojo mojo) {
 		mojo.setSkipCatalog(false);
 		String uploadUrl = "http://127.0.0.1:" + mock.getPort() + "/chartmuseum";
@@ -146,6 +154,7 @@ public class UploadMojoTest extends AbstractMojoTest {
 
 	@DisplayName("nexus: without authentication")
 	@Test
+	@Order(1)
 	void urlNexusWithoutAuthentication(UploadMojo mojo) {
 		mojo.setUploadRepoStable(new HelmRepository()
 				.setType(RepoType.NEXUS)
