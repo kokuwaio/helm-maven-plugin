@@ -344,6 +344,44 @@ public class InitMojoTest extends AbstractMojoTest {
 				"repo add extra3 https://example.org/extra3");
 	}
 
+	@DisplayName("with flag --pass-credentials")
+	@Test
+	void withPassCredentialsForAll(InitMojo mojo) {
+		mojo.setAddDefaultRepo(true);
+		mojo.setAddUploadRepos(true);
+		mojo.setRepositoryAddPassCredentials(true);
+		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
+				.setName("example")
+				.setUrl("https://example.org/repo/example")
+				.setPassCredentials(true) });
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("example-stable")
+				.setUrl("https://example.org/repo/stable"));
+		mojo.setUploadRepoSnapshot(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("example-snapshot")
+				.setUrl("https://example.org/repo/snapshot"));
+		assertHelm(mojo,
+				"repo add stable " + InitMojo.STABLE_HELM_REPO + " --pass-credentials",
+				"repo add example-stable https://example.org/repo/stable --pass-credentials",
+				"repo add example-snapshot https://example.org/repo/snapshot --pass-credentials",
+				"repo add example https://example.org/repo/example --pass-credentials");
+	}
+
+	@DisplayName("with flag --pass-credentials for single repository")
+	@Test
+	void withPassCredentialsForSingleRepository(InitMojo mojo) {
+		mojo.setAddDefaultRepo(true);
+		mojo.setHelmExtraRepos(new HelmRepository[] { new HelmRepository()
+				.setName("example")
+				.setUrl("https://example.org/repo/example")
+				.setPassCredentials(true) });
+		assertHelm(mojo,
+				"repo add stable " + InitMojo.STABLE_HELM_REPO,
+				"repo add example https://example.org/repo/example --pass-credentials");
+	}
+
 	private File createTempDirectory() {
 		return assertDoesNotThrow(() -> Files.createTempDirectory("helm-maven-plugin-test")).toFile();
 	}

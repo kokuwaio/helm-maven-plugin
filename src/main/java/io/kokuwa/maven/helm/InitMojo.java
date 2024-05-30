@@ -103,6 +103,15 @@ public class InitMojo extends AbstractHelmMojo {
 	private boolean repositoryAddForceUpdate;
 
 	/**
+	 * If <code>true</code>, pass credentials to all domains. Can be also specified on repository level in
+	 * "helmExtraRepos".
+	 *
+	 * @since 6.15.0
+	 */
+	@Parameter(property = "helm.repo.add.pass-credentials", defaultValue = "false")
+	private boolean repositoryAddPassCredentials;
+
+	/**
 	 * Download url of helm.
 	 *
 	 * @since 1.0
@@ -210,7 +219,8 @@ public class InitMojo extends AbstractHelmMojo {
 		getLog().info("Adding repo [" + repository + "]");
 		HelmExecutable helm = helm()
 				.arguments("repo", "add", repository.getName(), repository.getUrl())
-				.flag("force-update", repositoryAddForceUpdate || repository.isForceUpdate());
+				.flag("force-update", repositoryAddForceUpdate || repository.isForceUpdate())
+				.flag("pass-credentials", repositoryAddPassCredentials || repository.isPassCredentials());
 		PasswordAuthentication auth = authenticationRequired ? getAuthentication(repository) : null;
 		if (auth != null) {
 			helm.flag("username", auth.getUserName()).flag("password", String.valueOf(auth.getPassword()));
