@@ -54,4 +54,12 @@ public class HelmRepository {
 	 * @since 6.6.0
 	 */
 	private boolean forceUpdate = false;
+
+	/**
+	 * If <code>true</code>, pass credentials to all domains (useful when the chart archive is on a different domain
+	 * from the index.yaml, for example on a CDN)
+	 *
+	 * @since 6.15.0
+	 */
+	private boolean passCredentials = false;
 }
