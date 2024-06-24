@@ -26,8 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # removed macos-latest because ip is always blocked and test will fail
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     env:
       MAVEN_ARGS: --batch-mode --color=always --no-transfer-progress -Dmaven.test.redirectTestOutputToFile=false
     steps:
@@ -42,4 +41,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
+          name: site-${{ matrix.os }}
           path: target/site
