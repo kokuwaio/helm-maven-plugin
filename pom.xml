@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>io.kokuwa.maven</groupId>
 		<artifactId>maven-parent</artifactId>
-		<version>0.6.15</version>
+		<version>0.6.16</version>
 		<relativePath />
 	</parent>
 
 	<artifactId>helm-maven-plugin</artifactId>
-	<version>6.14.1-SNAPSHOT</version>
+	<version>6.15.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>Helm Maven Plugin</name>
@@ -96,11 +96,11 @@
 		<!-- ============================= Versions ============================== -->
 		<!-- ===================================================================== -->
 
-		<version.org.apache.commons.compress>1.26.1</version.org.apache.commons.compress>
+		<version.org.apache.commons.compress>1.26.2</version.org.apache.commons.compress>
 		<version.org.junit.jupiter>5.10.2</version.org.junit.jupiter>
 		<version.org.mockito>4.11.0</version.org.mockito>
 		<version.org.projectlombok>1.18.32</version.org.projectlombok>
-		<version.com.fasterxml.jackson>2.17.0</version.com.fasterxml.jackson>
+		<version.com.fasterxml.jackson>2.17.1</version.com.fasterxml.jackson>
 		<version.com.github.tomakehurst.wiremock>2.35.2</version.com.github.tomakehurst.wiremock>
 		<version.com.puppycrawl.tools.checkstyle>9.3</version.com.puppycrawl.tools.checkstyle>
 
