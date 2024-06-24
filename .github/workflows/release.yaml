@@ -29,7 +29,6 @@ jobs:
           server-password: SERVER_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
-      - run: mvn $MAVEN_ARGS dependency:go-offline
       - run: mvn $MAVEN_ARGS release:prepare -Darguments="$MAVEN_ARGS"
       - run: mvn $MAVEN_ARGS release:perform -Darguments="$MAVEN_ARGS"
         env:
