@@ -34,6 +34,14 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 	private String action;
 
 	/**
+	 * Specify template used to name the release.
+	 *
+	 * @since 6.15
+	 */
+	@Parameter(property = "helm.template.name-template")
+	private String templateNameTemplate;
+
+	/**
 	 * Writes the executed templates to files in output-dir instead of stdout.
 	 *
 	 * @since 6.6.1
@@ -89,6 +97,7 @@ public class TemplateMojo extends AbstractHelmWithValueOverrideMojo {
 					.arguments(action, chartDirectory)
 					.arguments(getArguments())
 					.flag("output-dir", templateOutputDir)
+					.flag("name-template", templateNameTemplate)
 					.flag("generate-name", templateGenerateName)
 					.flag("plain-http", isPlainHttp(templatePlainHttp))
 					.execute("There are test failures");
