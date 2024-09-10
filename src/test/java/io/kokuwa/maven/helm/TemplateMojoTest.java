@@ -63,6 +63,14 @@ public class TemplateMojoTest extends AbstractMojoTest {
 		assertHelm(mojo, "template src/test/resources/simple --foo --bar");
 	}
 
+	@DisplayName("with --name-template")
+	@Test
+	void nameTemplate(TemplateMojo mojo) {
+		mojo.setSkipTemplate(false);
+		mojo.setTemplateNameTemplate("my-name");
+		assertHelm(mojo, "template src/test/resources/simple --name-template my-name");
+	}
+
 	@DisplayName("with --output-dir")
 	@Test
 	void outputDirectory(TemplateMojo mojo) {

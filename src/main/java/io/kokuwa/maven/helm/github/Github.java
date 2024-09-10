@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Utility for Github requests with cachging.
+ * Utility for Github requests with caching.
  *
  * @author Stephan Schnabel
  * @since 6.1.0

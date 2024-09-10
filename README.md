@@ -335,6 +335,7 @@ Parameter | Type | User Property | Required | Description
 `<uninstallKeepHistory>` | boolean | helm.uninstall.keep-history | false | Remove all associated resources and mark the release as deleted, but retain the release history.
 `<uninstallIgnoreNotFound>` | boolean | helm.uninstall.ignore-not-found | false | Treat "release not found" as a successful uninstall.
 `<templateOutputDir>` | file | helm.template.output-dir | false | Writes the executed templates to files in output-dir instead of stdout.
+`<templateTemplateName>` | string | helm.template.name-template | false | Specify template used to name the release.
 `<templateGenerateName>` | boolean | helm.template.generate-name | false | Generate the name (and omit the NAME parameter).
 `<templatePlainHttp>` | boolean | helm.template.plain-http | false | Use insecure HTTP connections for the chart download.
 `<pushPlainHttp>` | boolean | helm.push.plain-http | false | Use insecure HTTP connections for the chart download.
