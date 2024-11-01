@@ -97,7 +97,7 @@
 		<!-- ===================================================================== -->
 
 		<version.org.apache.commons.compress>1.27.1</version.org.apache.commons.compress>
-		<version.org.junit.jupiter>5.11.1</version.org.junit.jupiter>
+		<version.org.junit.jupiter>5.11.3</version.org.junit.jupiter>
 		<version.org.mockito>4.11.0</version.org.mockito>
 		<version.org.projectlombok>1.18.34</version.org.projectlombok>
 		<version.com.fasterxml.jackson>2.18.0</version.com.fasterxml.jackson>
