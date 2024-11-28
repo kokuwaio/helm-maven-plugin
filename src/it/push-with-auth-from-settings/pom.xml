@@ -33,7 +33,7 @@
 							<chartVersion>1.0.0</chartVersion>
 							<uploadRepoStable>
 								<name>registry-with-auth</name>
-								<url>127.0.0.1</url>
+								<url>127.0.0.1:${wiremockPort}</url>
 							</uploadRepoStable>
 						</configuration>
 					</execution>

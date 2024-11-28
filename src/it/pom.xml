@@ -20,7 +20,7 @@
 		<maven.compiler.source>@maven.compiler.source@</maven.compiler.source>
 		<maven.compiler.target>@maven.compiler.target@</maven.compiler.target>
 
-		<test.helmExecutableDirectory>${project.basedir}/../../../src/bin/amd64</test.helmExecutableDirectory>
+		<test.helmExecutableDirectory>${settings.localRepository}/helm-it-executable-directory</test.helmExecutableDirectory>
 
 		<!-- ===================================================================== -->
 		<!-- ============================= Libaries ============================== -->
@@ -73,6 +73,12 @@
 					<groupId>io.kokuwa.maven</groupId>
 					<artifactId>helm-maven-plugin</artifactId>
 					<version>${version.io.kokuwa.maven.helm}</version>
+					<configuration>
+						<!-- integration test should use onw config space to avoid override system -->
+						<registryConfig>${project.build.directory}/helm/registry/config.json</registryConfig>
+						<repositoryConfig>${project.build.directory}/helm/repositories.yaml</repositoryConfig>
+						<repositoryCache>${project.build.directory}/helm/cache</repositoryCache>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -99,7 +105,7 @@
 				<executions>
 					<execution>
 						<id>default-install</id>
-						<phase />
+						<phase>none</phase>
 					</execution>
 				</executions>
 			</plugin>
@@ -109,7 +115,7 @@
 				<executions>
 					<execution>
 						<id>default-deploy</id>
-						<phase />
+						<phase>none</phase>
 					</execution>
 				</executions>
 			</plugin>

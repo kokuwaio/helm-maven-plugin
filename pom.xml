@@ -238,6 +238,10 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
+					<addTestClassPath>true</addTestClassPath>
+				</configuration>
 			</plugin>
 
 		</plugins>

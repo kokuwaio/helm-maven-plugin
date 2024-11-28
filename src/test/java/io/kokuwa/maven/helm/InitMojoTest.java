@@ -163,7 +163,7 @@ public class InitMojoTest extends AbstractMojoTest {
 		proxy3.setId("test3");
 		proxy3.setActive(true);
 		proxy3.setProtocol("http");
-		proxy3.setHost("proxy3.127.0.0.1.nip.io");
+		proxy3.setHost("127.0.0.1");
 		proxy3.setPort(mock.getPort());
 		proxy3.setNonProxyHosts(null);
 

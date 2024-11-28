@@ -32,7 +32,7 @@
 					<chartVersion>1.0.0</chartVersion>
 					<overwriteLocalDependencies>true</overwriteLocalDependencies>
 					<overwriteDependencyVersion>5.0.0</overwriteDependencyVersion>
-                    <overwriteDependencyRepository>"@kokuwaio"</overwriteDependencyRepository>
+					<overwriteDependencyRepository>"@kokuwaio"</overwriteDependencyRepository>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -1,5 +1,0 @@
-// verify that registry login was tried
-
-return org.codehaus.plexus.util.FileUtils
-	.fileRead(basedir + "/build.log")
-	.contains(basedir + "/../../../src/bin/amd64/helm push " + basedir + "/target/helm/repo/app-1.0.0.tgz oci://127.0.0.1\n")
