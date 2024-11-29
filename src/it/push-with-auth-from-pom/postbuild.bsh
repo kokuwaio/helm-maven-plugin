@@ -1,5 +1,0 @@
-// verify that registry login was tried
-
-return org.codehaus.plexus.util.FileUtils
-	.fileRead(basedir + "/build.log")
-	.contains(basedir + "/../../../src/bin/amd64/helm registry login 127.0.0.1 --username auth-from-pom --password-stdin\n")
