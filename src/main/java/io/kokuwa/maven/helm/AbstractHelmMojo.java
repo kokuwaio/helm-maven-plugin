@@ -341,8 +341,8 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		return helm
 				.flag("debug", debug)
 				.flag("kube-apiserver", kubeApiServer)
-				.flag("kube-as-group", kubeAsUser)
-				.flag("kube-as-user", kubeAsGroup)
+				.flag("kube-as-group", kubeAsGroup)
+				.flag("kube-as-user", kubeAsUser)
 				.flag("kube-ca-file", kubeCaFile)
 				.flag("kube-insecure-skip-tls-verify", kubeInsecure)
 				.flag("kube-token", kubeToken)
