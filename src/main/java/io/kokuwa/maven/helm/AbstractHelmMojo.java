@@ -162,7 +162,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	 * @since 6.16.1
 	 */
 	@Parameter(property = "helm.cacheValidityDays", defaultValue = "1")
-	private int cacheValidityDays;
+	private Integer cacheValidityDays;
 
 	/**
 	 * Directory where to store Github cache.
