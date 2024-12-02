@@ -2,7 +2,6 @@ package io.kokuwa.maven.helm.github;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.ResponseCache;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;

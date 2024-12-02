@@ -270,7 +270,7 @@ Parameter | Type | User Property | Required | Description
 `<helmDownloadServerId>` | string | helm.downloadServerId | false | Server Id in `settings.xml` which has username and password used to authenticate while downloading helm binary package
 `<helmVersion>` | string | helm.version | false | Version of helm to download.
 `<githubUserAgent>` | string | helm.githubUserAgent | false | To determine latest helm version this plugin uses the Github API. Therefore a [user agent](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#user-agent-required) is needed. Defaults to `kokuwaio/helm-maven-plugin`
-`<cacheValidityDays> | int | helm.cacheValidityDays | false | Skip accessing the Github API for helm version if cache is newer than given days. Defaults to 1.
+`<cacheValidityDays>` | int | helm.cacheValidityDays | false | Skip accessing the Github API for helm version if cache is newer than given days. Defaults to 1.
 `<tmpDir>` | string | helm.tmpDir | false | Directory where to store cached Github responses. Defaults to `${java.io.tmpdir}/helm-maven-plugin`
 `<excludes>` | list of strings | helm.excludes | false | list of chart directories to exclude
 `<useLocalHelmBinary>` | boolean | helm.useLocalHelmBinary | false | Controls whether a local binary should be used instead of downloading it. If set to `true` path has to be set with property `executableDirectory`
