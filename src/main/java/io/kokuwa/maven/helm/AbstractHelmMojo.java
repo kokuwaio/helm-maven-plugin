@@ -156,6 +156,14 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	@Parameter(property = "helm.githubUserAgent", defaultValue = "kokuwaio/helm-maven-plugin")
 	private String githubUserAgent;
 
+	/*
+	 * Skip accessing the Github API for helm version if cache is newer than given days.
+	 *
+	 * @since 6.16.1
+	 */
+	@Parameter(property = "helm.cacheValidityDays", defaultValue = "1")
+	private int cacheValidityDays;
+
 	/**
 	 * Directory where to store Github cache.
 	 *
@@ -446,7 +454,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 	public String getHelmVersion() throws MojoExecutionException {
 		if (helmVersion == null) {
-			helmVersion = new Github(getLog(), tmpDir.toPath(), githubUserAgent).getHelmVersion();
+			helmVersion = new Github(getLog(), tmpDir.toPath(), githubUserAgent, cacheValidityDays).getHelmVersion();
 		}
 		return helmVersion;
 	}

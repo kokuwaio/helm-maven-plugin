@@ -2,9 +2,12 @@ package io.kokuwa.maven.helm.github;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.ResponseCache;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -26,10 +29,11 @@ public class Github {
 	private static final String LATEST_RELEASE_URL = "https://api.github.com/repos/helm/helm/releases/latest";
 	private static final String RELEASE_FILE = "github-release.json";
 
-	private final ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 	private final Log log;
 	private final Path tmpDir;
 	private final String userAgent;
+	private final int cacheValidityDays;
 
 	public String getHelmVersion() throws MojoExecutionException {
 
@@ -43,7 +47,12 @@ public class Github {
 
 	private ReleaseResponse getReleaseResponse() throws MojoExecutionException {
 
-		Optional<ReleaseCache> cache = readCache();
+		Optional<ReleaseCache> cache = readCache(cacheValidityDays);
+		Instant cacheExpiredThreshold = Instant.now().minus(Duration.ofDays(cacheValidityDays));
+		if (cache.map(ReleaseCache::getTimestamp).filter(cacheExpiredThreshold::isBefore).isPresent()) {
+			log.debug("Github cache found with timestamp " + cache.get().getTimestamp() + ", skip Github request.");
+			return cache.get().getResponse();
+		}
 
 		try {
 			HttpURLConnection connection = (HttpURLConnection) new URL(LATEST_RELEASE_URL).openConnection();
@@ -82,7 +91,7 @@ public class Github {
 		}
 	}
 
-	private Optional<ReleaseCache> readCache() {
+	private Optional<ReleaseCache> readCache(int cacheValidityDays) {
 
 		Path file = tmpDir.resolve(RELEASE_FILE);
 		if (!Files.exists(file)) {
@@ -92,7 +101,8 @@ public class Github {
 
 		try {
 			ReleaseCache cache = mapper.readValue(file.toFile(), ReleaseCache.class);
-			log.debug("Github cache found at " + file);
+			cache.setTimestamp(Files.getLastModifiedTime(file).toInstant());
+			log.debug("Github cache found at " + file + " with timestamp " + cache.getTimestamp());
 			return Optional.of(cache);
 		} catch (IOException e) {
 			log.warn("Failed to read cache from " + file, e);
