@@ -244,6 +244,7 @@ and disables the auto-detection feature:
 
 ## Goals
 
+- `helm:clean` cleanups helm specific directory `charts` and `Chart.lock` file
 - `helm:init` initializes Helm by downloading a specific version
 - `helm:dependency-build` resolves the chart dependencies
 - `helm:dependency-update` verifies that the required chart dependencies are present
@@ -291,6 +292,7 @@ Parameter | Type | User Property | Required | Description
 `<addDefaultRepo>` | boolean | helm.init.add-default-repo | true | If true, stable repo (<https://charts.helm.sh/stable>) will be added
 `<addUploadRepos>` | boolean | helm.init.add-upload-repos | false | If true, upload repos (uploadRepoStable, uploadRepoSnapshot) will be added, if configured
 `<skip>` | boolean | helm.skip | false | skip plugin execution
+`<skipClean>` | boolean | helm.clean.skip | false | skip clean goal
 `<skipInit>` | boolean | helm.init.skip | false | skip init goal
 `<skipLint>` | boolean | helm.lint.skip | false | skip lint goal
 `<skipTemplate>` | boolean | helm.template.skip | false | skip template goal. Default value is true due to the dry-run goal
@@ -347,10 +349,20 @@ Parameter | Type | User Property | Required | Description
 `<overwriteLocalDependencies>` | boolean | helm.overwriteLocalDependencies | false | Controls whether a local path chart should be used for a chart dependency. When set to `true`, chart dependencies on a local path chart will be overwritten with the respective properties set by `overwriteDependencyVersion` and `overwriteDependencyRepository`. This is helpful for deploying charts with intra repository dependencies, while still being able to use local path dependencies for development builds. Example usage: for development use `mvn clean install` and for deployment use `mvn clean deploy -Dhelm.overwriteLocalDependencies=true`
 `<overwriteDependencyVersion>` | string | helm.overwriteDependencyVersion | false |  Value used to overwrite a local path chart's version within a chart's dependencies. The property `overwriteLocalDependencies` must be set to `true` for this to apply.
 `<overwriteDependencyRepository>` | string | helm.overwriteDependencyRepository | false | Value used to overwrite a local path chart's repository within a chart's dependencies. The property `overwriteLocalDependencies` must be set to `true` for this to apply.
+`<cleanFailOnError>` | boolean | helm.clean.failOnError | false | Indicates whether the build will continue even if there are clean errors. (default true)
 
 ## Packaging with the Helm Lifecycle
 
-To keep your pom files small you can use 'helm' packaging. This binds `helm:init` to the initialize phase, `helm:dependency-build` to the process-resources phase,  `helm:lint` to the test phase,`helm:package` to the package phase and `helm:upload` to the deploy phase.
+To keep your pom files small you can use 'helm' packaging.
+
+This binds:
+
+- `helm:clean` to clean phase
+- `helm:init` to the initialize phase
+- `helm:dependency-build` to the process-resources phase
+- `helm:lint` to the test phase
+- `helm:package` to the package phase
+- `helm:upload` to the deploy phase
 
 ```xml
 <pom>

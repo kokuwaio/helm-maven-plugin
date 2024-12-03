@@ -52,7 +52,7 @@ public abstract class AbstractMojoTest {
 		Authenticator.setDefault(null);
 	}
 
-	static void assertHelm(AbstractHelmMojo mojo, String... commands) {
+	static void assertHelm(AbstractChartDirectoryMojo mojo, String... commands) {
 
 		// setup log
 
