@@ -136,7 +136,7 @@ public abstract class AbstractHelmMojo extends AbstractChartDirectoryMojo {
 	/*
 	 * Skip accessing the Github API for helm version if cache is newer than given days.
 	 *
-	 * @since 6.16.1
+	 * @since 6.17.0
 	 */
 	@Parameter(property = "helm.cacheValidityDays", defaultValue = "1")
 	private Integer cacheValidityDays;
