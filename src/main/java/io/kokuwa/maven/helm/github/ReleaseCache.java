@@ -1,5 +1,7 @@
 package io.kokuwa.maven.helm.github;
 
+import java.time.Instant;
+
 import lombok.Data;
 
 /**
@@ -11,6 +13,7 @@ import lombok.Data;
 @Data
 public class ReleaseCache {
 
+	private Instant timestamp;
 	private String etag;
 	private ReleaseResponse response;
 }
