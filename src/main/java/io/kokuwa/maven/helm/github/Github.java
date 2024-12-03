@@ -46,7 +46,7 @@ public class Github {
 
 	private ReleaseResponse getReleaseResponse() throws MojoExecutionException {
 
-		Optional<ReleaseCache> cache = readCache(cacheValidityDays);
+		Optional<ReleaseCache> cache = readCache();
 		Instant cacheExpiredThreshold = Instant.now().minus(Duration.ofDays(cacheValidityDays));
 		if (cache.map(ReleaseCache::getTimestamp).filter(cacheExpiredThreshold::isBefore).isPresent()) {
 			log.debug("Github cache found with timestamp " + cache.get().getTimestamp() + ", skip Github request.");
@@ -71,7 +71,10 @@ public class Github {
 
 			ReleaseResponse response = mapper.readValue(connection.getInputStream(), ReleaseResponse.class);
 			log.debug("Got valid response from github");
-			writeCache(new ReleaseCache().setEtag(connection.getHeaderField("ETag")).setResponse(response));
+			writeCache(new ReleaseCache()
+					.setEtag(connection.getHeaderField("ETag"))
+					.setTimestamp(Instant.now())
+					.setResponse(response));
 
 			return response;
 		} catch (IOException e) {
@@ -90,7 +93,7 @@ public class Github {
 		}
 	}
 
-	private Optional<ReleaseCache> readCache(int cacheValidityDays) {
+	private Optional<ReleaseCache> readCache() {
 
 		Path file = tmpDir.resolve(RELEASE_FILE);
 		if (!Files.exists(file)) {
@@ -100,7 +103,6 @@ public class Github {
 
 		try {
 			ReleaseCache cache = mapper.readValue(file.toFile(), ReleaseCache.class);
-			cache.setTimestamp(Files.getLastModifiedTime(file).toInstant());
 			log.debug("Github cache found at " + file + " with timestamp " + cache.getTimestamp());
 			return Optional.of(cache);
 		} catch (IOException e) {

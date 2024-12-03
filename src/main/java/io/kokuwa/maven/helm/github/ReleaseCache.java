@@ -2,8 +2,6 @@ package io.kokuwa.maven.helm.github;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.Data;
 
 /**
@@ -15,7 +13,6 @@ import lombok.Data;
 @Data
 public class ReleaseCache {
 
-	@JsonIgnore
 	private Instant timestamp;
 	private String etag;
 	private ReleaseResponse response;

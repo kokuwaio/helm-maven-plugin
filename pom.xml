@@ -167,6 +167,11 @@
 			<artifactId>jackson-dataformat-yaml</artifactId>
 			<version>${version.com.fasterxml.jackson}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>${version.com.fasterxml.jackson}</version>
+		</dependency>
 
 		<!-- test -->
 		<dependency>
