@@ -7,6 +7,12 @@
 			<configuration>
 				<lifecycles>
 					<lifecycle>
+						<id>clean</id>
+						<phases>
+							<clean>org.apache.maven.plugins:maven-clean-plugin:clean,io.kokuwa.maven:helm-maven-plugin:clean</clean>
+						</phases>
+					</lifecycle>
+					<lifecycle>
 						<id>default</id>
 						<phases>
 							<initialize>io.kokuwa.maven:helm-maven-plugin:init</initialize>
