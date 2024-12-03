@@ -16,7 +16,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * Cleanups helm specific directory {@code charts} and {@code Chart.lock} file.
  *
  * @author Slawomir Jaranowski
- * @since 6.16.1
+ * @since 6.17.0
  */
 @Mojo(name = "clean", defaultPhase = LifecyclePhase.CLEAN, threadSafe = true)
 public class CleanMojo extends AbstractChartDirectoryMojo {
@@ -24,7 +24,7 @@ public class CleanMojo extends AbstractChartDirectoryMojo {
 	/**
 	 * Set this to <code>true</code> to skip invoking clean goal.
 	 *
-	 * @since 6.16.1
+	 * @since 6.17.0
 	 */
 	@Parameter(property = "helm.clean.skip", defaultValue = "false")
 	private boolean skipClean;
@@ -32,7 +32,7 @@ public class CleanMojo extends AbstractChartDirectoryMojo {
 	/**
 	 * Indicates whether the build will continue even if there are clean errors.
 	 *
-	 * @since 6.16.1
+	 * @since 6.17.0
 	 */
 	@Parameter(property = "helm.clean.failOnError", defaultValue = "true")
 	private boolean cleanFailOnError;
