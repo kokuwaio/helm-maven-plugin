@@ -7,7 +7,7 @@ jobs:
   yaml:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ibiqlik/action-yamllint@v3
         with:
           format: colored
@@ -16,7 +16,7 @@ jobs:
   markdown:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: avto-dev/markdown-lint@v1
         with:
           args: /github/workspace
@@ -30,7 +30,7 @@ jobs:
     env:
       MAVEN_ARGS: --batch-mode --color=always --no-transfer-progress -Dmaven.test.redirectTestOutputToFile=false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
