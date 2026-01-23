@@ -197,6 +197,7 @@ public class UploadMojo extends AbstractHelmMojo {
 		try {
 			return Arrays.asList(MAPPER.readValue(catalogFile, Catalog[].class));
 		} catch (DatabindException e) {
+			getLog().warn(e.getMessage());
 			getLog().warn("Unable to parse the existing catalog file content. Overwriting data.");
 		} catch (IOException e) {
 			throw new MojoExecutionException("Failure occurred while reading the catalog file.", e);
@@ -212,7 +213,7 @@ public class UploadMojo extends AbstractHelmMojo {
 	 */
 	private String createCatalogContent(Catalog data) throws MojoExecutionException {
 		File file = getCatalogFilePath().toFile();
-		List<Catalog> catalog = readCatalog(file);
+		List<Catalog> catalog = new ArrayList<>(readCatalog(file));
 		catalog.add(data);
 		try {
 			return MAPPER.writeValueAsString(catalog);
