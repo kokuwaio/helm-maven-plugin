@@ -2,6 +2,7 @@ package io.kokuwa.maven.helm;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,7 +10,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hc.core5.http.HttpHeaders;
@@ -78,7 +81,9 @@ public class UploadMojoTest extends AbstractMojoTest {
 	@DisplayName("chartmuseum: check helm upload calatog file is created")
 	@Test
 	@Order(1)
-	void uploadChartToChartMuseumAndCheckCatalogIsCreated(UploadMojo mojo) {
+	void uploadChartToChartMuseumAndCheckCatalogIsCreated(UploadMojo mojo) throws IOException {
+		// delete existing catalog file
+		Files.deleteIfExists(mojo.getCatalogFilePath());
 		mojo.setSkipCatalog(false);
 		String uploadUrl = "http://127.0.0.1:" + mock.getPort() + "/chartmuseum";
 		mojo.setUploadRepoStable(new HelmRepository()
@@ -87,7 +92,11 @@ public class UploadMojoTest extends AbstractMojoTest {
 				.setUrl(uploadUrl));
 		Path archive = copyPackagedHelmChartToOutputdirectory(mojo);
 		assertUpload(mojo, RequestMethod.POST, "/chartmuseum", null);
-		assertCatalog(mojo, archive, uploadUrl);
+		List<Catalog> expectedCatalogs = new ArrayList<>();
+		expectedCatalogs.add(
+			new Catalog(archive, java.net.URI.create(uploadUrl).toURL(), null, "")
+		);
+		assertCatalog(mojo, expectedCatalogs);
 	}
 
 	@DisplayName("chartmuseum: with username/password")
@@ -179,7 +188,8 @@ public class UploadMojoTest extends AbstractMojoTest {
 
 	@DisplayName("nexus: check helm upload catalog file is created")
 	@Test
-	void uploadChartToNexusAndCheckCatalogIsCreated(UploadMojo mojo) {
+	void uploadChartToNexusAndCheckCatalogIsCreated(UploadMojo mojo) throws IOException {
+		Files.deleteIfExists(mojo.getCatalogFilePath());
 		mojo.setSkipCatalog(false);
 		mojo.setUploadRepoStable(new HelmRepository()
 				.setType(RepoType.NEXUS)
@@ -189,8 +199,12 @@ public class UploadMojoTest extends AbstractMojoTest {
 				.setPassword("secret"));
 		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
 		assertUpload(mojo, RequestMethod.PUT, "/nexus/" + packaged.getFileName(), BASIC_FOO_SECRET);
-		String uploadUrl = "http://127.0.0.1:" + mock.getPort() + "/nexus" + packaged.getFileName();
-		assertCatalog(mojo, packaged, uploadUrl);
+		String uploadUrl = "http://127.0.0.1:" + mock.getPort() + "/nexus/" + packaged.getFileName();
+		List<Catalog> expectedCatalogs = new ArrayList<>();
+		expectedCatalogs.add(
+			new Catalog(packaged, java.net.URI.create(uploadUrl).toURL(), null, "")
+		);
+		assertCatalog(mojo, expectedCatalogs);
 	}
 
 	@DisplayName("nexus: with serverId")
@@ -297,7 +311,8 @@ public class UploadMojoTest extends AbstractMojoTest {
 
 	@DisplayName("artifactory: check helm upload catalog file is created")
 	@Test
-	void uploadChartToArtifactoryAndCheckCatalogIsCreated(UploadMojo mojo) {
+	void uploadChartToArtifactoryAndCheckCatalogIsCreated(UploadMojo mojo) throws IOException {
+		Files.deleteIfExists(mojo.getCatalogFilePath());
 		mojo.setSkipCatalog(false);
 		mojo.setProjectGroupId("io.kokuwa.maven.helm");
 		mojo.setProjectArtifactId("helm-maven-plugin");
@@ -314,7 +329,55 @@ public class UploadMojoTest extends AbstractMojoTest {
 		String expectedPath = "/artifactory/io/kokuwa/maven/helm/helm-maven-plugin/6.5.0/" + packaged.getFileName();
 		assertUpload(mojo, RequestMethod.PUT, expectedPath, BASIC_FOO_SECRET);
 		String uploadUrl = "http://127.0.0.1:" + mock.getPort() + expectedPath;
-		assertCatalog(mojo, packaged, uploadUrl);
+		List<Catalog> expectedCatalogs = new ArrayList<>();
+		expectedCatalogs.add(
+			new Catalog(packaged, java.net.URI.create(uploadUrl).toURL(), null, "")
+		);
+		assertCatalog(mojo, expectedCatalogs);
+	}
+
+	@DisplayName("check multiple helm upload entries are present in catalog file after uploading to multiple repos")
+	@Test
+	void uploadHelmChartToMultipleReposAndCheckCatalogIsCreated(UploadMojo mojo) throws IOException {
+		Files.deleteIfExists(mojo.getCatalogFilePath());
+		mojo.setSkipCatalog(false);
+		mojo.setProjectGroupId("io.kokuwa.maven.helm");
+		mojo.setProjectArtifactId("helm-maven-plugin");
+		mojo.setProjectVersion("6.5.0");
+		// Upload chart to artifactory
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.ARTIFACTORY)
+				.setName("my-artifactory")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/artifactory")
+				.setUsername("foo")
+				.setPassword("secret")
+				.setUseGroupId(true)
+				.setUseArtifactId(true));
+		Path packaged = copyPackagedHelmChartToOutputdirectory(mojo);
+		String expectedPath = "/artifactory/io/kokuwa/maven/helm/helm-maven-plugin/6.5.0/" + packaged.getFileName();
+		assertUpload(mojo, RequestMethod.PUT, expectedPath, BASIC_FOO_SECRET);
+		String uploadUrl = "http://127.0.0.1:" + mock.getPort() + expectedPath;
+		List<Catalog> expectedCatalogs = new ArrayList<>();
+		expectedCatalogs.add(
+			new Catalog(packaged, java.net.URI.create(uploadUrl).toURL(), null, "")
+		);
+		// Expect one entry in catalog
+		assertCatalog(mojo, expectedCatalogs);
+
+		// Upload chart to nexus
+		mojo.setUploadRepoStable(new HelmRepository()
+				.setType(RepoType.NEXUS)
+				.setName("my-nexus")
+				.setUrl("http://127.0.0.1:" + mock.getPort() + "/nexus")
+				.setUsername("foo")
+				.setPassword("secret"));
+		assertDoesNotThrow(mojo::execute, "upload failed");
+		uploadUrl = "http://127.0.0.1:" + mock.getPort() + "/nexus/" + packaged.getFileName();
+		expectedCatalogs.add(
+			new Catalog(packaged, java.net.URI.create(uploadUrl).toURL(), null, "")
+		);
+		// Expect two entries in catalog
+		assertCatalog(mojo, expectedCatalogs);
 	}
 
 	@DisplayName("artifactory: with serverId")
@@ -434,20 +497,26 @@ public class UploadMojoTest extends AbstractMojoTest {
 		assertEquals(authorization, request.getHeader(HttpHeaders.AUTHORIZATION), "authorization");
 	}
 
-	private void assertCatalog(UploadMojo mojo, Path archive, String uploadUrl) {
+	private void assertCatalog(UploadMojo mojo, List<Catalog> expectedCatalogs) {
 		File helmCatalogFile = mojo.getCatalogFilePath().toFile();
 		assertTrue(helmCatalogFile.exists());
+		List<Catalog> catalogs = null;
 		try {
-			for (Catalog catalog : mojo.readCatalog(helmCatalogFile)) {
-				assertEquals(archive.toString(), catalog.getChart().toString());
-				assertEquals(uploadUrl, catalog.getUploadUrl().toString());
-				assertNull(catalog.getUploadResponseType());
-				assertEquals("", catalog.getUploadResponse());
-			}
+			catalogs = mojo.readCatalog(helmCatalogFile);
 		} catch (MojoExecutionException e) {
 			fail(e);
 		}
-
+		assertNotNull(catalogs);
+		assertEquals(expectedCatalogs.size(), catalogs.size(), "catalog size mismatch");
+		for (Catalog catalog : catalogs) {
+			int index = catalogs.indexOf(catalog);
+			Catalog expectedCatalog = expectedCatalogs.get(index);
+			assertEquals(expectedCatalog.getChart().toAbsolutePath().toString(),
+				catalog.getChart().toAbsolutePath().toString());
+			assertEquals(expectedCatalog.getUploadUrl().toString(), catalog.getUploadUrl().toString());
+			assertNull(catalog.getUploadResponseType());
+			assertEquals("", catalog.getUploadResponse());
+		}
 	}
 
 	private void assertUploadVerifySuccess(UploadMojo mojo, RequestMethod method, String path) {
